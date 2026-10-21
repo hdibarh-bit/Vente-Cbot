@@ -1,5 +1,5 @@
 {
-  "_note": "Performances simulées. Source unique des chiffres affichés sur le site. Référence du site : risque 1 %.",
+  "_note": "EN ATTENTE DE DÉCISION DE HAMID (21/10) : le PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf montre des capitaux de 500 € à ~10 000 € sur 2024-2026, ce qui contredit ces chiffres (100 000 €, 2025-2026). Ne pas utiliser avant arbitrage. Performances simulées. Source unique des chiffres affichés sur le site. Référence du site : risque 1 %.",
   "compteInitial": 100000,
   "devise": "EUR",
   "periode": { "debut": "2025-01-01", "fin": "2026-10-07" },
