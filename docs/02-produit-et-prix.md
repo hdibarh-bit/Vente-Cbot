@@ -13,7 +13,7 @@ cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, m
 **Réglages client** : risque par trade et noms des symboles chez son broker. Plafond 3 % codé en dur (liste fixe 1 % / 2 % / 3 %). Pour changer : arrêter le cBot dans le cloud cTrader, modifier « risque », relancer.
 
 **Capital conseillé : 5 000 € minimum.** En dessous, le lot minimum fait refuser beaucoup de trades (Nasdaq, DAX, or) et les résultats deviennent très irréguliers.
-**Risque par défaut recommandé : 1 %** (à confirmer par Bouchra).
+**Risque par défaut : 1 %** (décidé le 21/10/2026). Le client choisit 1 %, 2 % ou 3 %, jamais au-delà.
 
 ## Prix
 | Formule | Prix | Total 1re année |
@@ -25,7 +25,7 @@ cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, m
 - L'abonnement est **obligatoire** pour garder la licence active. L'annuel économise 120 €/an : argument à mettre en avant.
 - Au paiement : achat + premier abonnement dans le même passage en caisse.
 - Sans abonnement payé : le cBot cesse d'ouvrir de nouveaux trades en fin de licence (voir `04-licences.md`).
-- **Question ouverte : prix TTC ou HT ?** (dépend du statut/TVA de Bouchra).
+- **TVA (décidé le 21/10/2026)** : auto-entrepreneur au départ, donc aucune mention TTC/HT. Passage en société plus tard : prix en TTC.
 
 ## Résultats de backtest
 Voir `config/resultats-backtest.json` (source unique) et `06-regles-legales-communication.md` pour les règles d'affichage. Référence du site : **1 % de risque**, toujours avec la pire baisse à côté.

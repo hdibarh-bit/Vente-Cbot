@@ -18,20 +18,20 @@ Signature : **ECDSA P-256 / SHA-256** (compatible .NET 6 du cBot). Dossier `/cbo
 - Clé d'essai → 14 jours, compte **démo** uniquement (le cBot doit savoir reconnaître un compte démo : faisable dans cTrader, à coder).
 
 ## Décision du 21/10/2026
-**C'est n8n qui détecte le paiement (Stripe), génère la licence et la livre au bot.** Le cBot la récupère via le port cloud. Le site WordPress n'héberge ni le service de licence ni la clé privée ; il affiche la licence dans l'espace client (reçue de n8n) et envoie les événements à n8n. Le dossier `/cbot-licence` du brief (service Node) n'est donc plus à construire dans WordPress. Réserve : la connexion WebSocket depuis le cloud cTrader reste à tester ; repli = envoi par email.
+**C'est n8n qui détecte le paiement (Stripe), génère la licence et la livre au bot.** Le cBot la récupère via le port cloud. Le site WordPress n'héberge ni le service de licence ni la clé privée ; il affiche la licence dans l'espace client (reçue de n8n) et envoie les événements à n8n. Le service WebSocket Node (port 25345) reste à coder et documenter, mais **hors WordPress** (sur le VPS), et **non activé** tant que le test cTrader n'a pas réussi. Le dossier `/cbot-licence` (clé publique + exemple C# de vérification) reste à fournir. Réserve : la connexion WebSocket depuis le cloud cTrader reste à tester ; repli = envoi par email.
 
 ## Livraison de la clé (décision selon un test)
-- **Automatique** : le cBot se connecte 1×/jour à un serveur de licences (WebSocket, **port 25345**, seul port autorisé dans le cloud cTrader). La doc cTrader se contredit : **test réel à faire** avec Bouchra. Service Node séparé, codé et documenté mais activé seulement si le test réussit.
+- **Automatique** : le cBot se connecte 1×/jour à un serveur de licences (WebSocket, **port 25345**, seul port autorisé dans le cloud cTrader). La doc cTrader se contredit : **test réel à faire** avec Hamid. Service Node séparé, codé et documenté mais activé seulement si le test réussit.
 - **Manuelle (déjà sûre)** : n8n envoie la nouvelle clé par email 5 jours avant la fin ; le client la colle dans les réglages. Clé de 12 mois pour les abonnés annuels.
 
 ## À faire côté cBot (hors site)
-Vérification de licence, mode essai démo, risque par défaut 1 % (si validé), choix 1/2/3 % (rien au-delà), **obscurcissement du code** et vérification de licence répartie à plusieurs endroits (le fichier peut être décompilé).
+Vérification de licence, mode essai démo, risque par défaut 1 %, choix 1/2/3 % (rien au-delà), **obscurcissement du code** et vérification de licence répartie à plusieurs endroits (le fichier peut être décompilé).
 
 ## Chaînes n8n (instance n8n.cosmartis.com, un seul workflow pour tous les clients)
 1. **Paiement réussi** : enregistrement client, génération de clé, email avec lien espace client, prime de 225 € programmée à J+30 pour le parrain, alerte Telegram.
 2. **Paiement d'abonnement échoué** : relances J+1, J+3, J+7, pas de nouvelle clé.
 3. **Chaque paiement d'abonnement** : 10 % crédités au parrain.
-4. **Chaque mois** : liste des virements d'affiliation préparée, validée par Bouchra en un clic.
+4. **Chaque mois** : liste des virements d'affiliation préparée, validée par Hamid en un clic.
 5. **Récap quotidien Telegram** : ventes, abonnements, impayés, commissions.
 
 Événements envoyés par le site à n8n (webhook signé) : vente, paiement d'abonnement, échec de paiement, nouvelle commission, inscription au rapport gratuit, demande d'essai.

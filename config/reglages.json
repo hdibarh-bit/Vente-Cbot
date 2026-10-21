@@ -1,6 +1,6 @@
 {
-  "_note": "Valeurs initiales de la table de réglages (modifiables depuis l'admin). Prix TTC/HT à trancher.",
-  "produit": { "nomProvisoire": "Aurum ICT", "domaine": null },
+  "_note": "Valeurs initiales de la table de réglages (modifiables depuis l'admin). Auto-entrepreneur au départ : pas de mention TTC/HT ; prix en TTC au passage en société.",
+  "produit": { "nomProvisoire": "Aurum ICT", "domaine": "bot.cosmartis.com" },
   "prix": {
     "achatCbot": 1500,
     "abonnementMensuel": 39.9,
@@ -8,7 +8,7 @@
     "abonnementAnnuelParMois": 29.9,
     "economieAnnuelle": 120,
     "devise": "EUR",
-    "tvaTrancheEnAttente": true
+    "mentionTvaAffichee": false
   },
   "capitalConseille": 5000,
   "risque": { "defaut": 1, "choix": [1, 2, 3], "plafond": 3 },

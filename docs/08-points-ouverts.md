@@ -1,10 +1,13 @@
 # Points ouverts et prochaines étapes
 
-## Décisions à prendre par Bouchra
-- [ ] Risque par défaut du cBot : **1 % recommandé** (fichier actuel 3 %/3 %).
-- [ ] Prix **TTC ou HT** (dépend du statut / TVA).
-- [ ] Parrain non client : touche-t-il ses commissions ? (proposition : oui)
-- [ ] Nom du produit (provisoire « Aurum ICT ») et nom de domaine.
+## Décisions à prendre par Hamid
+- [x] Risque par défaut : 1 % (décidé le 21/10). Le fichier cBot actuel est encore à 3 %/3 % : à modifier.
+- [x] TVA : auto-entrepreneur, pas de TTC/HT au départ (décidé le 21/10).
+- [x] Parrain non client : touche ses commissions (décidé le 21/10).
+- [x] Domaine : bot.cosmartis.com (décidé le 21/10).
+- [ ] Nom du produit (provisoire « Aurum ICT »).
+- [ ] « Feu vert site » (voir `SYNC-BOT-ICT.md` §5/§6) et prompt final.
+- [ ] Offre Hostinger actuelle (hébergement WordPress, Cloud ou VPS).
 
 ## Avant le lancement public (priorité)
 - [ ] Compiler le cBot `IctSmcTendance` dans cTrader (onglet Algo → Build) et corriger les erreurs.
@@ -22,9 +25,9 @@
 - [ ] Mettre à jour le rapport PDF de backtest au réglage 1 % (téléchargement gratuit).
 
 ## Construction
-- [ ] Site avec Claude Code (voir `prompt-claude-code.md`) — **après discussion avec Bouchra**.
+- [ ] Site avec Claude Code (voir `prompt-claude-code.md`) — **après discussion avec Hamid**.
 - [ ] Workflows n8n (paiements, licences, commissions, récap Telegram).
 - [ ] Pilote : 3 à 5 clients test avant ouverture publique.
 
 ## Comptes / clés à demander au bon moment
-Stripe (clés test puis prod, webhook secret) · Supabase (URL, clés) · Resend · Vercel · n8n (URL webhook + secret) · paire de clés ECDSA P-256 pour les licences.
+Stripe (clés test puis prod, webhook secret) · accès WordPress/Hostinger · n8n (URL webhook + secret) · paire de clés ECDSA P-256 pour les licences (clé privée côté n8n uniquement).

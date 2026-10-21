@@ -1,9 +1,9 @@
 # Contexte projet — Vente du bot ICT/SMC
 
-Source : Google Drive, « Contexte projet - Vente du bot ICT-SMC.docx » (21/10/2026, Bouchra).
+Source : Google Drive, « Contexte projet - Vente du bot ICT-SMC.docx » (21/10/2026, Hamid).
 
 ## Résumé
-Bouchra vend son bot de trading ICT/SMC sous forme de **cBot cTrader**, avec un **site de vente à thème doré** codé par Claude Code.
+Hamid vend son bot de trading ICT/SMC sous forme de **cBot cTrader**, avec un **site de vente à thème doré** codé par Claude Code.
 
 | Sujet | Décidé | Statut |
 |---|---|---|
@@ -22,7 +22,10 @@ Bouchra vend son bot de trading ICT/SMC sous forme de **cBot cTrader**, avec un 
 - Écrit en C# le 20/10/2026 (conversation « Bot cTrader stratégie tendance »). Moteur ICT : signaux identiques au bot n8n sur 322 situations de marché.
 - Première compilation à faire dans cTrader (onglet Algo → Build).
 - Le robot AMD (BTC/ETH) reste dans n8n et **ne fait pas partie de l'offre**.
-- Fichier actuel réglé à 3 % / 3 % ; recommandation : livrer à 1 %.
+- Fichier actuel réglé à 3 % / 3 % ; décision du 21/10/2026 : livrer à 1 % par défaut.
+
+## Fichier de liaison
+`SYNC-BOT-ICT.md` (Drive) : canal avec Claude/Cowork, à lire avant chaque session. Voir `CLAUDE.md` règle n°0.
 
 ## Autres ressources (Drive)
 - Dossier « Trading Bot - Données backtest 2019-2026 » (CSV M15, 14 actifs) — propriétaire abbadibouchra77@gmail.com.

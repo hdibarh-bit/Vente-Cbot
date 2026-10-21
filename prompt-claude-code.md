@@ -1,14 +1,16 @@
+> **⚠ Brief d'origine, partiellement dépassé (21/10/2026).** La stack est désormais **WordPress sur Hostinger + Stripe seul + thème et plugin maison, 0 € fixe** ; la licence est gérée par **n8n** ; risque par défaut **1 %** ; **auto-entrepreneur** (pas de TTC/HT) ; **parrain non client payé** ; **grâce de 3 jours**. Voir `CLAUDE.md`, `docs/` et `SYNC-BOT-ICT.md` (Drive). Les sections « Stack recommandée », « Base de données » et « Licences » ci-dessous sont à lire avec ces changements.
+
 # Mission
-Construis le site de vente complet d'un robot de trading vendu sous forme de cBot cTrader. Le site est en français, avec un thème doré haut de gamme. Il gère la vente, les abonnements, les licences, un espace client, un programme de parrainage à un seul niveau et une administration. La propriétaire, Bouchra, n'est pas développeuse : explique-lui chaque étape en français simple et demande-lui les comptes et clés nécessaires au bon moment.
+Construis le site de vente complet d'un robot de trading vendu sous forme de cBot cTrader. Le site est en français, avec un thème doré haut de gamme. Il gère la vente, les abonnements, les licences, un espace client, un programme de parrainage à un seul niveau et une administration. La propriétaire, Hamid, n'est pas développeuse : explique-lui chaque étape en français simple et demande-lui les comptes et clés nécessaires au bon moment.
 
 Nom du produit : [NOM DU PRODUIT] (provisoire : « Aurum ICT »)
-Domaine : [DOMAINE]
+Domaine : bot.cosmartis.com
 
 # Le produit
 - Un cBot cTrader (robot de trading) que le client installe dans le cloud cTrader, sur son propre compte broker. Il tourne même ordinateur éteint.
 - Stratégie : suivi de tendance H1 (or, BTC, Nasdaq, DAX, ETH) avec stop suiveur de 3 ATR, et setups ICT A+ de prise de liquidité en 15 minutes (Nasdaq, EURUSD, US 500, ETH). Objectifs fixes 5R et 7R. Garde-fous : 1 trade par actif, 3 positions max, 2 pertes max par jour. Entrées du dimanche 23h59 au vendredi 17h (Paris).
 - Capital conseillé : 5 000 € minimum. Risque conseillé : 1 % par trade. Le client peut changer lui-même son risque dans les réglages du cBot, au choix 1 %, 2 % ou 3 % (liste fixe codée dans le cBot, rien au-delà de 3 %) (à expliquer dans la FAQ et le guide d'installation).
-- Bouchra vend un logiciel : elle ne gère jamais l'argent ni le compte du client.
+- Hamid vend un logiciel : elle ne gère jamais l'argent ni le compte du client.
 
 # Prix
 - Achat du cBot : 1 500 € (paiement unique).
@@ -20,7 +22,7 @@ Domaine : [DOMAINE]
 - Supabase : base PostgreSQL + authentification par email (lien magique).
 - Stripe : Checkout, Billing (abonnements), portail client, webhooks.
 - Resend pour les emails transactionnels.
-- n8n (instance existante de Bouchra : n8n.cosmartis.com) : le site lui envoie des événements par webhook signé (vente, paiement d'abonnement, échec de paiement, nouvelle commission) pour les relances, la séquence email et les alertes Telegram.
+- n8n (instance existante de Hamid : n8n.cosmartis.com) : le site lui envoie des événements par webhook signé (vente, paiement d'abonnement, échec de paiement, nouvelle commission) pour les relances, la séquence email et les alertes Telegram.
 - Déploiement sur Vercel. Toutes les clés secrètes en variables d'environnement, jamais dans le code.
 
 # Thème doré (important)
@@ -48,7 +50,7 @@ Domaine : [DOMAINE]
 | 3 % | +332 % | +106 % | −26 % | environ −27 % |
 
 Texte obligatoire sous le tableau : données 15 minutes 2019–2026 sur 14 actifs ; en cours de mois les baisses ont pu être plus fortes (jusqu'à −35/−40 % à 3 %) ; 2025 meilleure année, 2026 la plus difficile ; sur 2019–2026 à risque élevé la baisse maximale a atteint 77 % ; sous 5 000 € les résultats sont très irréguliers ; les réglages ont été choisis sur le même historique, donc les résultats futurs seront probablement moins bons ; pas encore d'historique en argent réel ; l'avenir peut être très positif, nul ou négatif, avec une perte possible de tout le capital.
-N'affiche jamais de cumul spectaculaire en titre. Mets ces données dans un fichier de configuration pour que Bouchra puisse les mettre à jour (voir `config/resultats-backtest.json`).
+N'affiche jamais de cumul spectaculaire en titre. Mets ces données dans un fichier de configuration pour que Hamid puisse les mettre à jour (voir `config/resultats-backtest.json`).
 
 # Parrainage et affiliation (UN SEUL niveau, ne jamais payer les niveaux supérieurs)
 - Inscription gratuite comme parrain, sans obligation d'acheter.
@@ -69,14 +71,14 @@ N'affiche jamais de cumul spectaculaire en titre. Mets ces données dans un fich
 - Prévois aussi un endpoint WebSocket séparé (petit service Node, port 25345) où le cBot envoie son numéro de compte et reçoit sa licence à jour. Code-le et documente-le, mais il ne sera activé que si le test dans le cloud cTrader réussit.
 
 # Espace client
-- Téléchargement du cBot (fichier fourni plus tard par Bouchra, prévois l'emplacement privé dans Supabase Storage).
+- Téléchargement du cBot (fichier fourni plus tard par Hamid, prévois l'emplacement privé dans Supabase Storage).
 - Clé de licence actuelle + date de fin + bouton copier.
 - Numéro de compte cTrader : saisie et modification (2 changements par an max, sinon demande à l'admin), régénère la licence.
 - Abonnement : changer mensuel/annuel, résilier, factures (portail client Stripe).
 - Guide d'installation pas à pas (texte provisoire).
 - Onglet Parrainage : lien, filleuls, commissions par statut, IBAN et statut (particulier/entreprise).
 
-# Administration (Bouchra seule)
+# Administration (Hamid seule)
 - Tableau de bord : ventes, abonnements actifs par formule, impayés, revenus du mois, commissions à payer.
 - Liste clients, licences (régénérer, révoquer), parrains, commissions (valider, marquer payées, export CSV), réglages (taux, montants, textes de résultats).
 

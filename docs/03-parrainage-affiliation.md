@@ -12,12 +12,12 @@ Deux récompenses distinctes. **Seul le parrain direct est payé**, jamais les n
 - Inscription **gratuite** comme parrain, sans obligation d'acheter (garde le programme du bon côté de la loi).
 - Lien `?ref=CODE`, mémorisé **90 jours** (cookie + champ Stripe Checkout). Parrain fixé au **premier achat**, ne change plus.
 - Statuts : en attente → à payer → payée.
-- **Remboursement** (rétractation, remboursement, contestation bancaire) : la récompense correspondante est retirée, déduite des commissions suivantes (solde négatif possible) ou à rembourser. Écrit dans la page « Conditions du programme de parrainage », case à cocher à l'inscription. Le cas d'un parrain qui refuse est traité à part par Bouchra.
+- **Remboursement** (rétractation, remboursement, contestation bancaire) : la récompense correspondante est retirée, déduite des commissions suivantes (solde négatif possible) ou à rembourser. Écrit dans la page « Conditions du programme de parrainage », case à cocher à l'inscription. Le cas d'un parrain qui refuse est traité à part par Hamid.
 - **Anti-fraude** : pas d'auto-parrainage (même email, même client Stripe, même empreinte de carte) → commission bloquée + alerte admin.
 - Paiement : prime de 225 € virée à J+30 ; affiliation versée **une fois par mois à partir de 50 € cumulés**. Le parrain fournit IBAN + statut (particulier/entreprise). Export CSV des virements (nom, IBAN, montant).
 - Taux et montants dans une table de réglages modifiable depuis l'admin (`config/reglages.json` = valeurs initiales).
 - Espace parrain : lien, filleuls, commissions par statut, paiements.
 - Vocabulaire : « récompense de recommandation », jamais « revenu » ni « opportunité ».
 
-## Question ouverte
-Un client qui parraine sans être abonné touche-t-il ses commissions ? **Proposition : oui** (l'inscription parrain est indépendante de l'achat). À valider par Bouchra.
+## Décision du 21/10/2026
+Un parrain qui n'est pas client touche ses commissions comme les autres.

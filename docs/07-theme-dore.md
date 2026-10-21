@@ -20,4 +20,4 @@ Style : **banque privée, pas casino**. Sobre, haut de gamme, beaucoup d'espace.
 ## Logos (Drive, dossier du projet)
 - « Logo de robot trader en or noir-1.png »
 - « Logo doré futuriste BOT.COSMARTIS.COM.png »
-À récupérer dans `/public` au moment de la construction ; choix du logo final et du nom à valider par Bouchra.
+À récupérer dans `/public` au moment de la construction ; choix du logo final et du nom à valider par Hamid.
