@@ -1,29 +1,434 @@
 {
-  "_note": "EN ATTENTE : chiffres à extraire du PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf (Hamid, 21/10/2026). Ne rien inventer. L'ancien tableau à 100 000 € (simulation prop firm, sans rapport avec le bot vendu) a été retiré ; il reste dans l'historique git. Performances simulées.",
+  "_note": "TRANSCRIPTION FIDÈLE du PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf (daté du 20/10/2026, lu par Claude Code le 21/10/2026). NE PAS PUBLIER AVANT ARBITRAGE DE HAMID : (1) ces résultats sont au risque 3 %/3 %, alors que la décision figée est risque 1 % par défaut et résultats à 1 % en référence ; (2) le ton du PDF (« Combien rapporte le bot », multiplicateurs ×28,3, soldes finaux) contredit les règles de communication (aucune promesse de gain, aucun cumul spectaculaire en titre) ; (3) la période réelle est janv. 2024 → 7 oct. 2026, pas « 7 ans ». Performances simulées.",
+  "statut": "en_attente_arbitrage",
   "source": "assets/rapports/Simulation-bots-cTrader-2024-2026.pdf",
-  "annees": [
-    2024,
-    2025,
-    2026
-  ],
+  "datePdf": "2026-10-20",
+  "periode": {
+    "debut": "2024-01-01",
+    "fin": "2026-10-07"
+  },
+  "reglageDuPdf": {
+    "libelle": "Bot principal 3 % + bot test 3 %, sans le robot AMD et sans l'argent (XAGUSD)",
+    "risqueParTrade": "3 %",
+    "risqueConformeADecisionSYNC": false
+  },
   "devise": "EUR",
-  "montantsCapital": [],
-  "resultats": [],
-  "_structureAttendue": {
-    "capital": "montant en euros (de 500 à environ 10000)",
-    "annee": "2024 | 2025 | 2026",
-    "gainPourcent": null,
-    "soldeLePlusBas": null
+  "methode": [
+    "Historique réel des prix en bougies de 15 minutes (or, BTC, ETH, Nasdaq, DAX, US 500, EURUSD), janvier 2024 → 7 octobre 2026.",
+    "Signaux recalculés avec la même logique que les bots en service (tendance H1 et ICT A+), mêmes objectifs et même stop suiveur.",
+    "Frais compris : écart achat/vente, commission et glissement estimés pour chaque actif.",
+    "Volumes arrondis au pas du broker (Fusion Markets), avec le minimum par actif et la règle des 1,5 fois.",
+    "Compte en dollars, converti au taux fixe de 1 € = 1,12 $. Positions encore ouvertes le 7 octobre 2026 fermées au dernier prix connu.",
+    "Chaque année est simulée seule, en repartant du capital de départ au 1er janvier (la colonne 2024→2026 est l'enchaînement sur trois ans, sans retrait)."
+  ],
+  "detailReglage": {
+    "botPrincipal": "or, BTC, Nasdaq et DAX en tendance H1 ; Nasdaq et EURUSD en ICT A+. Objectif 5R, stop suiveur.",
+    "botTest": "ETH en tendance et en ICT 15M, US 500 en ICT 1H. Objectif 7R.",
+    "reglesCommunes": "1 trade par actif, 3 positions au maximum, 2 pertes au maximum par jour. Entrées du dimanche 23h59 au vendredi 17h (heure de Paris).",
+    "risque": "3 % du solde du moment à chaque trade, donc les gains se réinvestissent d'eux-mêmes."
   },
-  "capitalConseille": {
-    "montant": 5000,
-    "obligatoire": false,
-    "raison": "Sous 5 000 €, beaucoup de trades sont refusés (lot minimum du broker, garde-fou du bot), donc moins de trades pris et des résultats irréguliers. À partir de 5 000 €, beaucoup moins de refus."
-  },
+  "resultatsParCapital": [
+    {
+      "capital": 500,
+      "troisAns": {
+        "soldeFinal": 4180,
+        "multiplicateur": 8.4,
+        "plusBasDuCompte": 551,
+        "pireBaissePct": -37,
+        "gainPct": 736
+      },
+      "parAnnee": {
+        "2024": {
+          "soldeFinal": 1087,
+          "gainPct": 117
+        },
+        "2025": {
+          "soldeFinal": 1958,
+          "gainPct": 292
+        },
+        "2026_au_7_oct": {
+          "soldeFinal": 630,
+          "gainPct": 26
+        }
+      },
+      "pireMoisParAnnee": [
+        {
+          "annee": 2024,
+          "pireMois": "juin 2024",
+          "pireMoisPct": -22,
+          "soldeDebutMois": 834,
+          "soldeFinMois": 652,
+          "pireBaissePct": -22,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2025,
+          "pireMois": "déc. 2025",
+          "pireMoisPct": -30,
+          "soldeDebutMois": 2797,
+          "soldeFinMois": 1958,
+          "pireBaissePct": -30,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2026,
+          "pireMois": "mai 2026",
+          "pireMoisPct": -18,
+          "soldeDebutMois": 709,
+          "soldeFinMois": 584,
+          "pireBaissePct": -19,
+          "moisPerdants": 4,
+          "moisTotal": 10
+        }
+      ],
+      "tradesRefuses2024_2026": 1339,
+      "soldeFinalSelonReglage": {
+        "3%/3% sans argent (retenu)": 4180,
+        "3%/3% avec argent": 4183,
+        "3%/1% (équilibré actuel)": 3682,
+        "3%/1% sans argent": 3817
+      }
+    },
+    {
+      "capital": 1000,
+      "troisAns": {
+        "soldeFinal": 28262,
+        "multiplicateur": 28.3,
+        "plusBasDuCompte": 1058,
+        "pireBaissePct": -30,
+        "gainPct": 2726
+      },
+      "parAnnee": {
+        "2024": {
+          "soldeFinal": 3945,
+          "gainPct": 294
+        },
+        "2025": {
+          "soldeFinal": 3247,
+          "gainPct": 225
+        },
+        "2026_au_7_oct": {
+          "soldeFinal": 3662,
+          "gainPct": 266
+        }
+      },
+      "pireMoisParAnnee": [
+        {
+          "annee": 2024,
+          "pireMois": "avr. 2024",
+          "pireMoisPct": -18,
+          "soldeDebutMois": 1646,
+          "soldeFinMois": 1346,
+          "pireBaissePct": -18,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2025,
+          "pireMois": "déc. 2025",
+          "pireMoisPct": -12,
+          "soldeDebutMois": 3709,
+          "soldeFinMois": 3247,
+          "pireBaissePct": -12,
+          "moisPerdants": 2,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2026,
+          "pireMois": "juil. 2026",
+          "pireMoisPct": -27,
+          "soldeDebutMois": 3399,
+          "soldeFinMois": 2491,
+          "pireBaissePct": -27,
+          "moisPerdants": 3,
+          "moisTotal": 10
+        }
+      ],
+      "tradesRefuses2024_2026": 546,
+      "soldeFinalSelonReglage": {
+        "3%/3% sans argent (retenu)": 28262,
+        "3%/3% avec argent": 20609,
+        "3%/1% (équilibré actuel)": 19683,
+        "3%/1% sans argent": 22292
+      }
+    },
+    {
+      "capital": 2000,
+      "troisAns": {
+        "soldeFinal": 28257,
+        "multiplicateur": 14.1,
+        "plusBasDuCompte": 1159,
+        "pireBaissePct": -62,
+        "gainPct": 1313
+      },
+      "parAnnee": {
+        "2024": {
+          "soldeFinal": 2235,
+          "gainPct": 12
+        },
+        "2025": {
+          "soldeFinal": 13885,
+          "gainPct": 594
+        },
+        "2026_au_7_oct": {
+          "soldeFinal": 4180,
+          "gainPct": 109
+        }
+      },
+      "pireMoisParAnnee": [
+        {
+          "annee": 2024,
+          "pireMois": "avr. 2024",
+          "pireMoisPct": -51,
+          "soldeDebutMois": 3048,
+          "soldeFinMois": 1507,
+          "pireBaissePct": -62,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2025,
+          "pireMois": "juin 2025",
+          "pireMoisPct": -13,
+          "soldeDebutMois": 7741,
+          "soldeFinMois": 6711,
+          "pireBaissePct": -13,
+          "moisPerdants": 2,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2026,
+          "pireMois": "mai 2026",
+          "pireMoisPct": -28,
+          "soldeDebutMois": 4661,
+          "soldeFinMois": 3342,
+          "pireBaissePct": -32,
+          "moisPerdants": 5,
+          "moisTotal": 10
+        }
+      ],
+      "tradesRefuses2024_2026": 534,
+      "soldeFinalSelonReglage": {
+        "3%/3% sans argent (retenu)": 28257,
+        "3%/3% avec argent": 29168,
+        "3%/1% (équilibré actuel)": 19025,
+        "3%/1% sans argent": 22272
+      }
+    },
+    {
+      "capital": 5000,
+      "troisAns": {
+        "soldeFinal": 106101,
+        "multiplicateur": 21.2,
+        "plusBasDuCompte": 4649,
+        "pireBaissePct": -36,
+        "gainPct": 2022
+      },
+      "parAnnee": {
+        "2024": {
+          "soldeFinal": 12830,
+          "gainPct": 157
+        },
+        "2025": {
+          "soldeFinal": 34656,
+          "gainPct": 593
+        },
+        "2026_au_7_oct": {
+          "soldeFinal": 8415,
+          "gainPct": 68
+        }
+      },
+      "pireMoisParAnnee": [
+        {
+          "annee": 2024,
+          "pireMois": "avr. 2024",
+          "pireMoisPct": -31,
+          "soldeDebutMois": 7229,
+          "soldeFinMois": 4961,
+          "pireBaissePct": -36,
+          "moisPerdants": 2,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2025,
+          "pireMois": "juin 2025",
+          "pireMoisPct": -18,
+          "soldeDebutMois": 19808,
+          "soldeFinMois": 16302,
+          "pireBaissePct": -18,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2026,
+          "pireMois": "juil. 2026",
+          "pireMoisPct": -23,
+          "soldeDebutMois": 9126,
+          "soldeFinMois": 7031,
+          "pireBaissePct": -36,
+          "moisPerdants": 6,
+          "moisTotal": 10
+        }
+      ],
+      "tradesRefuses2024_2026": 10,
+      "soldeFinalSelonReglage": {
+        "3%/3% sans argent (retenu)": 106101,
+        "3%/3% avec argent": 126233,
+        "3%/1% (équilibré actuel)": 121361,
+        "3%/1% sans argent": 120324
+      }
+    },
+    {
+      "capital": 7500,
+      "troisAns": {
+        "soldeFinal": 126451,
+        "multiplicateur": 16.9,
+        "plusBasDuCompte": 6668,
+        "pireBaissePct": -41,
+        "gainPct": 1586
+      },
+      "parAnnee": {
+        "2024": {
+          "soldeFinal": 14232,
+          "gainPct": 90
+        },
+        "2025": {
+          "soldeFinal": 43581,
+          "gainPct": 481
+        },
+        "2026_au_7_oct": {
+          "soldeFinal": 16441,
+          "gainPct": 119
+        }
+      },
+      "pireMoisParAnnee": [
+        {
+          "annee": 2024,
+          "pireMois": "avr. 2024",
+          "pireMoisPct": -33,
+          "soldeDebutMois": 11291,
+          "soldeFinMois": 7612,
+          "pireBaissePct": -41,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2025,
+          "pireMois": "mars 2025",
+          "pireMoisPct": -19,
+          "soldeDebutMois": 12746,
+          "soldeFinMois": 10308,
+          "pireBaissePct": -19,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2026,
+          "pireMois": "juil. 2026",
+          "pireMoisPct": -22,
+          "soldeDebutMois": 17862,
+          "soldeFinMois": 14001,
+          "pireBaissePct": -34,
+          "moisPerdants": 7,
+          "moisTotal": 10
+        }
+      ],
+      "tradesRefuses2024_2026": 1,
+      "soldeFinalSelonReglage": {
+        "3%/3% sans argent (retenu)": 126451,
+        "3%/3% avec argent": 126309,
+        "3%/1% (équilibré actuel)": 113704,
+        "3%/1% sans argent": 120193
+      }
+    },
+    {
+      "capital": 10000,
+      "troisAns": {
+        "soldeFinal": 205818,
+        "multiplicateur": 20.6,
+        "plusBasDuCompte": 9675,
+        "pireBaissePct": -35,
+        "gainPct": 1958
+      },
+      "parAnnee": {
+        "2024": {
+          "soldeFinal": 23613,
+          "gainPct": 136
+        },
+        "2025": {
+          "soldeFinal": 44533,
+          "gainPct": 345
+        },
+        "2026_au_7_oct": {
+          "soldeFinal": 21966,
+          "gainPct": 120
+        }
+      },
+      "pireMoisParAnnee": [
+        {
+          "annee": 2024,
+          "pireMois": "avr. 2024",
+          "pireMoisPct": -30,
+          "soldeDebutMois": 14928,
+          "soldeFinMois": 10391,
+          "pireBaissePct": -35,
+          "moisPerdants": 2,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2025,
+          "pireMois": "mars 2025",
+          "pireMoisPct": -20,
+          "soldeDebutMois": 18411,
+          "soldeFinMois": 14803,
+          "pireBaissePct": -20,
+          "moisPerdants": 3,
+          "moisTotal": 12
+        },
+        {
+          "annee": 2026,
+          "pireMois": "juil. 2026",
+          "pireMoisPct": -17,
+          "soldeDebutMois": 22828,
+          "soldeFinMois": 19017,
+          "pireBaissePct": -28,
+          "moisPerdants": 7,
+          "moisTotal": 10
+        }
+      ],
+      "tradesRefuses2024_2026": 0,
+      "soldeFinalSelonReglage": {
+        "3%/3% sans argent (retenu)": 205818,
+        "3%/3% avec argent": 118705,
+        "3%/1% (équilibré actuel)": 166727,
+        "3%/1% sans argent": 159719
+      }
+    }
+  ],
+  "pourquoiPetitsComptesRefusentDesTrades": "Le broker impose 1 contrat minimum sur le Nasdaq et le DAX, et 0,01 lot sur l'or. Si ce minimum fait risquer plus de 1,5 fois les 3 % prévus, le bot refuse le trade, comme en vrai. Avec un petit compte, beaucoup de signaux sont donc écartés. Le nombre compte chaque signal refusé, y compris ceux qui se répètent pour un même mouvement.",
+  "conseilDuPdf": "À partir de 5 000 €, le bot fonctionne comme prévu et les résultats deviennent plus réguliers. À partir de 10 000 €, il ne refuse plus rien. En dessous de 5 000 €, les gains peuvent être très bons mais dépendent beaucoup de la chance du moment.",
+  "aRetenirDuPdf": [
+    "Aucune année ne finit sous le capital de départ, quel que soit le montant.",
+    "2025 est la meilleure année pour presque tous les montants (jusqu'à +594 %), portée par l'or et le BTC.",
+    "2026 est plus difficile : de +26 % à +266 % selon le montant, avec plus de mois perdants.",
+    "Sous 5 000 €, les résultats sont très irréguliers : 2 000 € ne fait que +12 % en 2024 alors que 1 000 € fait +294 %."
+  ],
+  "limitesDuPdf": [
+    "C'est un backtest : le passé ne garantit pas l'avenir, et les vrais résultats peuvent être plus bas.",
+    "Les gros montants en fin de période sont gonflés par le réinvestissement des gains. Avec de très gros volumes, les prix d'exécution seraient moins bons dans la réalité.",
+    "Des baisses de 30 à 40 % sont normales avec 3 % de risque par trade. Il faut pouvoir les supporter sans tout arrêter au mauvais moment.",
+    "Les minimums de lot de l'US 500 sont supposés identiques à ceux du Nasdaq (1 contrat)."
+  ],
   "limitesCommunes": [
     "Les réglages ont été choisis sur le même historique que celui qui les teste : les résultats futurs seront probablement moins bons.",
     "Il n'y a pas encore d'historique en argent réel : les bots tournent en démo depuis septembre 2026.",
     "L'avenir peut être très positif, nul ou négatif, avec une perte possible de tout le capital engagé."
   ],
-  "limitesARevalider": "Les autres limites de l'ancien test (baisses jusqu'à -35/-40 %, baisse max 77 %, meilleure/pire année) portaient sur l'ancienne simulation : à réécrire d'après le PDF."
+  "capitalConseille": {
+    "montant": 5000,
+    "obligatoire": false,
+    "raison": "Sous 5 000 €, beaucoup de trades sont refusés (lot minimum du broker, règle des 1,5 fois). À partir de 5 000 €, presque plus de refus (10 refus sur 2024-2026 à 5 000 €, 1 à 7 500 €, 0 à 10 000 €)."
+  }
 }
