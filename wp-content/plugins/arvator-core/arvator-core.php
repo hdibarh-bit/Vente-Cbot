@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Arvator Core
  * Plugin URI:        https://bot.cosmartis.com
- * Description:       Cœur du site Arvator : sécurité renforcée dès l'activation (connexions limitées, XML-RPC et éditeur de fichiers désactivés, énumération des comptes bloquée, en-têtes de sécurité). Accueillera plus tard les licences, l'espace client, le parrainage et l'administration.
- * Version:           0.1.0
+ * Description:       Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Accueillera ensuite le paiement Stripe, le parrainage et l'administration.
+ * Version:           0.2.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Hamid
@@ -20,11 +20,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARVATOR_CORE_VERSION', '0.1.0' );
+define( 'ARVATOR_CORE_VERSION', '0.2.0' );
 define( 'ARVATOR_CORE_DIR', plugin_dir_path( __FILE__ ) );
 
-require_once ARVATOR_CORE_DIR . 'includes/class-hardening.php';
-require_once ARVATOR_CORE_DIR . 'includes/class-login-limiter.php';
+foreach (
+	array(
+		'class-hardening',
+		'class-login-limiter',
+		'class-support',
+		'class-repo',
+		'class-roles',
+		'class-pages',
+		'class-install',
+		'class-mailer',
+		'class-contact',
+		'class-member',
+		'class-downloads',
+		'class-privacy',
+		'class-admin',
+	) as $arvator_file
+) {
+	require_once ARVATOR_CORE_DIR . 'includes/' . $arvator_file . '.php';
+}
+unset( $arvator_file );
 
 Arvator_Hardening::init();
 Arvator_Login_Limiter::init();
+Arvator_Install::init();
+Arvator_Roles::init();
+Arvator_Mailer::init();
+Arvator_Contact::init();
+Arvator_Member::init();
+Arvator_Downloads::init();
+Arvator_Privacy::init();
+
+if ( is_admin() ) {
+	Arvator_Admin::init();
+}
+
+register_activation_hook( __FILE__, array( 'Arvator_Install', 'activate' ) );

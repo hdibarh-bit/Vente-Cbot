@@ -12,6 +12,17 @@
 - [ ] « Feu vert site » (voir `SYNC-BOT-ICT.md` §5/§6) et prompt final.
 - [x] Hébergement : Hostinger « Hébergement Premium » (mutualisé), précisé par Hamid le 21/10. **À clarifier** : existe-t-il aussi un serveur (VPS) pour le service de licence automatique (port 25345) ? Où tourne n8n.cosmartis.com ?
 
+## Réponses de Hamid du 21/10/2026
+- [x] Contact : contact@cosmartis.com.
+- [x] Mentions légales : Hamid DIBARH, Fresnes-sur-Escaut, SIRET 80230131700029. **Adresse postale complète à ajouter** (obligatoire) ; mention de TVA à confirmer avec le comptable.
+- [x] Remboursement : 14 jours si achat sans essai ; pas de remboursement d'un achat fait après un essai. **À confirmer** : cela signifie qu'au paiement, la case de renonciation au droit de rétractation n'est demandée qu'au client qui a fait l'essai (étape C).
+- [x] Courtiers : « tout courtier proposant cTrader avec le cloud ».
+- [x] Stripe : compte existant (clés de test à fournir à l'étape C).
+- [ ] **Résiliation** : texte par défaut posé (« à tout moment depuis l'espace membre, effet à la fin de la période payée, pas de remboursement de la période en cours »). À confirmer par Hamid.
+- [ ] Avocat : valider CGV, confidentialité, cookies, mentions légales, risques (bandeau « provisoire » à retirer ensuite).
+- [ ] Envoi des emails : renseigner l'envoi SMTP dans wp-config.php (guide `10-installation-wordpress.md`).
+- [ ] Vérifier la raison sociale d'hébergeur (Hostinger International Ltd., Larnaca, Chypre) dans les mentions légales.
+
 ## Avant le lancement public (priorité)
 - [ ] Compiler le cBot `IctSmcTendance` dans cTrader (onglet Algo → Build) et corriger les erreurs.
 - [ ] Tester la connexion WebSocket (port 25345) depuis le cloud cTrader → licence automatique ou manuelle.

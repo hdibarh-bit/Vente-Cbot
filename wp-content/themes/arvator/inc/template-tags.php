@@ -80,8 +80,9 @@ function arvator_default_links( string $location ): array {
 		'primary' => array(
 			array( 'Résultats', 'resultats' ),
 			array( 'Tarifs', 'tarifs' ),
-			array( 'Parrainage', 'parrainage' ),
 			array( 'FAQ', 'faq' ),
+			array( 'À propos', 'a-propos' ),
+			array( 'Contact', 'contact' ),
 		),
 		'footer'  => array(
 			array( 'Résultats simulés', 'resultats' ),
@@ -90,6 +91,9 @@ function arvator_default_links( string $location ): array {
 			array( 'Rapport gratuit', 'rapport-gratuit' ),
 			array( 'Parrainage', 'parrainage' ),
 			array( 'FAQ', 'faq' ),
+			array( 'À propos', 'a-propos' ),
+			array( 'Contact', 'contact' ),
+			array( 'Espace membre', 'espace-membre' ),
 		),
 		'legal'   => array(
 			array( 'Risques', 'risques' ),

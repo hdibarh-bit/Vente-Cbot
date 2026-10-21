@@ -20,6 +20,27 @@
 		} );
 	}
 
+	// Bouton « Copier » (clé de licence).
+	document.querySelectorAll( '[data-copy]' ).forEach( function ( btn ) {
+		btn.addEventListener( 'click', function () {
+			var target = document.querySelector( btn.getAttribute( 'data-copy' ) );
+			if ( ! target ) { return; }
+			target.focus();
+			target.select();
+			var done = function () {
+				var old = btn.textContent;
+				btn.textContent = 'Copié ✓';
+				setTimeout( function () { btn.textContent = old; }, 1800 );
+			};
+			if ( navigator.clipboard && navigator.clipboard.writeText ) {
+				navigator.clipboard.writeText( target.value ).then( done, function () { document.execCommand( 'copy' ); done(); } );
+			} else {
+				document.execCommand( 'copy' );
+				done();
+			}
+		} );
+	} );
+
 	document.querySelectorAll( '[data-tabs]' ).forEach( function ( root ) {
 		var tabs = Array.prototype.slice.call( root.querySelectorAll( '[role="tab"]' ) );
 		var panels = tabs.map( function ( tab ) {

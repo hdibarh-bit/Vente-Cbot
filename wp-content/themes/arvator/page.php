@@ -13,8 +13,9 @@ get_header();
 	<?php
 	while ( have_posts() ) :
 		the_post();
+		$arv_wide = has_shortcode( get_the_content(), 'arvator_membre' );
 		?>
-		<article <?php post_class( 'prose' ); ?>>
+		<article <?php post_class( $arv_wide ? 'member-page' : 'prose' ); ?>>
 			<h1><?php the_title(); ?></h1>
 			<?php the_content(); ?>
 		</article>

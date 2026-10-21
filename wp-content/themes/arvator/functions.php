@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARVATOR_THEME_VERSION', '0.2.1' );
+define( 'ARVATOR_THEME_VERSION', '0.3.0' );
 
 require_once get_theme_file_path( 'inc/template-tags.php' );
 require_once get_theme_file_path( 'inc/results.php' );
