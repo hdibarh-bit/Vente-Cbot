@@ -43,6 +43,10 @@ final class Arvator_Support {
 			'achat_erreur'     => array( 'err', 'Le paiement n’a pas pu être lancé. Réessayez dans un instant, ou écrivez-nous depuis la page Contact.' ),
 			'achat_rate'       => array( 'err', 'Trop de tentatives. Merci de patienter un peu avant de réessayer.' ),
 			'achat_deja'       => array( 'err', 'Vous avez déjà acheté Arvator : retrouvez-le dans votre espace membre.' ),
+			'essai_ok'         => array( 'ok', 'Votre demande d’essai est bien reçue. Vous recevrez votre licence d’essai par email, à l’adresse indiquée. Un email de confirmation vient de vous être envoyé.' ),
+			'essai_invalid'    => array( 'err', 'Merci d’indiquer une adresse email valide, le numéro de votre compte démo (chiffres uniquement) et de cocher les deux cases.' ),
+			'essai_deja'       => array( 'err', 'Un essai a déjà été demandé avec cette adresse email ou ce numéro de compte. L’essai est limité à un par personne : vous pouvez écrire depuis la page Contact.' ),
+			'achat_renonciation' => array( 'err', 'Vous avez demandé l’essai gratuit : pour acheter, merci de cocher la case de renonciation au droit de rétractation.' ),
 			'portal_erreur'    => array( 'err', 'La gestion de l’abonnement n’a pas pu s’ouvrir. Réessayez dans un instant ou écrivez-nous depuis la page Contact.' ),
 			'download_denied'  => array( 'err', 'Le téléchargement n’est pas disponible pour votre compte.' ),
 		);

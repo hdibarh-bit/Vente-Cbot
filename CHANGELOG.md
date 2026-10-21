@@ -4,6 +4,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.4.0 — 21/10/2026
+- **Appels à l'action partout, discrets** : en-tête (« Acheter » + « Essai gratuit »), haut de page (essai en bouton principal, tarifs en second), sous les trois étapes, sous les résultats, dans chaque carte de tarif (« Choisir l'annuel » / « Choisir le mensuel », formule présélectionnée sur la page d'achat), bandeau final (essai + achat), pied de page, et bandeau en bas des pages FAQ, À propos et Résultats. Aucun bandeau sur les pages légales, risques, achat, essai, contact et espace membre.
+- Le bandeau « Essayez avant d'acheter » est toujours affiché.
+
 ### 0.3.1 — 21/10/2026
 - Bouton « Acheter Arvator » dans la section Tarifs (page d'achat) ; mise en forme du choix d'abonnement.
 
@@ -25,6 +29,12 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.4.0 — 21/10/2026
+- **Page « Essai gratuit de 14 jours »** (créée automatiquement) : email, numéro du compte démo cTrader, case obligatoire de **renonciation au droit de rétractation annoncée avant la demande**, consentement. Un seul essai par email et par numéro de compte. La demande est enregistrée et envoyée à contact@cosmartis.com ; le demandeur reçoit une confirmation avec le rappel. La licence d'essai elle-même arrive avec l'étape licence.
+- **Rappel de renonciation au paiement** : si l'email a demandé un essai, l'achat exige la case de renonciation ; elle est notée dans la commande Stripe (`trial_waiver`). Sans essai : aucune renonciation demandée.
+- Page d'achat : la formule peut être présélectionnée (`?plan=annual` ou `monthly`).
+- Tests automatiques : 219 contrôles.
 
 ### 0.3.0 — 21/10/2026 (étape C : paiement Stripe, bac à sable)
 - **Page « Acheter Arvator »** (créée automatiquement) : choix annuel ou mensuel, email, deux cases obligatoires (CGV, risques), départ vers la page de paiement Stripe. Robot (paiement unique) et premier abonnement dans le même paiement. Aucune donnée de carte sur le site.

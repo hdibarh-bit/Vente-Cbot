@@ -20,6 +20,12 @@ get_header();
 			<?php the_content(); ?>
 		</article>
 	<?php endwhile; ?>
+	<?php
+	// Appel à l'action discret en bas des pages d'information (jamais sur les pages légales, l'achat, l'essai ou l'espace membre).
+	if ( is_page( array( 'faq', 'a-propos', 'resultats' ) ) ) {
+		arvator_cta_band( 'Prêt à essayer ?', 'Testez le robot pendant 14 jours sur un compte démo, ou passez directement à l’achat.' );
+	}
+	?>
 </div>
 <?php
 get_footer();

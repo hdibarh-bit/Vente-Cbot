@@ -3,7 +3,7 @@
  * Plugin Name:       Arvator Core
  * Plugin URI:        https://bot.cosmartis.com
  * Description:       Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks ; accueillera ensuite la licence, le parrainage et l'administration.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Hamid
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARVATOR_CORE_VERSION', '0.3.0' );
+define( 'ARVATOR_CORE_VERSION', '0.4.0' );
 define( 'ARVATOR_CORE_DIR', plugin_dir_path( __FILE__ ) );
 
 foreach (
@@ -34,6 +34,7 @@ foreach (
 		'class-install',
 		'class-mailer',
 		'class-stripe',
+		'class-trial',
 		'class-checkout',
 		'class-webhook',
 		'class-contact',
@@ -53,6 +54,7 @@ Arvator_Install::init();
 Arvator_Roles::init();
 Arvator_Mailer::init();
 Arvator_Contact::init();
+Arvator_Trial::init();
 Arvator_Checkout::init();
 Arvator_Webhook::init();
 Arvator_Member::init();

@@ -113,7 +113,7 @@ if ( '/%postname%/' !== get_option( 'permalink_structure' ) ) {
 	flush_rewrite_rules();
 }
 // Départ propre : on supprime les pages du plugin et on les recrée comme à la première installation.
-foreach ( array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'acheter', 'espace-membre' ) as $arv_slug ) {
+foreach ( array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'essai-gratuit', 'acheter', 'espace-membre' ) as $arv_slug ) {
 	$arv_old = get_page_by_path( $arv_slug, OBJECT, 'page' );
 	if ( $arv_old ) {
 		wp_delete_post( $arv_old->ID, true );
@@ -127,7 +127,7 @@ $tag = substr( md5( (string) microtime( true ) ), 0, 6 );
 
 /* ======================================================================== A. Pages */
 title( 'A. Pages créées' );
-$slugs = array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'acheter', 'espace-membre' );
+$slugs = array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'essai-gratuit', 'acheter', 'espace-membre' );
 $anon  = new Browser( $url );
 foreach ( $slugs as $s ) {
 	$page = get_page_by_path( $s, OBJECT, 'page' );
@@ -654,6 +654,76 @@ Arvator_Repo::delete_test_rows_for_user( (int) $buyer_user->ID );
 wp_delete_user( (int) $buyer_user->ID );
 @unlink( $stripe_log );
 @unlink( $stripe_fix );
+
+
+/* ======================================================================== I. Essai gratuit et boutons */
+title( 'I. Essai gratuit, boutons, rappel de renonciation' );
+// Les essais précédents ont supprimé des pages : on repart d'une installation propre.
+foreach ( $slugs as $s ) {
+	$old = get_page_by_path( $s, OBJECT, 'page' );
+	if ( $old ) {
+		wp_delete_post( $old->ID, true );
+	}
+}
+delete_option( 'arvator_pages_created' );
+Arvator_Pages::create_missing();
+clear_transients();
+$trial_email = "essai_$tag@example.org";
+$acct        = (string) ( 100000 + (int) hexdec( substr( $tag, 0, 4 ) ) );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email = '$trial_email'" );
+$tp = $anon->get( '/essai-gratuit/' );
+check( 200 === $tp['code'] && str_contains( $tp['body'], 'renonce à mon droit de rétractation' ) && str_contains( $tp['body'], 'name="account"' ), 'page d\'essai : renonciation annoncée avant la demande, champ compte démo' );
+$tn   = field_in_form( $tp['body'], 'arvator_trial', '_arv_nonce' );
+$tgood = array( 'action' => 'arvator_trial', '_arv_nonce' => $tn, 'email' => $trial_email, 'account' => $acct, 'waiver' => '1', 'consent' => '1' );
+check( 'generic_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( '_arv_nonce' => 'faux' ) + $tgood ) ), 'essai sans clé de sécurité valide refusé' );
+check( 'essai_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'waiver' => '' ) + $tgood ) ), 'essai sans case de renonciation refusé' );
+check( 'essai_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'consent' => '' ) + $tgood ) ), 'essai sans consentement refusé' );
+check( 'essai_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'account' => 'abc; DROP' ) + $tgood ) ), 'numéro de compte non numérique refusé' );
+check( 'essai_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'email' => 'nope' ) + $tgood ) ), 'email invalide refusé' );
+check( ! Arvator_Trial::has_trial( $trial_email ), 'rien d\'enregistré pour les demandes refusées' );
+@unlink( $log );
+check( 'essai_ok' === notice_of( $anon->post( '/wp-admin/admin-post.php', $tgood ) ), 'demande valide acceptée' );
+check( Arvator_Trial::has_trial( $trial_email ) && Arvator_Trial::has_trial( strtoupper( $trial_email ) ), 'demande enregistrée (email insensible à la casse)' );
+$m = mails();
+check( 2 === count( $m ) && 'contact@cosmartis.com' === $m[0]->to && str_contains( $m[0]->message, $acct ) && $trial_email === $m[1]->to && str_contains( $m[1]->message, 'droit de rétractation' ), 'email à Hamid + confirmation au demandeur avec le rappel de renonciation' );
+$anon2 = new Browser( $url );
+$tp2   = $anon2->get( '/essai-gratuit/' );
+$tg2   = array( '_arv_nonce' => field_in_form( $tp2['body'], 'arvator_trial', '_arv_nonce' ) ) + $tgood;
+check( 'essai_deja' === notice_of( $anon2->post( '/wp-admin/admin-post.php', $tg2 ) ), 'même email : un seul essai' );
+check( 'essai_deja' === notice_of( $anon2->post( '/wp-admin/admin-post.php', array( 'email' => "autre_$tag@example.org" ) + $tg2 ) ), 'même numéro de compte avec un autre email : un seul essai' );
+check( 'essai_ok' === notice_of( $anon2->post( '/wp-admin/admin-post.php', array( 'website' => 'http://spam' ) + $tg2 ) ) && 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" ), 'champ piège rempli : rien d\'enregistré' );
+
+// Rappel de renonciation au paiement
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_w', 'url' => 'https://checkout.stripe.com/c/pay/cs_w' ) ) );
+@unlink( $stripe_log );
+$bp  = $anon2->get( '/acheter/?plan=monthly' );
+check( str_contains( $bp['body'], 'value="monthly" checked' ) && ! str_contains( $bp['body'], 'value="annual" checked' ), 'page d\'achat : formule présélectionnée par le bouton de la carte' );
+$bg = array( 'action' => 'arvator_checkout', '_arv_nonce' => field_in_form( $bp['body'], 'arvator_checkout', '_arv_nonce' ), 'plan' => 'annual', 'email' => $trial_email, 'cgv' => '1', 'risks' => '1' );
+check( 'achat_renonciation' === notice_of( $anon2->post( '/wp-admin/admin-post.php', $bg ) ) && 0 === count( $stripe_calls() ), 'après un essai : achat refusé sans la case de renonciation (aucun appel à Stripe)' );
+$r = $anon2->post( '/wp-admin/admin-post.php', array( 'waiver' => '1' ) + $bg );
+$wb = array();
+parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $wb );
+check( 303 === $r['code'] && '1' === ( $wb['metadata']['trial_waiver'] ?? '' ), 'après un essai : achat accepté avec la case, renonciation notée dans la commande Stripe' );
+@unlink( $stripe_log );
+$r = $anon2->post( '/wp-admin/admin-post.php', array( 'email' => "sans_essai_$tag@example.org" ) + $bg );
+$wb = array();
+parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $wb );
+check( 303 === $r['code'] && '0' === ( $wb['metadata']['trial_waiver'] ?? '' ), 'sans essai : aucune renonciation demandée ni notée' );
+$set_fix( array() );
+@unlink( $stripe_log );
+
+// Boutons d'appel à l'action
+$home = $anon->get( '/' );
+$count_link = static fn( string $html, string $needle ): int => substr_count( $html, $needle );
+check( $count_link( $home['body'], '/essai-gratuit/' ) >= 4, 'accueil : plusieurs boutons d\'essai (en-tête, haut de page, résultats, bandeau, pied de page)', (string) $count_link( $home['body'], '/essai-gratuit/' ) );
+check( $count_link( $home['body'], '/acheter/' ) >= 4, 'accueil : plusieurs boutons d\'achat', (string) $count_link( $home['body'], '/acheter/' ) );
+check( str_contains( $home['body'], '/acheter/?plan=annual' ) && str_contains( $home['body'], '/acheter/?plan=monthly' ), 'accueil : un bouton d\'achat par formule' );
+check( str_contains( $anon->get( '/faq/' )['body'], 'Prêt à essayer' ) && str_contains( $anon->get( '/a-propos/' )['body'], '/essai-gratuit/' ), 'FAQ et À propos : bandeau discret en bas de page' );
+foreach ( array( 'risques', 'cgv', 'mentions-legales', 'confidentialite', 'cookies', 'acheter', 'espace-membre', 'essai-gratuit', 'contact' ) as $s ) {
+	check( ! str_contains( $anon->get( '/' . $s . '/' )['body'], 'Prêt à essayer' ), "page « $s » : pas de bandeau d'appel à l'action" );
+}
+check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) || 1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
 
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {

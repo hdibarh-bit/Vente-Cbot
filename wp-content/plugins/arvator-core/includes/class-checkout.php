@@ -61,6 +61,10 @@ final class Arvator_Checkout {
 
 		$a    = self::amounts();
 		$user = wp_get_current_user();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- simple présélection d'affichage
+		$pref    = isset( $_GET['plan'] ) ? sanitize_key( wp_unslash( (string) $_GET['plan'] ) ) : 'annual';
+		$pref    = 'monthly' === $pref ? 'monthly' : 'annual';
+		$had_trial = $user_id && Arvator_Trial::has_trial( (string) $user->user_email );
 		?>
 		<form class="arv-form arv-buy" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="arvator_checkout">
@@ -69,12 +73,12 @@ final class Arvator_Checkout {
 			<fieldset class="arv-plans">
 				<legend>Choisissez votre abonnement</legend>
 				<label class="arv-plan">
-					<input type="radio" name="plan" value="annual" checked>
+					<input type="radio" name="plan" value="annual"<?php checked( 'annual', $pref ); ?>>
 					<span><strong>Annuel</strong> · <?php echo esc_html( self::eur( $a['annuel_mois'] ) ); ?> par mois, payés d’avance (<?php echo esc_html( self::eur( $a['annuel'] ) ); ?> par an)<br>
 					<span class="muted">Premier paiement : <?php echo esc_html( self::eur( $a['achat'] + $a['annuel'] ) ); ?> (robot + 1 an d’abonnement)</span></span>
 				</label>
 				<label class="arv-plan">
-					<input type="radio" name="plan" value="monthly">
+					<input type="radio" name="plan" value="monthly"<?php checked( 'monthly', $pref ); ?>>
 					<span><strong>Mensuel</strong> · <?php echo esc_html( self::eur( $a['mensuel'] ) ); ?> par mois<br>
 					<span class="muted">Premier paiement : <?php echo esc_html( self::eur( $a['achat'] + $a['mensuel'] ) ); ?> (robot + 1er mois)</span></span>
 				</label>
@@ -93,6 +97,8 @@ final class Arvator_Checkout {
 
 			<p class="arv-check"><label><input type="checkbox" name="cgv" value="1" required> J’ai lu et j’accepte les <a href="<?php echo esc_url( Arvator_Support::page_url( 'cgv' ) ); ?>" target="_blank" rel="noopener">conditions générales de vente</a>.</label></p>
 			<p class="arv-check"><label><input type="checkbox" name="risks" value="1" required> J’ai lu l’<a href="<?php echo esc_url( Arvator_Support::page_url( 'risques' ) ); ?>" target="_blank" rel="noopener">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé.</label></p>
+
+			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1"<?php echo $had_trial ? ' required' : ''; ?>> <?php echo $had_trial ? '' : 'Si vous avez fait l’essai gratuit : '; ?>je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable).</label></p>
 
 			<p><button class="btn btn--primary" type="submit">Payer en toute sécurité avec Stripe</button></p>
 			<p class="muted">Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe.</p>
@@ -137,6 +143,11 @@ final class Arvator_Checkout {
 			Arvator_Support::redirect( $back, 'achat_invalid' );
 		}
 
+		$waiver = ! empty( $_POST['waiver'] );
+		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
+			Arvator_Support::redirect( $back, 'achat_renonciation' );
+		}
+
 		$params = array(
 			'mode'                  => 'subscription',
 			'line_items'            => array(
@@ -154,8 +165,9 @@ final class Arvator_Checkout {
 			'cancel_url'            => add_query_arg( 'arv_notice', 'achat_annule', $back ),
 			'locale'                => 'fr',
 			'metadata'              => array(
-				'plan'   => $plan,
-				'source' => 'arvator',
+				'plan'          => $plan,
+				'source'        => 'arvator',
+				'trial_waiver'  => $waiver ? '1' : '0',
 			),
 			'subscription_data'     => array(
 				'metadata' => array(

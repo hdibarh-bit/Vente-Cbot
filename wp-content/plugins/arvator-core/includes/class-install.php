@@ -107,6 +107,21 @@ final class Arvator_Install {
 ) $charset;"
 		);
 
+		// Demandes d'essai gratuit (une par email et par compte démo).
+		dbDelta(
+			"CREATE TABLE {$p}trials (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email VARCHAR(190) NOT NULL,
+  account_number VARCHAR(40) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'requested',
+  waiver_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY email (email),
+  UNIQUE KEY account_number (account_number)
+) $charset;"
+		);
+
 		// Journal des événements (téléchargements, webhooks, etc.). external_id unique = traitement idempotent.
 		dbDelta(
 			"CREATE TABLE {$p}events (

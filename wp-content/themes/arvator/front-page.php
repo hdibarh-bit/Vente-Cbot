@@ -43,9 +43,14 @@ get_header();
 				nous les montrons toujours avec les baisses qui vont avec.
 			</p>
 			<div class="hero__cta">
-				<?php arvator_button_or_anchor( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary', 'Voir les tarifs', 'tarifs' ); ?>
-				<?php arvator_button_or_anchor( 'rapport-gratuit', 'Recevoir le rapport gratuit', 'btn btn--ghost', 'Voir les résultats', 'resultats' ); ?>
+				<?php if ( '' !== arvator_page_url( 'essai-gratuit' ) ) : ?>
+					<?php arvator_button( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary' ); ?>
+					<a class="btn btn--ghost" href="#tarifs"><?php esc_html_e( 'Voir les tarifs', 'arvator' ); ?></a>
+				<?php else : ?>
+					<a class="btn btn--primary" href="#tarifs"><?php esc_html_e( 'Voir les tarifs', 'arvator' ); ?></a>
+				<?php endif; ?>
 			</div>
+			<p class="hero__note muted"><a href="#resultats"><?php esc_html_e( 'Voir les résultats simulés', 'arvator' ); ?></a></p>
 		</div>
 
 		<?php if ( $hero_row ) : ?>
@@ -103,6 +108,7 @@ get_header();
 			</li>
 		</ol>
 		<p class="trust-line">Nous ne touchons jamais à votre argent ni à votre compte : nous vendons un logiciel.</p>
+		<p class="section__more"><?php arvator_button( 'essai-gratuit', 'Commencer par l’essai gratuit', 'btn btn--ghost' ); ?></p>
 	</div>
 </section>
 
@@ -126,9 +132,10 @@ get_header();
 			</p>
 		</div>
 
-		<?php if ( '' !== arvator_page_url( 'resultats' ) ) : ?>
-			<p class="section__more"><?php arvator_button( 'resultats', 'Voir tous les résultats détaillés', 'btn btn--ghost' ); ?></p>
-		<?php endif; ?>
+		<p class="section__more">
+			<?php arvator_button( 'resultats', 'Voir tous les résultats détaillés', 'btn btn--ghost' ); ?>
+			<?php arvator_button( 'essai-gratuit', 'Essayer sur compte démo', 'btn btn--primary' ); ?>
+		</p>
 	</div>
 </section>
 
@@ -151,6 +158,7 @@ get_header();
 					<div><dt>Ensuite, chaque mois</dt><dd><?php echo esc_html( arvator_fmt_price( $price['mensuel'] ) ); ?></dd></div>
 					<div class="plan__total"><dt>Coût de la première année</dt><dd><?php echo esc_html( arvator_fmt_price( $price['annee1_mensuel'] ) ); ?></dd></div>
 				</dl>
+				<p class="plan__cta"><?php arvator_buy_button( 'Choisir le mensuel', 'btn btn--ghost', 'monthly' ); ?></p>
 			</article>
 
 			<article class="plan plan--featured" aria-labelledby="plan-annuel">
@@ -163,6 +171,7 @@ get_header();
 					<div><dt>Ensuite, chaque année</dt><dd><?php echo esc_html( arvator_fmt_price( $price['annuel_total'] ) ); ?></dd></div>
 					<div class="plan__total"><dt>Coût de la première année</dt><dd><?php echo esc_html( arvator_fmt_price( $price['annee1_annuel'] ) ); ?></dd></div>
 				</dl>
+				<p class="plan__cta"><?php arvator_buy_button( 'Choisir l’annuel', 'btn btn--primary', 'annual' ); ?></p>
 			</article>
 		</div>
 
@@ -187,25 +196,25 @@ get_header();
 		</div>
 
 		<div class="hero__cta">
-			<?php arvator_button( 'acheter', 'Acheter Arvator', 'btn btn--primary' ); ?>
 			<?php arvator_button( 'essai-gratuit', 'Essayer d’abord ' . $trial . ' jours sur compte démo', 'btn btn--ghost' ); ?>
 		</div>
 	</div>
 </section>
 
-<?php if ( '' !== arvator_page_url( 'essai-gratuit' ) ) : ?>
 <section class="section section--surface" aria-labelledby="titre-essai">
 	<div class="container">
 		<div class="cta-band">
 			<div>
 				<h2 id="titre-essai">Essayez avant d’acheter</h2>
-				<p>14 jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader.</p>
+				<p><?php echo esc_html( (string) $trial ); ?> jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader.</p>
 			</div>
-			<?php arvator_button( 'essai-gratuit', 'Demander mon essai gratuit', 'btn btn--primary' ); ?>
+			<div class="cta-band__actions">
+				<?php arvator_button( 'essai-gratuit', 'Demander mon essai gratuit', 'btn btn--primary' ); ?>
+				<?php arvator_buy_button( 'Acheter Arvator', 'btn btn--ghost' ); ?>
+			</div>
 		</div>
 	</div>
 </section>
-<?php endif; ?>
 
 <?php
 get_footer();

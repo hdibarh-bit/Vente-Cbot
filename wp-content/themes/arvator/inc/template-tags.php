@@ -58,6 +58,46 @@ function arvator_button( string $slug, string $label, string $classes = 'btn btn
 	printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( $url ), esc_html( $label ) );
 }
 
+/** Adresse de la page d'achat, avec la formule présélectionnée (annual ou monthly). */
+function arvator_buy_url( string $plan = '' ): string {
+	$url = arvator_page_url( 'acheter' );
+	if ( '' === $url ) {
+		return '';
+	}
+	return in_array( $plan, array( 'annual', 'monthly' ), true ) ? add_query_arg( 'plan', $plan, $url ) : $url;
+}
+
+/** Bouton « Acheter » (masqué si la page d'achat n'existe pas). */
+function arvator_buy_button( string $label = 'Acheter Arvator', string $classes = 'btn btn--primary', string $plan = '' ): void {
+	$url = arvator_buy_url( $plan );
+	if ( '' !== $url ) {
+		printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( $url ), esc_html( $label ) );
+	}
+}
+
+/**
+ * Bandeau d'appel à l'action discret : un titre, une phrase, l'essai et l'achat.
+ * Jamais de promesse de gain : on invite à essayer ou à acheter.
+ */
+function arvator_cta_band( string $title, string $text ): void {
+	$trial = (int) ( arvator_settings()['essaiJours'] ?? 14 );
+	if ( '' === arvator_page_url( 'essai-gratuit' ) && '' === arvator_page_url( 'acheter' ) ) {
+		return;
+	}
+	?>
+	<aside class="cta-band cta-band--inline" aria-label="<?php echo esc_attr( $title ); ?>">
+		<div>
+			<h2><?php echo esc_html( $title ); ?></h2>
+			<p><?php echo esc_html( $text ); ?></p>
+		</div>
+		<div class="cta-band__actions">
+			<?php arvator_button( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary' ); ?>
+			<?php arvator_buy_button( 'Acheter Arvator', 'btn btn--ghost' ); ?>
+		</div>
+	</aside>
+	<?php
+}
+
 /**
  * Bouton avec solution de repli : lien vers la page si elle existe, sinon vers une section de l'accueil.
  */

@@ -293,3 +293,13 @@ p { margin: 0 0 1em; }
 .arv-plan{display:flex;gap:.9rem;align-items:flex-start;border:1px solid rgba(201,162,39,.35);border-radius:10px;padding:1rem 1.1rem;margin-bottom:.75rem;cursor:pointer}
 .arv-plan:has(input:checked){border-color:#C9A227;background:rgba(201,162,39,.08)}
 .arv-plan input{margin-top:.3rem;accent-color:#C9A227}
+
+/* Appels à l'action */
+.cta-band__actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+.cta-band--inline { margin-top: 3rem; }
+.hero__note { margin-top: 1rem; font-size: .95rem; }
+.hero__note a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.section__more { display: flex; flex-wrap: wrap; gap: .7rem; }
+.plan__cta { margin: 1.4rem 0 0; }
+.plan__cta .btn { width: 100%; justify-content: center; }
+.site-footer__cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }

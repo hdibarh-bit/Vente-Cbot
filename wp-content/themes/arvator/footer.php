@@ -15,6 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="site-footer__brand">
 				<?php arvator_brand(); ?>
 				<p class="muted"><?php echo esc_html( arvator_text( 'footer_blurb' ) ); ?></p>
+				<p class="site-footer__cta">
+					<?php arvator_button( 'essai-gratuit', 'Essai gratuit', 'btn btn--primary btn--sm' ); ?>
+					<?php arvator_buy_button( 'Acheter', 'btn btn--ghost btn--sm' ); ?>
+				</p>
 			</div>
 			<nav aria-label="<?php esc_attr_e( 'Pied de page', 'arvator' ); ?>">
 				<h2 class="footer-title"><?php esc_html_e( 'Découvrir', 'arvator' ); ?></h2>

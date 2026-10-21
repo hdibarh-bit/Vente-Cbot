@@ -262,6 +262,19 @@ Lorsque vous payez, vous êtes redirigé vers la page de paiement sécurisée de
 TXT,
 	),
 
+	'essai-gratuit' => array(
+		'title' => 'Essai gratuit de 14 jours',
+		'text'  => <<<'TXT'
+Essayez Arvator pendant 14 jours **sur un compte démo cTrader** : aucun argent n'est engagé. Il suffit d'une adresse email et du numéro de votre compte démo.
+
+Ce que vous devez savoir avant de demander l'essai : **si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation**, et l'achat n'est alors plus remboursable. Sans essai, vous disposez de 14 jours pour demander le remboursement du prix du robot (voir les [conditions générales de vente](/cgv/)).
+
+[arvator_essai]
+
+L'essai est limité à un par personne. Les résultats présentés sur le site sont des performances simulées : le trading comporte un risque élevé de perte en capital.
+TXT,
+	),
+
 	'acheter' => array(
 		'title' => 'Acheter Arvator',
 		'text'  => <<<'TXT'
