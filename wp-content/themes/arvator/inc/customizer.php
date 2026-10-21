@@ -77,5 +77,27 @@ add_action(
 				)
 			);
 		}
+
+		// Image du bandeau « Recommandez Arvator ! » (illustration dorée par défaut).
+		$wp_customize->add_setting(
+			'arvator_referral_image',
+			array(
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			new WP_Customize_Media_Control(
+				$wp_customize,
+				'arvator_referral_image',
+				array(
+					'label'       => 'Image du bandeau « Recommandez Arvator »',
+					'description' => 'Facultatif. Une photo de deux personnes qui regardent un téléphone, format paysage. Sans image, l’illustration dorée est utilisée. Jamais de billets ni de signes de richesse.',
+					'section'     => 'arvator_home',
+					'mime_type'   => 'image',
+				)
+			)
+		);
 	}
 );

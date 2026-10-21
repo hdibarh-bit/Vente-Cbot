@@ -99,6 +99,51 @@ function arvator_cta_band( string $title, string $text ): void {
 }
 
 /**
+ * Bandeau « Recommandez Arvator ! » : montant de la récompense de recommandation, image à droite.
+ * Affiché seulement si la page « parrainage » (conditions et inscription) est publiée.
+ * Vocabulaire imposé : « récompense de recommandation », jamais « gagner », « revenu » ni « opportunité ».
+ */
+function arvator_referral_banner(): void {
+	$url = arvator_page_url( 'parrainage' );
+	if ( '' === $url ) {
+		return;
+	}
+
+	$ref    = arvator_settings()['parrainage'] ?? array();
+	$prime  = (float) ( $ref['primeParAchat'] ?? 225 );
+	$delai  = (int) ( $ref['delaiPaiementJours'] ?? 30 );
+	$img_id = (int) get_theme_mod( 'arvator_referral_image' );
+	?>
+	<aside class="referral" aria-labelledby="titre-recommandation">
+		<div class="referral__body">
+			<p class="referral__pill">Recommandez Arvator&nbsp;!</p>
+			<h2 id="titre-recommandation" class="referral__title">
+				<span class="referral__amount"><?php echo esc_html( arvator_fmt_price( $prime ) ); ?><sup>*</sup></span>
+				par recommandation
+			</h2>
+			<p class="referral__sub">Pour chaque proche qui achète le robot grâce à votre lien.</p>
+			<p class="referral__note">
+				*Récompense de recommandation versée <?php echo esc_html( (string) $delai ); ?>&nbsp;jours après l’achat, s’il n’est pas remboursé.
+				Inscription gratuite, <a href="<?php echo esc_url( $url ); ?>">voir conditions</a>.
+			</p>
+		</div>
+		<a class="referral__media" href="<?php echo esc_url( $url ); ?>" tabindex="-1" aria-hidden="true">
+			<?php
+			if ( $img_id > 0 && wp_attachment_is_image( $img_id ) ) {
+				echo wp_get_attachment_image( $img_id, 'large', false, array( 'alt' => '', 'loading' => 'lazy', 'decoding' => 'async' ) );
+			} else {
+				printf(
+					'<img src="%s" alt="" width="480" height="400" loading="lazy" decoding="async">',
+					esc_url( get_theme_file_uri( 'assets/img/recommandation.svg' ) )
+				);
+			}
+			?>
+		</a>
+	</aside>
+	<?php
+}
+
+/**
  * Bouton avec solution de repli : lien vers la page si elle existe, sinon vers une section de l'accueil.
  */
 function arvator_button_or_anchor( string $slug, string $label, string $classes, string $fallback_label, string $anchor ): void {

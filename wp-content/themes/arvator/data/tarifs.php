@@ -33,4 +33,9 @@ return array (
   ),
   'graceJours' => 3,
   'essaiJours' => 14,
+  'parrainage' => 
+  array (
+    'primeParAchat' => 225,
+    'delaiPaiementJours' => 30,
+  ),
 );

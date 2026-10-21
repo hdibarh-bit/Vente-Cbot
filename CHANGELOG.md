@@ -4,6 +4,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.5.0 — 21/10/2026
+- **Bandeau « Recommandez Arvator ! »** sur l'accueil (avant « Essayez avant d'acheter ») : « 225 €* par recommandation », image à droite (en dessous sur mobile), renvoi « *Récompense de recommandation versée 30 jours après l'achat, s'il n'est pas remboursé. Inscription gratuite, voir conditions ». Montant et délai repris de `config/reglages.json`.
+- Le bandeau n'apparaît que lorsque la page « Parrainage » (adresse `parrainage`) est publiée : jamais d'offre sans ses conditions.
+- Image : illustration dorée fournie ; remplaçable par une photo dans Apparence > Personnaliser > « Arvator — textes de l'accueil ».
+
 ### 0.4.0 — 21/10/2026
 - **Appels à l'action partout, discrets** : en-tête (« Acheter » + « Essai gratuit »), haut de page (essai en bouton principal, tarifs en second), sous les trois étapes, sous les résultats, dans chaque carte de tarif (« Choisir l'annuel » / « Choisir le mensuel », formule présélectionnée sur la page d'achat), bandeau final (essai + achat), pied de page, et bandeau en bas des pages FAQ, À propos et Résultats. Aucun bandeau sur les pages légales, risques, achat, essai, contact et espace membre.
 - Le bandeau « Essayez avant d'acheter » est toujours affiché.

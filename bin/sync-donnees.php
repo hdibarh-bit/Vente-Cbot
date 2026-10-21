@@ -3,7 +3,7 @@
  * Génère les fichiers de données publiques du thème à partir de config/*.json.
  *
  * Seuls les champs destinés à être affichés sur le site sont copiés : aucune note interne,
- * aucun réglage de licence ou de parrainage. Les fichiers générés sont du PHP (protégé par
+ * aucun réglage de licence ; pour le parrainage, seuls le montant de la prime et son délai (affichés). Les fichiers générés sont du PHP (protégé par
  * « ABSPATH ») : un visiteur qui en connaît l'adresse ne voit rien.
  *
  * Usage : php bin/sync-donnees.php
@@ -81,5 +81,9 @@ ecrire(
 		'risque'          => $s['risque'],
 		'graceJours'      => $s['licence']['graceJours'],
 		'essaiJours'      => $s['licence']['essaiJours'],
+		'parrainage'      => array(
+			'primeParAchat'      => $s['parrainage']['primeParAchat'],
+			'delaiPaiementJours' => $s['parrainage']['delaiPaiementJours'],
+		),
 	)
 );

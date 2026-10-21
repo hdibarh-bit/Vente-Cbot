@@ -201,6 +201,12 @@ get_header();
 	</div>
 </section>
 
+<?php if ( '' !== arvator_page_url( 'parrainage' ) ) : ?>
+	<section class="section section--tight" aria-label="Recommandation">
+		<div class="container"><?php arvator_referral_banner(); ?></div>
+	</section>
+<?php endif; ?>
+
 <section class="section section--surface" aria-labelledby="titre-essai">
 	<div class="container">
 		<div class="cta-band">
