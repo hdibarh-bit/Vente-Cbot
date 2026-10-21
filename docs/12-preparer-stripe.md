@@ -54,14 +54,32 @@ define( 'ARVATOR_STRIPE_PRICE_MONTHLY', 'price_1UT3qVGi3zUNJ20grHHXX4zU' );
 ### 6.2 Le webhook (Stripe prévient le site après chaque paiement)
 1. Stripe (en bac à sable) → Développeurs → Webhooks → **Ajouter un point de terminaison**.
 2. Adresse : `https://bot.cosmartis.com/wp-json/arvator/v1/stripe`
-3. Événements à cocher : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`, `charge.refunded`.
+3. Événements à cocher : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`, `charge.refunded`, `charge.dispute.created`.
+   - **Depuis le plugin 0.5.0 (parrainage)** : si le webhook existe déjà, ajoutez-lui `invoice.paid` (récompense de 10 % sur chaque renouvellement d'abonnement) et `charge.dispute.created` (contestation bancaire : la récompense est retirée). Stripe → Développeurs → Webhooks → votre point de terminaison → « Modifier les événements ».
 4. Après l'enregistrement, copier le **secret de signature** (`whsec_…`) dans la ligne `ARVATOR_STRIPE_WEBHOOK_SECRET`.
 
 ### 6.3 Droits de la clé restreinte
-Écriture : Checkout Sessions, Customers, Subscriptions (nécessaire pour arrêter l'abonnement lors d'un remboursement), Customer portal sessions. Lecture : Prices, Products, Invoices, Charges, PaymentIntents. Si un droit manque, Stripe répond par une erreur claire (visible dans Développeurs → Journaux) : cocher la case indiquée.
+Écriture : Checkout Sessions, Customers, Subscriptions (nécessaire pour arrêter l'abonnement lors d'un remboursement), Customer portal sessions. Lecture : Prices, Products, Invoices, Charges, PaymentIntents, PaymentMethods (empreinte de la carte, pour repérer l'auto-parrainage). Si un droit manque, Stripe répond par une erreur claire (visible dans Développeurs → Journaux) : cocher la case indiquée.
 
 ### 6.4 Essai de bout en bout (bac à sable, 5 minutes)
 1. Page « Acheter Arvator » → choisir l'annuel → payer avec la carte de test `4242 4242 4242 4242` (date future, code au choix).
 2. Vérifier : email de confirmation reçu, compte créé, achat et abonnement visibles dans l'espace membre.
 3. Espace membre → « Gérer mon abonnement » → le portail Stripe s'ouvre.
 4. Dans Stripe : rembourser **1 500 €** de la facture → l'achat passe à « remboursé » et l'abonnement est arrêté.
+
+## 7. Parrainage (plugin 0.5.0)
+
+### 7.1 Une ligne de plus dans `wp-config.php` (recommandé, avant le premier parrain)
+Les IBAN des parrains sont enregistrés **chiffrés**. Ajoutez une phrase secrète à vous, longue et inventée (jamais envoyée par message) :
+
+```php
+define( 'ARVATOR_DATA_KEY', 'une longue phrase secrète inventée, à garder aussi dans votre gestionnaire de mots de passe' );
+```
+Sans cette ligne, le chiffrement utilise les clés secrètes de WordPress. Ne changez plus cette phrase ensuite : les IBAN déjà enregistrés deviendraient illisibles (les parrains devraient les ressaisir).
+
+### 7.2 Essai de bout en bout (bac à sable, 10 minutes)
+1. Page « Parrainage » → s'inscrire avec une adresse A → email reçu avec le lien `?ref=CODE`.
+2. Dans une fenêtre de navigation privée : ouvrir ce lien, puis « Acheter Arvator » : le code est prérempli. Payer avec la carte `4242 4242 4242 4242` et une adresse B.
+3. Se connecter avec A → Espace membre → Parrainage : prime de 225 € « en attente » et 35,88 € (10 % de l'annuel), disponibles dans 30 jours. Saisir un IBAN de test (par exemple `FR76 3000 6000 0112 3456 7890 189`).
+4. Dans Stripe, rembourser 1 500 € à B → la prime passe à « annulée ».
+5. Arvator → Parrainage (tableau de bord WordPress) : onglets Virements, Récompenses, Parrains, Réglages.

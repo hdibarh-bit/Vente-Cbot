@@ -5,10 +5,10 @@ Ce dépôt contient le **code** du site, pas WordPress lui-même.
 | Dossier | Contenu |
 |---|---|
 | `wp-content/themes/arvator/` | Thème doré (affichage uniquement) |
-| `wp-content/plugins/arvator-core/` | Plugin maison : sécurité (v0.1.0) ; licences, parrainage, espace client, admin, webhooks : à venir |
+| `wp-content/plugins/arvator-core/` | Plugin maison : sécurité, pages, espace membre, paiement Stripe et webhooks, essai, parrainage ; licences et administration complète : à venir |
 | `releases/` | Fichiers zip prêts à installer (régénérés par `bin/build-zip.sh`) |
 | `CHANGELOG.md` | Journal des versions |
-| `tests/` | Tests d'intégration (`tests/run.sh`) : à lancer avant chaque livraison, sur un WordPress jetable |
+| `tests/` | Tests d'intégration (`tests/run.sh`) : à lancer avant chaque livraison, sur un WordPress jetable. `tests/mu-plugins/` : fausse API Stripe et journal des emails (aucun envoi réel) |
 | `config/` | Source unique des chiffres et réglages |
 | `bin/sync-resultats.sh` | Régénère `data/resultats.php` et `data/tarifs.php` du thème depuis `config/*.json` (seuls les champs publics sont copiés : aucune note interne, aucun réglage de licence ou de parrainage) |
 | `bin/build-zip.sh` | Fabrique `releases/arvator-theme.zip` et `releases/arvator-core.zip` (à installer dans WordPress, voir `10-installation-wordpress.md`) |

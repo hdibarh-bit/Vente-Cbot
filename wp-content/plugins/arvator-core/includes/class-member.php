@@ -22,6 +22,7 @@ final class Arvator_Member {
 		'achats'    => 'Mes achats et abonnement',
 		'licence'   => 'Ma licence',
 		'fichiers'  => 'Téléchargements',
+		'parrainage' => 'Parrainage',
 		'profil'    => 'Mes informations',
 	);
 
@@ -104,6 +105,7 @@ final class Arvator_Member {
 					'achats'   => self::section_purchases( $user_id ),
 					'licence'  => self::section_license( $user_id ),
 					'fichiers' => self::section_files( $user_id ),
+					'parrainage' => self::section_referral( $user_id ),
 					'profil'   => self::section_profile( $user ),
 					default    => self::section_dashboard( $user_id ),
 				};
@@ -249,6 +251,90 @@ final class Arvator_Member {
 			);
 		}
 		echo '</ul>';
+	}
+
+	private static function section_referral( int $user_id ): void {
+		$ref = Arvator_Referral::referrer( $user_id );
+		if ( ! $ref ) {
+			$s = Arvator_Referral::settings();
+			echo '<p>Recommandez Arvator à vos proches : vous recevez une <strong>récompense de recommandation de ' . esc_html( Arvator_Referral::money( $s['prime_cents'] ) ) . '</strong> pour chaque achat du robot fait avec votre lien, puis ' . esc_html( Arvator_Referral::pct( $s['rate'] ) ) . ' de chaque abonnement qu’ils paient. Gratuit, sans engagement.</p>';
+			Arvator_Referral::join_form();
+			return;
+		}
+		Arvator_Referral::promote_due();
+		$link  = Arvator_Referral::link( (string) $ref['code'] );
+		$comms = Arvator_Referral::commissions_for( $user_id );
+		$refs  = Arvator_Referral::referrals_of( $user_id );
+		$sum   = array( 'pending' => 0, 'payable' => 0, 'paid' => 0 );
+		foreach ( $comms as $c ) {
+			if ( isset( $sum[ $c['status'] ] ) ) {
+				$sum[ $c['status'] ] += (int) $c['amount_cents'];
+			}
+		}
+		?>
+		<section class="arv-card">
+			<h3>Mon lien de recommandation</h3>
+			<?php if ( 'active' !== $ref['status'] ) : ?>
+				<p class="arv-notice arv-notice--err">Votre lien est suspendu. Écrivez-nous depuis la page <a href="<?php echo esc_url( Arvator_Support::page_url( 'contact' ) ); ?>">Contact</a>.</p>
+			<?php endif; ?>
+			<label for="arv-ref-link">Partagez ce lien</label>
+			<input id="arv-ref-link" class="arv-key" type="text" readonly value="<?php echo esc_attr( $link ); ?>">
+			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-link">Copier le lien</button>
+				<span class="muted">Votre code : <strong><?php echo esc_html( (string) $ref['code'] ); ?></strong></span></p>
+			<p class="muted">Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des performances simulées et le trading comporte un risque élevé de perte en capital.</p>
+		</section>
+
+		<div class="arv-cards">
+			<section class="arv-card"><h3>En attente</h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['pending'] ) ); ?></strong></p><p class="muted">Disponible <?php echo esc_html( (string) Arvator_Referral::settings()['delay_days'] ); ?> jours après chaque paiement.</p></section>
+			<section class="arv-card"><h3>À payer</h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['payable'] ) ); ?></strong></p><p class="muted">Virement de la prime dès qu’elle est disponible ; abonnements à partir de <?php echo esc_html( Arvator_Referral::money( Arvator_Referral::settings()['payout_min_cents'] ) ); ?> cumulés.</p></section>
+			<section class="arv-card"><h3>Déjà versé</h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['paid'] ) ); ?></strong></p><p class="muted"><?php echo esc_html( (string) count( $refs ) ); ?> personne(s) recommandée(s) ayant acheté.</p></section>
+		</div>
+
+		<h3>Mes récompenses de recommandation</h3>
+		<?php
+		if ( ! $comms ) {
+			echo '<p>Aucune récompense pour le moment.</p>';
+		} else {
+			echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">Date</th><th scope="col">Type</th><th scope="col">Montant</th><th scope="col">État</th><th scope="col">Disponible le</th></tr></thead><tbody>';
+			foreach ( $comms as $c ) {
+				printf(
+					'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+					esc_html( self::date( (string) $c['created_at'] ) ),
+					esc_html( Arvator_Referral::kind_label( (string) $c['kind'] ) ),
+					esc_html( Arvator_Referral::money( (int) $c['amount_cents'] ) ),
+					esc_html( Arvator_Referral::status_label( (string) $c['status'] ) ),
+					esc_html( 'paid' === $c['status'] && ! empty( $c['paid_at'] ) ? 'Versée le ' . self::date( (string) $c['paid_at'] ) : self::date( (string) $c['available_at'] ) )
+				);
+			}
+			echo '</tbody></table></div>';
+		}
+		$has_bank = '' !== (string) ( $ref['iban_last4'] ?? '' );
+		?>
+		<section class="arv-card">
+			<h3>Coordonnées pour le virement</h3>
+			<?php if ( $has_bank ) : ?>
+				<p>Virement à <strong><?php echo esc_html( (string) $ref['holder_name'] ); ?></strong> · IBAN <?php echo esc_html( substr( (string) $ref['iban_last4'], 0, 4 ) . ' •••• •••• ' . substr( (string) $ref['iban_last4'], -4 ) ); ?> · <?php echo esc_html( 'entreprise' === $ref['entity_type'] ? 'Entreprise' : 'Particulier' ); ?></p>
+				<p class="muted">Pour changer de compte, saisissez les nouvelles coordonnées ci-dessous.</p>
+			<?php else : ?>
+				<p>Indiquez où verser vos récompenses. Sans IBAN, elles restent en attente de virement.</p>
+			<?php endif; ?>
+			<form class="arv-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" autocomplete="off">
+				<input type="hidden" name="action" value="arvator_referral_bank">
+				<?php wp_nonce_field( 'arvator_referral_bank', '_arv_nonce' ); ?>
+				<p><label for="arv-holder">Nom du titulaire du compte</label><input id="arv-holder" name="holder" type="text" required maxlength="120"></p>
+				<p><label for="arv-iban">IBAN</label><input id="arv-iban" name="iban" type="text" required maxlength="42" inputmode="text" spellcheck="false"></p>
+				<fieldset class="arv-plans">
+					<legend>Vous êtes</legend>
+					<label class="arv-plan"><input type="radio" name="entity" value="particulier" checked> <span>Un particulier</span></label>
+					<label class="arv-plan"><input type="radio" name="entity" value="entreprise"> <span>Une entreprise (SIRET obligatoire)</span></label>
+				</fieldset>
+				<p><label for="arv-siret">SIRET <span class="muted">(entreprise uniquement)</span></label><input id="arv-siret" name="siret" type="text" inputmode="numeric" maxlength="17"></p>
+				<p><button class="btn btn--primary" type="submit">Enregistrer</button></p>
+				<p class="muted">Votre IBAN est enregistré chiffré et ne sert qu’au virement de vos récompenses. Selon votre situation, ces récompenses peuvent être à déclarer aux impôts.</p>
+			</form>
+		</section>
+		<p class="muted"><a href="<?php echo esc_url( Arvator_Support::page_url( 'conditions-parrainage' ) ); ?>">Conditions du programme de parrainage</a></p>
+		<?php
 	}
 
 	private static function section_profile( WP_User $user ): void {

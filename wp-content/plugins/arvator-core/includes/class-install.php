@@ -58,6 +58,7 @@ final class Arvator_Install {
   currency CHAR(3) NOT NULL DEFAULT 'eur',
   status VARCHAR(20) NOT NULL DEFAULT 'paid',
   is_test TINYINT(1) NOT NULL DEFAULT 0,
+  card_fingerprint VARCHAR(64) NULL,
   created_at DATETIME NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY stripe_session_id (stripe_session_id),
@@ -119,6 +120,67 @@ final class Arvator_Install {
   PRIMARY KEY  (id),
   UNIQUE KEY email (email),
   UNIQUE KEY account_number (account_number)
+) $charset;"
+		);
+
+		// Parrains : code de recommandation, coordonnées de virement (IBAN chiffré).
+		dbDelta(
+			"CREATE TABLE {$p}referrers (
+  user_id BIGINT UNSIGNED NOT NULL,
+  code VARCHAR(16) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  holder_name VARCHAR(120) NULL,
+  iban_enc TEXT NULL,
+  iban_last4 VARCHAR(8) NULL,
+  entity_type VARCHAR(20) NULL,
+  siret VARCHAR(14) NULL,
+  terms_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY  (user_id),
+  UNIQUE KEY code (code)
+) $charset;"
+		);
+
+		// Filleuls : un filleul n'a qu'un parrain, fixé à son premier achat.
+		dbDelta(
+			"CREATE TABLE {$p}referrals (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  referee_user_id BIGINT UNSIGNED NOT NULL,
+  referrer_user_id BIGINT UNSIGNED NOT NULL,
+  order_id BIGINT UNSIGNED NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'ok',
+  note VARCHAR(255) NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY referee_user_id (referee_user_id),
+  KEY referrer_user_id (referrer_user_id)
+) $charset;"
+		);
+
+		// Récompenses de recommandation (montants signés : une déduction est négative). source_id unique = idempotent.
+		dbDelta(
+			"CREATE TABLE {$p}commissions (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  referrer_user_id BIGINT UNSIGNED NOT NULL,
+  referee_user_id BIGINT UNSIGNED NOT NULL,
+  order_id BIGINT UNSIGNED NULL,
+  kind VARCHAR(20) NOT NULL,
+  source_id VARCHAR(190) NOT NULL,
+  amount_cents INT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  available_at DATETIME NOT NULL,
+  payout_batch VARCHAR(40) NULL,
+  paid_at DATETIME NULL,
+  note VARCHAR(255) NULL,
+  is_test TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY source_id (source_id),
+  KEY referrer_user_id (referrer_user_id),
+  KEY order_id (order_id),
+  KEY status (status)
 ) $charset;"
 		);
 

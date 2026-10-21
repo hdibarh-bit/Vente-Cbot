@@ -725,6 +725,316 @@ foreach ( array( 'risques', 'cgv', 'mentions-legales', 'confidentialite', 'cooki
 check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) || 1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
 
+/* ======================================================================== J. Parrainage */
+title( 'J. Parrainage : lien, récompenses, remboursement, anti-fraude, virements' );
+clear_transients();
+@unlink( $log );
+@unlink( $stripe_log );
+$ref_tables = array( 'referrers', 'referrals', 'commissions' );
+foreach ( $ref_tables as $t ) {
+	check( $wpdb->get_var( "SHOW TABLES LIKE '" . Arvator_Repo::table( $t ) . "'" ) === Arvator_Repo::table( $t ), "table « $t » créée" );
+}
+
+// -- Unités : calculs, codes, IBAN
+check( 22500 === Arvator_Referral::settings()['prime_cents'] && 0.10 === Arvator_Referral::settings()['rate'] && 30 === Arvator_Referral::settings()['delay_days'], 'réglages par défaut : 225 €, 10 %, 30 jours' );
+check( 399 === Arvator_Referral::affiliation_cents( 3990 ) && 3588 === Arvator_Referral::affiliation_cents( 35880 ) && 0 === Arvator_Referral::affiliation_cents( 0 ), 'calcul : 10 % de 39,90 € = 3,99 € ; de 358,80 € = 35,88 €' );
+check( 'ABCD2345' === Arvator_Referral::normalize_code( ' abcd-2345 ' ) && '' === Arvator_Referral::normalize_code( "AB'; DROP" ) && '' === Arvator_Referral::normalize_code( 'ABC' ), 'code : nettoyé, rien d\'autre que 8 lettres ou chiffres' );
+check( Arvator_Referral::valid_iban( 'FR76 3000 6000 0112 3456 7890 189' ) && ! Arvator_Referral::valid_iban( 'FR76 3000 6000 0112 3456 7890 188' ) && ! Arvator_Referral::valid_iban( 'pas un iban' ), 'IBAN : clé de contrôle vérifiée' );
+$enc = Arvator_Referral::encrypt( 'FR7630006000011234567890189' );
+check( ! str_contains( $enc, '30006000' ) && 'FR7630006000011234567890189' === Arvator_Referral::decrypt( $enc ) && '' === Arvator_Referral::decrypt( 'v1:' . base64_encode( 'abimé-abimé-abimé-abimé-abimé-abimé' ) ), 'IBAN chiffré (illisible en base), déchiffrable, donnée abîmée refusée' );
+check( "\u{2212}225\u{00A0}€" === Arvator_Referral::money( -22500 ) && "3,99\u{00A0}€" === Arvator_Referral::money( 399 ), 'montants affichés (déduction en négatif)' );
+
+// -- Pages
+foreach ( array( 'parrainage', 'conditions-parrainage' ) as $s ) {
+	$old = get_page_by_path( $s, OBJECT, 'page' );
+	if ( $old ) {
+		wp_delete_post( $old->ID, true );
+	}
+}
+update_option( 'arvator_pages_created', array_values( array_diff( (array) get_option( 'arvator_pages_created', array() ), array( 'parrainage', 'conditions-parrainage' ) ) ) );
+Arvator_Pages::create_missing();
+$pp = $anon->get( '/parrainage/' );
+check( 200 === $pp['code'] && str_contains( $pp['body'], "225\u{00A0}€" ) && str_contains( $pp['body'], "10\u{00A0}%" ) && str_contains( $pp['body'], 'arvator_referral_signup' ) && str_contains( $pp['body'], '/conditions-parrainage/' ), 'page Parrainage : montants, formulaire gratuit, lien vers les conditions' );
+check( ! preg_match( '/revenu passif|opportunit|gagnez|garanti\b/iu', strip_tags( $pp['body'] ) ), 'page Parrainage : aucun mot interdit (revenu passif, opportunité, gagnez, garanti)' );
+check( str_contains( $pp['headers'], 'no-store' ), 'page Parrainage jamais mise en cache (formulaire)' );
+$cp = $anon->get( '/conditions-parrainage/' );
+check( 200 === $cp['code'] && str_contains( $cp['body'], 'notice-provisional' ) && str_contains( $cp['body'], 'déduit des récompenses suivantes' ), 'conditions : marquées provisoires, règle de déduction écrite' );
+$home = $anon->get( '/' );
+check( str_contains( $home['body'], 'class="referral"' ) && str_contains( $home['body'], 'Recommandez Arvator' ) && str_contains( $home['body'], '/parrainage/' ), 'accueil : bandeau « Recommandez Arvator » affiché dès que la page existe' );
+check( str_contains( $home['body'], '/conditions-parrainage/' ), 'pied de page : lien vers les conditions du parrainage' );
+
+// -- Inscription d'un visiteur (gratuite, sans achat)
+$pemail = "parrain_$tag@example.org";
+$sn     = field_in_form( $pp['body'], 'arvator_referral_signup', '_arv_nonce' );
+$sgood  = array( 'action' => 'arvator_referral_signup', '_arv_nonce' => $sn, 'email' => $pemail, 'terms' => '1' );
+check( 'generic_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( '_arv_nonce' => 'faux' ) + $sgood ) ), 'inscription sans clé de sécurité valide refusée' );
+check( 'parrain_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'terms' => '' ) + $sgood ) ), 'inscription sans accepter les conditions refusée' );
+check( 'parrain_mail' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'website' => 'spam' ) + $sgood ) ) && ! get_user_by( 'email', $pemail ), 'champ piège rempli : rien de créé' );
+check( 'parrain_mail' === notice_of( $anon->post( '/wp-admin/admin-post.php', $sgood ) ), 'inscription valide acceptée' );
+$puser = get_user_by( 'email', $pemail );
+$pref  = $puser ? Arvator_Referral::referrer( (int) $puser->ID ) : null;
+check( $puser instanceof WP_User && in_array( Arvator_Roles::CLIENT, $puser->roles, true ) && is_array( $pref ) && 8 === strlen( (string) $pref['code'] ) && 'active' === $pref['status'], 'compte client et code de parrain créés, sans achat' );
+$code = (string) ( $pref['code'] ?? '' );
+$m    = mails();
+check( 1 === count( $m ) && $pemail === $m[0]->to && str_contains( $m[0]->message, '?ref=' . $code ) && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'performances simulées' ), 'email : lien de recommandation + lien pour choisir le mot de passe + rappel des risques' );
+@unlink( $log );
+check( 'parrain_mail' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'email' => "a$tag@example.com" ) + $sgood ) ) && null === Arvator_Referral::referrer( $uA ), 'adresse déjà cliente : même réponse (pas de fuite), pas d\'inscription à sa place' );
+check( 1 === count( mails() ) && "a$tag@example.com" === mails()[0]->to && str_contains( mails()[0]->message, 'rubrique « Parrainage »' ), '… mais un email lui explique comment activer son lien' );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'referrers' ) . ' WHERE user_id = ' . (int) $uA );
+
+// -- Lien de recommandation : cookie
+$vis = new Browser( $url );
+$r   = $vis->get( '/?ref=' . strtolower( $code ) );
+check( 302 === $r['code'] && ! str_contains( $r['location'], 'ref=' ) && preg_match( '/Set-Cookie: arv_ref=' . $code . ';.*HttpOnly/i', $r['headers'] ), 'lien ?ref= : code mémorisé (cookie HttpOnly), adresse nettoyée' );
+check( str_contains( $r['headers'], 'no-store' ) || str_contains( $r['headers'], 'no-cache' ), 'lien ?ref= : réponse jamais mise en cache' );
+$r2 = ( new Browser( $url ) )->get( '/?ref=ZZZZ9999' );
+check( 302 === $r2['code'] && ! str_contains( $r2['headers'], 'arv_ref=' ), 'code inconnu : aucun cookie' );
+$buy = $vis->get( '/acheter/' );
+check( str_contains( $buy['body'], 'name="ref"' ) && str_contains( $buy['body'], 'value="' . $code . '"' ), 'page d\'achat : code du parrain prérempli' );
+
+// -- Départ vers le paiement avec un code
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_r', 'url' => 'https://checkout.stripe.com/c/pay/cs_r' ) ) );
+@unlink( $stripe_log );
+$f1    = "filleul1_$tag@example.org";
+$cgood = array( 'action' => 'arvator_checkout', '_arv_nonce' => field_in_form( $buy['body'], 'arvator_checkout', '_arv_nonce' ), 'plan' => 'annual', 'email' => $f1, 'cgv' => '1', 'risks' => '1', 'ref' => $code );
+check( 'achat_code' === notice_of( $vis->post( '/wp-admin/admin-post.php', array( 'ref' => 'ZZZZ9999' ) + $cgood ) ), 'code inconnu au paiement : message clair' );
+check( 'achat_code' === notice_of( $vis->post( '/wp-admin/admin-post.php', array( 'email' => $pemail ) + $cgood ) ), 'parrain qui utilise son propre code : refusé' );
+check( 0 === count( $stripe_calls() ), 'aucun appel à Stripe pour ces refus' );
+$r  = $vis->post( '/wp-admin/admin-post.php', $cgood );
+$cb = array();
+parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $cb );
+check( 303 === $r['code'] && $code === ( $cb['metadata']['ref'] ?? '' ), 'achat avec code : code transmis à Stripe' );
+@unlink( $stripe_log );
+$vis->post( '/wp-admin/admin-post.php', array( 'ref' => '' ) + $cgood );
+$cb = array();
+parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $cb );
+check( '' === ( $cb['metadata']['ref'] ?? '' ), 'champ vidé : aucun code transmis' );
+
+// -- Paiement confirmé : filleul rattaché, prime + 10 % du premier abonnement
+$pid      = (int) $puser->ID;
+$mk_sess  = static function ( string $sid, string $email, string $cus, string $ref, string $fp = '' ) use ( $full, $tag ): array {
+	$s                       = $full;
+	$s['id']                 = $sid;
+	$s['customer']           = $cus;
+	$s['customer_email']     = $email;
+	$s['customer_details']   = array( 'email' => $email );
+	$s['invoice']            = 'in_' . $sid;
+	$s['metadata']           = array( 'ref' => $ref, 'plan' => 'annual' );
+	$s['subscription']['id'] = 'sub_' . $sid;
+	if ( '' !== $fp ) {
+		$s['subscription']['default_payment_method'] = array( 'card' => array( 'fingerprint' => $fp ) );
+	}
+	return $s;
+};
+$buy_hook = static function ( string $sid, array $sess, string $evt ) use ( $set_fix, $event, $post_raw, $sign ): array {
+	$set_fix( array( "GET checkout/sessions/$sid" => $sess ) );
+	$e = $event( $evt, 'checkout.session.completed', array( 'id' => $sid, 'payment_status' => 'paid' ) );
+	return $post_raw( $e, $sign( $e ) );
+};
+$coms = static function ( int $referrer ) use ( $wpdb ): array {
+	return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referrer_user_id = %d ORDER BY id', $referrer ), ARRAY_A );
+};
+@unlink( $log );
+$s1 = "cs_ref1_$tag";
+$r  = $buy_hook( $s1, $mk_sess( $s1, $f1, "cus_f1_$tag", $code, "fp_f1_$tag" ), "evt_{$tag}_r1" );
+check( 200 === $r['code'], 'achat du filleul accepté', $r['body'] );
+$f1u = get_user_by( 'email', $f1 );
+$rel = $f1u ? Arvator_Referral::referral_for( (int) $f1u->ID ) : null;
+check( is_array( $rel ) && (int) $rel['referrer_user_id'] === $pid && 'ok' === $rel['status'], 'filleul rattaché à son parrain' );
+$c = $coms( $pid );
+check( 2 === count( $c ), 'deux récompenses créées', (string) count( $c ) );
+$prime = $c[0] ?? array();
+$aff1  = $c[1] ?? array();
+check( 'prime' === ( $prime['kind'] ?? '' ) && 22500 === (int) ( $prime['amount_cents'] ?? 0 ) && 'pending' === ( $prime['status'] ?? '' ), 'prime d\'achat : 225 €, en attente' );
+$delay = strtotime( (string) ( $prime['available_at'] ?? '' ) . ' UTC' ) - time();
+check( $delay > 29.9 * 86400 && $delay < 30.1 * 86400, 'prime disponible 30 jours après le paiement' );
+check( 'affiliation' === ( $aff1['kind'] ?? '' ) && 3588 === (int) ( $aff1['amount_cents'] ?? 0 ), 'premier abonnement annuel : 10 % = 35,88 €' );
+check( 1 === (int) ( $prime['is_test'] ?? 0 ), 'récompense marquée « test » (bac à sable)' );
+$buy_hook( $s1, $mk_sess( $s1, $f1, "cus_f1_$tag", $code, "fp_f1_$tag" ), "evt_{$tag}_r1" );
+$buy_hook( $s1, $mk_sess( $s1, $f1, "cus_f1_$tag", $code, "fp_f1_$tag" ), "evt_{$tag}_r1bis" );
+check( 2 === count( $coms( $pid ) ), 'idempotence : même achat reçu 3 fois → toujours 2 récompenses' );
+$rel2 = $buy_hook( $s1, $mk_sess( $s1, $f1, "cus_f1_$tag", 'ZZZZ9999', "fp_f1_$tag" ), "evt_{$tag}_r1ter" );
+check( (int) Arvator_Referral::referral_for( (int) $f1u->ID )['referrer_user_id'] === $pid, 'parrain fixé au premier achat : ne change plus' );
+
+// -- Renouvellements d'abonnement (invoice.paid)
+$inv = static function ( string $id, string $sub, int $paid, string $reason = 'subscription_cycle' ) use ( $event ): string {
+	return $event( $id, 'invoice.paid', array( 'id' => 'in_' . $id, 'subscription' => $sub, 'amount_paid' => $paid, 'billing_reason' => $reason ) );
+};
+$e = $inv( "evt_{$tag}_i1", "sub_$s1", 35880, 'subscription_create' );
+$post_raw( $e, $sign( $e ) );
+check( 2 === count( $coms( $pid ) ), 'facture de création : déjà comptée à l\'achat, pas de doublon' );
+$e = $inv( "evt_{$tag}_i2", "sub_$s1", 35880 );
+$r = $post_raw( $e, $sign( $e ) );
+$post_raw( $e, $sign( $e ) );
+check( 200 === $r['code'] && 3 === count( $coms( $pid ) ) && 3588 === (int) $coms( $pid )[2]['amount_cents'], 'renouvellement payé : +10 %, reçu deux fois → compté une fois' );
+
+// Nouvelle version de l'API Stripe : l'abonnement est rangé ailleurs dans la facture.
+$e = $event( "evt_{$tag}_i3", 'invoice.paid', array( 'id' => "in_new_$tag", 'parent' => array( 'subscription_details' => array( 'subscription' => "sub_$s1" ) ), 'amount_paid' => 35880, 'billing_reason' => 'subscription_cycle' ) );
+$post_raw( $e, $sign( $e ) );
+check( 4 === count( $coms( $pid ) ), 'renouvellement (nouvelle API Stripe) : reconnu aussi' );
+$e = $inv( "evt_{$tag}_i4", 'sub_inconnu', 3990 );
+$r = $post_raw( $e, $sign( $e ) );
+check( 200 === $r['code'] && 4 === count( $coms( $pid ) ), 'abonnement sans parrain : aucune récompense, pas d\'erreur' );
+
+// -- Délai, « à payer », seuil de virement
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'commissions' ) . " SET available_at = '2000-01-01 00:00:00' WHERE referrer_user_id = $pid" );
+Arvator_Referral::promote_due();
+check( 4 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid AND status = 'payable'" ), 'délai passé : récompenses « à payer »' );
+$due   = Arvator_Referral::payouts_due();
+$mine  = array_values( array_filter( $due, static fn( $d ) => $d['user_id'] === $pid ) );
+check( 1 === count( $mine ) && 22500 + 3 * 3588 === $mine[0]['total'], 'à verser : prime + abonnements (cumul 107,64 € ≥ 50 €)', wp_json_encode( $mine ) );
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'commissions' ) . " SET status = 'canceled' WHERE referrer_user_id = $pid AND kind = 'affiliation' AND id <> " . (int) $aff1['id'] );
+$mine = array_values( array_filter( Arvator_Referral::payouts_due(), static fn( $d ) => $d['user_id'] === $pid ) );
+check( 1 === count( $mine ) && 22500 === $mine[0]['total'], 'abonnements sous 50 € cumulés : seule la prime est versée' );
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'commissions' ) . " SET status = 'payable' WHERE referrer_user_id = $pid AND kind = 'affiliation'" );
+
+// -- Remboursement avant versement : prime annulée, abonnement payé conservé
+$set_fix( array( "DELETE subscriptions/sub_$s1" => array( 'id' => "sub_$s1", 'status' => 'canceled' ) ) );
+$e = $event( "evt_{$tag}_rf", 'charge.refunded', array( 'id' => "ch_r_$tag", 'customer' => "cus_f1_$tag", 'invoice' => "in_$s1", 'amount_refunded' => 150000 ) );
+$post_raw( $e, $sign( $e ) );
+$post_raw( $e, $sign( $e ) );
+$p = $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE id = ' . (int) $prime['id'], ARRAY_A );
+check( 'canceled' === $p['status'] && str_contains( (string) $p['note'], 'remboursement' ), 'achat remboursé : prime annulée avant versement' );
+check( 'payable' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE id = ' . (int) $aff1['id'] ), '… la récompense sur le premier abonnement (non remboursé) reste due' );
+check( 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid AND kind = 'adjustment'" ), '… et aucune déduction (rien n\'avait été versé)' );
+$e = $inv( "evt_{$tag}_i5", "sub_$s1", 35880 );
+$post_raw( $e, $sign( $e ) );
+check( 4 === count( $coms( $pid ) ), 'après remboursement : plus aucune récompense sur ce client' );
+
+// -- Contestation bancaire après versement : déduction
+$f2 = "filleul2_$tag@example.org";
+$s2 = "cs_ref2_$tag";
+$buy_hook( $s2, $mk_sess( $s2, $f2, "cus_f2_$tag", $code, "fp_f2_$tag" ), "evt_{$tag}_r2" );
+$f2u = get_user_by( 'email', $f2 );
+$c2  = $wpdb->get_results( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $f2u->ID . ' ORDER BY id', ARRAY_A );
+check( 2 === count( $c2 ), 'deuxième filleul : deux récompenses' );
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'commissions' ) . " SET status = 'paid', paid_at = '$now' WHERE referee_user_id = " . (int) $f2u->ID );
+$set_fix( array( "GET charges/ch_d_$tag" => array( 'id' => "ch_d_$tag", 'invoice' => "in_$s2", 'customer' => "cus_f2_$tag" ) ) );
+@unlink( $log );
+$e = $event( "evt_{$tag}_dp", 'charge.dispute.created', array( 'id' => "dp_$tag", 'charge' => "ch_d_$tag" ) );
+$r = $post_raw( $e, $sign( $e ) );
+$post_raw( $e, $sign( $e ) );
+$adj = $wpdb->get_results( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $f2u->ID . " AND kind = 'adjustment' ORDER BY id", ARRAY_A );
+check( 200 === $r['code'] && 2 === count( $adj ) && -22500 === (int) $adj[0]['amount_cents'] && -3588 === (int) $adj[1]['amount_cents'] && 'payable' === $adj[0]['status'], 'contestation après versement : prime et premier abonnement déduits (−225 €, −35,88 €), une seule fois', wp_json_encode( $adj ) );
+check( (bool) array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to && str_contains( $x->subject, 'contestation' ) ), 'Hamid est prévenu de la contestation' );
+$bal = (int) $wpdb->get_var( 'SELECT SUM(amount_cents) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid AND status = 'payable'" );
+check( 3 * 3588 - 22500 - 3588 === $bal, 'solde « à payer » du parrain négatif après déduction', (string) $bal );
+check( ! array_filter( Arvator_Referral::payouts_due(), static fn( $d ) => $d['user_id'] === $pid ), 'solde négatif : aucun virement proposé' );
+
+// -- Anti-fraude : auto-parrainage
+$fraud = static function ( string $label, string $sid, string $email, string $cus, string $fp, string $evt ) use ( $buy_hook, $mk_sess, $code, $pid, $wpdb, $log ): void {
+	@unlink( $log );
+	$buy_hook( $sid, $mk_sess( $sid, $email, $cus, $code, $fp ), $evt );
+	$u   = get_user_by( 'email', $email );
+	$rel = $u ? Arvator_Referral::referral_for( (int) $u->ID ) : null;
+	$st  = $u ? $wpdb->get_col( 'SELECT status FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $u->ID ) : array();
+	$al  = array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to && str_contains( $x->subject, 'bloquée' ) );
+	check( is_array( $rel ) && 'blocked' === $rel['status'] && $st && ! array_diff( $st, array( 'blocked' ) ) && $al, "auto-parrainage ($label) : récompenses bloquées + alerte à Hamid", wp_json_encode( $st ) );
+};
+// Le parrain achète lui-même avec son code (même compte, même email).
+$fraud( 'même compte', "cs_self_$tag", $pemail, "cus_self_$tag", "fp_self_$tag", "evt_{$tag}_fr1" );
+// Autre email, mais même client Stripe que le parrain.
+$fraud( 'même client Stripe', "cs_cus_$tag", "autre1_$tag@example.org", "cus_self_$tag", '', "evt_{$tag}_fr2" );
+// Autre email, autre client, mais même carte que le parrain.
+$fraud( 'même carte', "cs_card_$tag", "autre2_$tag@example.org", "cus_x_$tag", "fp_self_$tag", "evt_{$tag}_fr3" );
+check( ! array_filter( Arvator_Referral::payouts_due(), static fn( $d ) => in_array( $d['user_id'], array( $pid ), true ) && $d['total'] > 0 ), 'récompenses bloquées : jamais proposées au virement' );
+
+// -- Espace membre du parrain
+$pw = 'Parrain-Test-Only-' . $tag;
+wp_set_password( $pw, $pid );
+$pb = new Browser( $url );
+member_login( $pb, $pemail, $pw );
+$sec = $pb->get( '/espace-membre/?section=parrainage' );
+check( 200 === $sec['code'] && str_contains( $sec['body'], '?ref=' . $code ) && str_contains( $sec['body'], 'data-copy="#arv-ref-link"' ) && str_contains( $sec['body'], 'Déduction' ) && str_contains( $sec['body'], 'Prime d’achat' ), 'espace parrain : lien à copier, récompenses et déductions visibles' );
+check( ! str_contains( $sec['body'], $f1 ) && ! str_contains( $sec['body'], $f2 ), 'espace parrain : aucune adresse de filleul affichée' );
+$alice = new Browser( $url );
+member_login( $alice, "ta$tag", $newA );
+$as = $alice->get( '/espace-membre/?section=parrainage' );
+check( ! str_contains( $as['body'], $code ) && str_contains( $as['body'], 'arvator_referral_join' ), 'un autre client ne voit pas les données du parrain (il voit l\'inscription)' );
+$jn = field_in_form( $as['body'], 'arvator_referral_join', '_arv_nonce' );
+check( 'parrain_ok' === notice_of( $alice->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_referral_join', '_arv_nonce' => $jn, 'terms' => '1' ) ) ) && null !== Arvator_Referral::referrer( $uA ), 'un client connecté devient parrain en un clic' );
+$bn    = field_in_form( $sec['body'], 'arvator_referral_bank', '_arv_nonce' );
+$bgood = array( 'action' => 'arvator_referral_bank', '_arv_nonce' => $bn, 'holder' => '=HYPERLINK("x") Jean', 'iban' => 'fr76 3000 6000 0112 3456 7890 189', 'entity' => 'particulier' );
+check( 'iban_invalid' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'iban' => 'FR7630006000011234567890188' ) + $bgood ) ), 'IBAN faux refusé' );
+check( 'iban_invalid' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'entity' => 'entreprise', 'siret' => '123' ) + $bgood ) ), 'entreprise sans SIRET valide refusée' );
+check( 'generic_invalid' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( '_arv_nonce' => 'faux' ) + $bgood ) ), 'IBAN sans clé de sécurité valide refusé' );
+check( 'iban_ok' === notice_of( $pb->post( '/wp-admin/admin-post.php', $bgood ) ), 'IBAN valide enregistré' );
+$pref = Arvator_Referral::referrer( $pid );
+check( ! str_contains( (string) $pref['iban_enc'], '30006000' ) && 'FR7630006000011234567890189' === Arvator_Referral::decrypt( (string) $pref['iban_enc'] ), 'IBAN stocké chiffré en base' );
+$sec = $pb->get( '/espace-membre/?section=parrainage' );
+check( str_contains( $sec['body'], 'FR76 •••• •••• 0189' ) && ! str_contains( $sec['body'], '30006000' ), 'espace parrain : IBAN masqué à l\'affichage' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_referral_bank', '_arv_nonce' => $bn ) + $bgood );
+check( ! in_array( notice_of( $r ), array( 'iban_ok' ), true ), 'IBAN sans être connecté : refusé' );
+
+// -- Administration : virement, CSV, confirmation
+// On remet le parrain en solde positif : la déduction est compensée par une nouvelle prime « à payer ».
+$wpdb->insert( Arvator_Repo::table( 'commissions' ), array( 'referrer_user_id' => $pid, 'referee_user_id' => 0, 'order_id' => 0, 'kind' => 'prime', 'source_id' => "test:$tag", 'amount_cents' => 45000, 'status' => 'payable', 'available_at' => '2000-01-01 00:00:00', 'is_test' => 1, 'created_at' => $now, 'updated_at' => $now ) );
+$ap = $adm->get( '/wp-admin/admin.php?page=arvator-parrainage' );
+check( 200 === $ap['code'] && str_contains( $ap['body'], 'Préparer un lot de virements' ), 'administration : page Parrainage, virement proposé', (string) $ap['code'] );
+check( ! str_contains( $ap['body'], '30006000' ), 'administration : IBAN masqué à l\'écran' );
+foreach ( array( 'recompenses', 'parrains', 'reglages' ) as $tb ) {
+	$x = $adm->get( '/wp-admin/admin.php?page=arvator-parrainage&tab=' . $tb );
+	check( 200 === $x['code'] && ! preg_match( '/Warning:|Notice:|Fatal error|Deprecated:/', $x['body'] ), "administration : onglet « $tb » sans erreur" );
+}
+check( 403 === $pb->get( '/wp-admin/admin.php?page=arvator-parrainage' )['code'] || ! str_contains( $pb->get( '/wp-admin/admin.php?page=arvator-parrainage' )['body'], 'Préparer un lot' ), 'un client n\'accède pas à l\'administration du parrainage' );
+$r = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_batch_create', '_arv_nonce' => 'faux' ) );
+check( in_array( $r['code'], array( 403, 302 ), true ) && ! str_contains( $r['location'], 'arvator-parrainage' ), 'lot sans clé de sécurité valide refusé', (string) $r['code'] );
+$adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_batch_create', '_arv_nonce' => field_in_form( $ap['body'], 'arvator_ref_batch_create', '_arv_nonce' ) ) );
+$batch = (string) $wpdb->get_var( 'SELECT payout_batch FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid AND status = 'payable' AND payout_batch IS NOT NULL LIMIT 1" );
+check( 1 === preg_match( '/^V\d{14}$/', $batch ), 'lot de virements préparé' );
+$ap  = $adm->get( '/wp-admin/admin.php?page=arvator-parrainage' );
+$csv = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_batch_csv', 'batch' => $batch, '_arv_nonce' => field_in_form( $ap['body'], 'arvator_ref_batch_csv', '_arv_nonce' ) ) );
+$expected = number_format( ( 45000 + 3 * 3588 - 22500 - 3588 ) / 100, 2, ',', '' );
+check( 200 === $csv['code'] && str_contains( $csv['headers'], 'text/csv' ) && str_contains( $csv['body'], 'FR7630006000011234567890189' ) && str_contains( $csv['body'], '"' . $expected . '"' ), 'CSV : IBAN complet et montant net (' . $expected . ' €)', substr( $csv['body'], 0, 300 ) );
+check( str_contains( $csv['body'], '"\'=HYPERLINK' ), 'CSV : une cellule commençant par « = » est neutralisée (pas de formule)' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_batch_csv', 'batch' => $batch, '_arv_nonce' => field_in_form( $ap['body'], 'arvator_ref_batch_csv', '_arv_nonce' ) ) );
+check( ! str_contains( $r['body'], 'FR7630006000011234567890189' ), 'CSV inaccessible sans être administrateur' );
+$r = $pb->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_batch_csv', 'batch' => $batch, '_arv_nonce' => field_in_form( $ap['body'], 'arvator_ref_batch_csv', '_arv_nonce' ) ) );
+check( ! str_contains( $r['body'], 'FR7630006000011234567890189' ), 'CSV inaccessible à un client connecté' );
+@unlink( $log );
+$adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_batch_paid', 'batch' => $batch, '_arv_nonce' => field_in_form( $ap['body'], 'arvator_ref_batch_paid', '_arv_nonce' ) ) );
+check( 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE payout_batch = '$batch' AND status <> 'paid'" ) && 4 <= (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE payout_batch = '$batch' AND status = 'paid'" ), 'virement confirmé : récompenses du lot « payées » (déductions comprises)' );
+check( (bool) array_filter( mails(), static fn( $x ) => $pemail === $x->to && str_contains( $x->subject, 'virée' ) ), 'le parrain est prévenu par email' );
+
+// -- Déblocage d'une récompense par l'administrateur
+$blocked = (int) $wpdb->get_var( 'SELECT id FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid AND status = 'blocked' LIMIT 1" );
+$tabc    = $adm->get( '/wp-admin/admin.php?page=arvator-parrainage&tab=recompenses' );
+$cn      = '';
+foreach ( preg_split( '/<form\b/i', $tabc['body'] ) as $chunk ) {
+	if ( str_contains( $chunk, 'name="id" value="' . $blocked . '"' ) && str_contains( $chunk, 'value="unblock"' ) ) {
+		$cn = field( $chunk, '_arv_nonce' );
+	}
+}
+$adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_commission', 'id' => $blocked, 'op' => 'unblock', '_arv_nonce' => $cn ) );
+check( 'pending' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE id = $blocked" ), 'administrateur : récompense bloquée débloquée' );
+
+// -- Cookies : la page mentionne le cookie de recommandation
+check( str_contains( $anon->get( '/cookies/' )['body'], 'arv_ref' ), 'page Cookies : le cookie de recommandation est expliqué' );
+
+// -- Données personnelles : export et effacement du parrain
+$exp = Arvator_Privacy::export( $pemail );
+$flat = wp_json_encode( $exp['data'] );
+check( str_contains( $flat, $code ) && str_contains( $flat, 'FR76' ) && ! str_contains( $flat, '30006000' ), 'export RGPD : parrainage inclus, IBAN masqué' );
+Arvator_Privacy::erase( $pemail );
+check( null === Arvator_Referral::referrer( $pid ) && 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid" ) && 0 < (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE source_id = 'test:$tag'" ), 'effacement RGPD : IBAN et lien supprimés, récompenses gardées sans identité' );
+
+// -- Nettoyage du bloc J
+foreach ( array( $f1, $f2, $pemail, "autre1_$tag@example.org", "autre2_$tag@example.org" ) as $em ) {
+	$u = get_user_by( 'email', $em );
+	if ( $u ) {
+		Arvator_Repo::delete_test_rows_for_user( (int) $u->ID );
+		wp_delete_user( (int) $u->ID );
+	}
+}
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE source_id LIKE '%$tag%' OR referrer_user_id IN (0, $pid, $uA)" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'referrals' ) . " WHERE referrer_user_id IN ($pid, $uA)" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'referrers' ) . " WHERE user_id IN ($pid, $uA)" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id LIKE '%$tag%'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id LIKE '%$tag%'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'events' ) . " WHERE external_id LIKE 'stripe:evt\\_{$tag}%'" );
+$set_fix( array() );
+@unlink( $stripe_log );
+
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {
 	Arvator_Repo::delete_test_rows_for_user( $uid );

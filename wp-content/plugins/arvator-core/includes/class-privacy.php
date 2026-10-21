@@ -81,6 +81,26 @@ final class Arvator_Privacy {
 			) );
 		}
 
+		$ref = Arvator_Referral::referrer( $uid );
+		if ( $ref ) {
+			$data[] = self::item( 'arvator-parrainage', 'Parrainage Arvator', 'referrer-' . $uid, array(
+				'Code'                => (string) $ref['code'],
+				'Inscrit le'          => (string) $ref['created_at'],
+				'Titulaire du compte' => (string) $ref['holder_name'],
+				'IBAN'                => Arvator_Referral::mask_iban( Arvator_Referral::decrypt( (string) $ref['iban_enc'] ) ),
+				'Statut'              => (string) $ref['entity_type'],
+				'SIRET'               => (string) $ref['siret'],
+			) );
+			foreach ( Arvator_Referral::commissions_for( $uid ) as $c ) {
+				$data[] = self::item( 'arvator-recompenses', 'Récompenses de recommandation Arvator', 'com-' . $c['id'], array(
+					'Date'    => (string) $c['created_at'],
+					'Type'    => Arvator_Referral::kind_label( (string) $c['kind'] ),
+					'Montant' => number_format( (int) $c['amount_cents'] / 100, 2, ',', ' ' ) . ' EUR',
+					'État'    => Arvator_Referral::status_label( (string) $c['status'] ),
+				) );
+			}
+		}
+
 		return array(
 			'data' => $data,
 			'done' => true,
@@ -110,12 +130,24 @@ final class Arvator_Privacy {
 			}
 		}
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'licenses' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		// Parrainage : fiche de parrain (IBAN compris) et rattachements supprimés ; les récompenses (pièces comptables)
+		// sont gardées sans lien avec l'identité.
+		$wpdb->delete( Arvator_Repo::table( 'referrers' ), array( 'user_id' => $uid ), array( '%d' ) );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'referrals' ) . ' WHERE referrer_user_id = %d OR referee_user_id = %d', $uid, $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		foreach ( array( 'referrer_user_id', 'referee_user_id' ) as $col ) {
+			$n = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE $col = %d", $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			if ( $n > 0 ) {
+				$retained = true;
+				$wpdb->query( $wpdb->prepare( 'UPDATE ' . Arvator_Repo::table( 'commissions' ) . " SET $col = 0 WHERE $col = %d", $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			}
+		}
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'events' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return array(
 			'items_removed'  => true,
 			'items_retained' => $retained,
-			'messages'       => $retained ? array( 'Les pièces comptables (achats, abonnements) sont conservées 10 ans, sans lien avec votre identité.' ) : array(),
+			'messages'       => $retained ? array( 'Les pièces comptables (achats, abonnements, récompenses de recommandation) sont conservées 10 ans, sans lien avec votre identité.' ) : array(),
 			'done'           => true,
 		);
 	}

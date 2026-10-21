@@ -95,6 +95,12 @@ final class Arvator_Checkout {
 				</p>
 			<?php endif; ?>
 
+			<p>
+				<label for="arv-buy-ref">Code de recommandation <span class="muted">(facultatif)</span></label>
+				<input id="arv-buy-ref" name="ref" type="text" maxlength="12" autocomplete="off" value="<?php echo esc_attr( Arvator_Referral::cookie_code() ); ?>">
+				<span class="muted">Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé.</span>
+			</p>
+
 			<p class="arv-check"><label><input type="checkbox" name="cgv" value="1" required> J’ai lu et j’accepte les <a href="<?php echo esc_url( Arvator_Support::page_url( 'cgv' ) ); ?>" target="_blank" rel="noopener">conditions générales de vente</a>.</label></p>
 			<p class="arv-check"><label><input type="checkbox" name="risks" value="1" required> J’ai lu l’<a href="<?php echo esc_url( Arvator_Support::page_url( 'risques' ) ); ?>" target="_blank" rel="noopener">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé.</label></p>
 
@@ -143,6 +149,14 @@ final class Arvator_Checkout {
 			Arvator_Support::redirect( $back, 'achat_invalid' );
 		}
 
+		// Code de recommandation : vérifié ici (message clair en cas de faute de frappe), puis transmis à Stripe.
+		// Le parrain n'est enregistré qu'une fois le paiement confirmé, avec un nouveau contrôle anti-fraude.
+		$typed = isset( $_POST['ref'] ) ? trim( sanitize_text_field( wp_unslash( (string) $_POST['ref'] ) ) ) : '';
+		$ref   = Arvator_Referral::normalize_code( $typed );
+		if ( '' !== $typed && ( '' === $ref || ! Arvator_Referral::code_usable_for( $ref, $email, $user_id ) ) ) {
+			Arvator_Support::redirect( $back, 'achat_code' );
+		}
+
 		$waiver = ! empty( $_POST['waiver'] );
 		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
 			Arvator_Support::redirect( $back, 'achat_renonciation' );
@@ -168,6 +182,7 @@ final class Arvator_Checkout {
 				'plan'          => $plan,
 				'source'        => 'arvator',
 				'trial_waiver'  => $waiver ? '1' : '0',
+				'ref'           => $ref,
 			),
 			'subscription_data'     => array(
 				'metadata' => array(

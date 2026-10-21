@@ -215,6 +215,7 @@ TXT,
 	),
 
 	'confidentialite' => array(
+		'rev'   => 2,
 		'title' => 'Politique de confidentialité',
 		'text'  => <<<'TXT'
 [provisoire]
@@ -226,10 +227,13 @@ Hamid DIBARH, entrepreneur individuel établi à Fresnes-sur-Escaut (SIRET 802 3
 - Vos achats et abonnements : produit, montant, dates, état de l'abonnement (le paiement lui-même est traité par Stripe : nous ne voyons jamais votre numéro de carte).
 - Votre licence : clé de licence et numéro de compte cTrader associé.
 - Vos messages : le contenu de ce que vous nous écrivez depuis la page Contact.
+- Si vous êtes parrain : votre code de recommandation, les achats faits avec votre lien (date et état, sans identité de l'acheteur), vos récompenses, et pour le virement le nom du titulaire, votre IBAN (conservé chiffré), votre statut et, pour une entreprise, votre SIRET.
+- Si vous avez été recommandé : le parrain auquel votre achat est rattaché.
 
 ## Pourquoi, et sur quelle base
 - Gérer votre compte, votre achat et votre abonnement, et vous livrer le robot : exécution du contrat.
 - Facturer et respecter nos obligations comptables : obligation légale.
+- Gérer le programme de parrainage, verser les récompenses et prévenir la fraude (auto-parrainage) : exécution du contrat avec le parrain et intérêt légitime.
 - Répondre à vos messages : votre demande.
 - Protéger le site contre les abus (limitation des connexions, anti-spam) : intérêt légitime.
 
@@ -248,17 +252,82 @@ TXT,
 	),
 
 	'cookies'  => array(
+		'rev'   => 2,
 		'title' => 'Cookies',
 		'text'  => <<<'TXT'
 [provisoire]
-## Ce site n'utilise que des cookies nécessaires
-Ce site n'utilise que les cookies indispensables à son fonctionnement : ils servent à vous connecter à votre espace membre et à protéger votre compte. Ils sont supprimés à la fermeture de votre navigateur, ou après quelques jours si vous avez coché « Se souvenir de moi ».
+## Les cookies de ce site
+Ce site n'utilise que des cookies liés à son fonctionnement :
+- **Connexion :** ils servent à vous connecter à votre espace membre et à protéger votre compte. Ils sont supprimés à la fermeture de votre navigateur, ou après quelques jours si vous avez coché « Se souvenir de moi ».
+- **Recommandation :** si vous arrivez sur le site par le lien d'un parrain, son code de recommandation est mémorisé 90 jours (cookie « arv_ref »), uniquement pour pouvoir lui attribuer sa récompense si vous achetez. Il ne contient aucune donnée sur vous et n'est lu que par ce site. Vous pouvez le supprimer depuis les réglages de votre navigateur ; vous pourrez toujours saisir le code à la main au moment de l'achat.
 
 ## Ce que nous n'utilisons pas
 Ce site n'utilise aucun cookie publicitaire et aucun outil de mesure d'audience. Si cela change, vous serez invité à donner votre accord avant tout dépôt de cookie.
 
 ## Paiement
 Lorsque vous payez, vous êtes redirigé vers la page de paiement sécurisée de Stripe, qui dépose ses propres cookies nécessaires au paiement.
+TXT,
+	),
+
+	'parrainage' => array(
+		'title' => 'Parrainage',
+		'text'  => <<<'TXT'
+## Recommandez Arvator à vos proches
+Vous connaissez quelqu'un que le trading automatique intéresse ? Partagez votre lien de recommandation. S'il achète le robot avec ce lien, vous recevez une **récompense de recommandation**.
+
+[arvator_parrainage]
+
+## Comment ça marche
+- **Inscription gratuite**, sans obligation d'acheter le robot.
+- Vous recevez un **lien personnel** à partager. Il est mémorisé 90 jours sur l'appareil de la personne qui clique ; elle peut aussi saisir votre code au moment de l'achat.
+- La récompense d'achat est disponible **30 jours après l'achat** (après le délai de remboursement), puis versée par **virement bancaire**.
+- La récompense sur les abonnements est versée une fois par mois, dès que le cumul atteint 50 €.
+- Seule la personne qui a recommandé est récompensée : il n'y a qu'un seul niveau.
+- Si l'achat est remboursé ou contesté, la récompense correspondante est retirée.
+
+## Recommander de façon honnête
+Arvator est un logiciel, pas une promesse de gain. Quand vous le recommandez, ne promettez jamais de résultat : les performances présentées sur ce site sont **simulées** (backtest 2024-2026) et le trading comporte un risque élevé de perte en capital. La récompense de recommandation n'est jamais assurée : elle dépend uniquement des achats réellement faits avec votre lien.
+
+Voir les [conditions du programme de parrainage](/conditions-parrainage/).
+TXT,
+	),
+
+	'conditions-parrainage' => array(
+		'title' => 'Conditions du programme de parrainage',
+		'text'  => <<<'TXT'
+[provisoire]
+## 1. Objet
+Le programme de parrainage Arvator permet à toute personne inscrite (le « parrain ») de recevoir une récompense de recommandation lorsqu'une personne qu'elle a recommandée (le « filleul ») achète le robot Arvator. Il est édité par Hamid DIBARH, entrepreneur individuel (voir les [mentions légales](/mentions-legales/)).
+
+## 2. Inscription
+L'inscription est gratuite et n'oblige à aucun achat. Elle est réservée aux personnes majeures. Chaque parrain reçoit un code et un lien personnels. Il est interdit de se parrainer soi-même.
+
+## 3. Rattachement d'un filleul
+Le filleul est rattaché au parrain dont le lien a été utilisé (le code est mémorisé 90 jours sur son appareil) ou dont il saisit le code au moment de l'achat. Le parrain est fixé définitivement lors du premier achat du robot par le filleul.
+
+## 4. Récompenses
+- **Prime d'achat :** 225 € pour chaque achat du robot payé par un filleul.
+- **Récompense sur abonnement :** 10 % de chaque paiement d'abonnement d'un filleul (soit 3,99 € par mois pour l'abonnement mensuel, 35,88 € par an pour l'abonnement annuel), tant qu'il reste abonné.
+- Un seul niveau : seul le parrain direct est récompensé, jamais un « parrain du parrain ».
+- Les montants en vigueur sont ceux affichés au moment de l'achat du filleul.
+
+## 5. Disponibilité et versement
+Chaque récompense est « en attente » pendant 30 jours après le paiement du filleul, puis devient « à payer ». La prime d'achat est versée par virement bancaire dès qu'elle est à payer. Les récompenses sur abonnement sont versées une fois par mois, à partir de 50 € cumulés. Le parrain indique son IBAN et son statut (particulier ou entreprise, avec son numéro SIRET) dans son espace membre ; sans IBAN, aucun virement n'est possible. Le parrain est seul responsable de la déclaration de ses récompenses auprès de l'administration fiscale, selon sa situation.
+
+## 6. Remboursement, contestation, annulation
+Si l'achat d'un filleul est remboursé (droit de rétractation) ou contesté auprès de sa banque, la récompense correspondante est retirée. Si elle n'a pas encore été versée, elle est annulée. Si elle a déjà été versée, son montant est déduit des récompenses suivantes du parrain ; à défaut, le parrain s'engage à le rembourser.
+
+## 7. Fraude et bonne conduite
+Sont interdits : l'auto-parrainage (même personne, même adresse email, même moyen de paiement), les faux comptes, le spam, la publicité trompeuse et toute promesse de gain. Le parrain doit présenter Arvator honnêtement : les performances présentées sont simulées et le trading comporte un risque élevé de perte en capital. Une récompense suspecte est bloquée le temps d'une vérification. En cas de manquement, le lien peut être suspendu et les récompenses concernées annulées.
+
+## 8. Nature du programme
+La récompense de recommandation n'est pas un salaire et n'est jamais assurée : elle dépend uniquement des achats réellement payés par des filleuls. Le parrain agit en son nom propre et ne représente pas Arvator.
+
+## 9. Données personnelles
+L'IBAN est conservé chiffré et sert uniquement au versement des récompenses. Le parrain ne voit aucune donnée personnelle de ses filleuls (seulement la date et l'état de leurs achats). Voir la [politique de confidentialité](/confidentialite/).
+
+## 10. Modification et fin du programme
+Les conditions peuvent évoluer ; les récompenses déjà acquises restent dues selon les conditions en vigueur au moment de l'achat du filleul. Le parrain peut quitter le programme à tout moment en écrivant à {{email}}.
 TXT,
 	),
 

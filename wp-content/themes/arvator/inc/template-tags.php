@@ -186,6 +186,7 @@ function arvator_default_links( string $location ): array {
 			array( 'CGV', 'cgv' ),
 			array( 'Confidentialité', 'confidentialite' ),
 			array( 'Cookies', 'cookies' ),
+			array( 'Conditions du parrainage', 'conditions-parrainage' ),
 		),
 	);
 

@@ -26,7 +26,10 @@
 ## Avant le lancement public (priorité)
 - [ ] Compiler le cBot `IctSmcTendance` dans cTrader (onglet Algo → Build) et corriger les erreurs.
 - [ ] Tester la connexion WebSocket (port 25345) depuis le cloud cTrader → licence automatique ou manuelle.
-- [ ] Valider le juridique (avocat) : CGV, avertissements, programme de parrainage, statut « vente de logiciel ».
+- [ ] Valider le juridique (avocat) : CGV, avertissements, programme de parrainage (page « Conditions du programme de parrainage », provisoire), statut « vente de logiciel ».
+- [ ] Avocat : le cookie de recommandation `arv_ref` (90 jours) est déposé sans bandeau de consentement (présenté comme nécessaire au programme). La CNIL peut exiger un consentement pour les cookies d'affiliation : à confirmer. Repli prêt : le code peut toujours être saisi à la main à l'achat.
+- [ ] Comptable : traitement des récompenses versées aux parrains (particuliers et entreprises), justificatifs.
+- [ ] Hamid : confirmer que les récompenses sur abonnement attendent aussi 30 jours avant versement (choix prudent fait par Claude Code, modifiable).
 
 ## cBot
 - [ ] Vérification de licence, mode essai démo, risque par défaut 1 %, choix 1/2/3 % plafonné.

@@ -6,7 +6,8 @@
  * - Idempotent : chaque événement Stripe n'est traité qu'une fois (clé unique dans le journal). En cas d'erreur
  *   pendant le traitement, l'événement est « relâché » et Stripe le renvoie.
  * - Événements gérés : checkout.session.completed, customer.subscription.updated/deleted,
- *   invoice.payment_failed, charge.refunded. Tout autre type est ignoré.
+ *   invoice.paid (récompense de parrainage sur les renouvellements), invoice.payment_failed, charge.refunded,
+ *   charge.dispute.created (contestation bancaire). Tout autre type est ignoré.
  */
 
 declare(strict_types=1);
@@ -21,8 +22,10 @@ final class Arvator_Webhook {
 		'checkout.session.completed',
 		'customer.subscription.updated',
 		'customer.subscription.deleted',
+		'invoice.paid',
 		'invoice.payment_failed',
 		'charge.refunded',
+		'charge.dispute.created',
 	);
 
 	public static function init(): void {
@@ -74,8 +77,10 @@ final class Arvator_Webhook {
 				'checkout.session.completed'    => self::on_checkout_completed( $object, $live ),
 				'customer.subscription.updated',
 				'customer.subscription.deleted' => self::on_subscription_changed( $object, 'customer.subscription.deleted' === $type ),
+				'invoice.paid'                  => Arvator_Referral::on_invoice_paid( $object, $live ),
 				'invoice.payment_failed'        => self::on_payment_failed( $object ),
 				'charge.refunded'               => self::on_refund( $object ),
+				'charge.dispute.created'        => self::on_dispute( $object ),
 			};
 		} catch ( Throwable $e ) {
 			Arvator_Repo::release_event( 'stripe:' . $id );
@@ -99,7 +104,7 @@ final class Arvator_Webhook {
 		}
 
 		// Données complètes (lignes d'achat, abonnement) : lues chez Stripe, jamais crues sur parole.
-		$full = Arvator_Stripe::request( 'GET', 'checkout/sessions/' . rawurlencode( $session_id ), array( 'expand' => array( 'line_items', 'subscription' ) ) );
+		$full = Arvator_Stripe::request( 'GET', 'checkout/sessions/' . rawurlencode( $session_id ), array( 'expand' => array( 'line_items', 'subscription.default_payment_method' ) ) );
 		if ( is_wp_error( $full ) ) {
 			throw new RuntimeException( $full->get_error_message() );
 		}
@@ -127,9 +132,11 @@ final class Arvator_Webhook {
 		global $wpdb;
 		$now      = gmdate( 'Y-m-d H:i:s' );
 		$customer = (string) ( $full['customer'] ?? '' );
+		// Empreinte de la carte (identique pour une même carte, sans en révéler le numéro) : sert à repérer l'auto-parrainage.
+		$card_fp = (string) ( $full['subscription']['default_payment_method']['card']['fingerprint'] ?? '' );
 		$wpdb->query( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->prepare(
-				'INSERT IGNORE INTO ' . Arvator_Repo::table( 'orders' ) . ' (user_id, stripe_session_id, stripe_payment_intent, stripe_invoice_id, stripe_customer_id, product, amount_cents, currency, status, is_test, created_at) VALUES (%d, %s, %s, %s, %s, %s, %d, %s, %s, %d, %s)',
+				'INSERT IGNORE INTO ' . Arvator_Repo::table( 'orders' ) . ' (user_id, stripe_session_id, stripe_payment_intent, stripe_invoice_id, stripe_customer_id, product, amount_cents, currency, status, is_test, card_fingerprint, created_at) VALUES (%d, %s, %s, %s, %s, %s, %d, %s, %s, %d, %s, %s)',
 				$user_id,
 				$session_id,
 				(string) ( $full['payment_intent'] ?? '' ),
@@ -140,12 +147,18 @@ final class Arvator_Webhook {
 				strtolower( (string) ( $full['currency'] ?? 'eur' ) ),
 				'paid',
 				$live ? 0 : 1,
+				substr( $card_fp, 0, 64 ),
 				$now
 			)
 		);
 
 		if ( is_array( $full['subscription'] ?? null ) ) {
 			self::upsert_subscription( $user_id, $full['subscription'], $customer, ! $live );
+		}
+
+		$order_id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM ' . Arvator_Repo::table( 'orders' ) . ' WHERE stripe_session_id = %s', $session_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		if ( $order_id > 0 ) {
+			Arvator_Referral::on_purchase( $user_id, $order_id, $full, $live );
 		}
 
 		Arvator_Repo::log_event( 'purchase', $user_id, array( 'session' => $session_id, 'amount_cents' => $amount ) );
@@ -289,6 +302,7 @@ final class Arvator_Webhook {
 		$user_id = (int) $order['user_id'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
 		$wpdb->update( $orders, array( 'status' => 'refunded' ), array( 'id' => (int) $order['id'] ), array( '%s' ), array( '%d' ) );
+		Arvator_Referral::on_order_reversed( (int) $order['id'], 'refund' );
 		$wpdb->query( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->prepare( 'UPDATE ' . Arvator_Repo::table( 'licenses' ) . " SET status = 'revoked', updated_at = %s WHERE user_id = %d AND status = 'active'", $now, $user_id )
 		);
@@ -304,6 +318,41 @@ final class Arvator_Webhook {
 			$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'status' => 'canceled', 'updated_at' => $now ), array( 'stripe_subscription_id' => (string) $sub_id ), array( '%s', '%s' ), array( '%s' ) );
 		}
 		Arvator_Repo::log_event( 'refund', $user_id, array( 'refunded_cents' => $refunded ) );
+	}
+
+	/**
+	 * Contestation bancaire : la récompense de parrainage liée à l'achat est retirée, et Hamid est prévenu.
+	 * L'achat lui-même n'est pas modifié ici (Stripe tranche la contestation).
+	 *
+	 * @param array<string, mixed> $dispute
+	 */
+	private static function on_dispute( array $dispute ): void {
+		$charge_id = (string) ( is_array( $dispute['charge'] ?? null ) ? ( $dispute['charge']['id'] ?? '' ) : ( $dispute['charge'] ?? '' ) );
+		if ( '' === $charge_id ) {
+			return;
+		}
+		$charge = Arvator_Stripe::request( 'GET', 'charges/' . rawurlencode( $charge_id ) );
+		if ( is_wp_error( $charge ) ) {
+			throw new RuntimeException( $charge->get_error_message() );
+		}
+		global $wpdb;
+		$orders   = Arvator_Repo::table( 'orders' );
+		$invoice  = (string) ( $charge['invoice'] ?? '' );
+		$customer = (string) ( $charge['customer'] ?? '' );
+		$order    = null;
+		if ( '' !== $invoice ) {
+			$order = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $orders WHERE stripe_invoice_id = %s LIMIT 1", $invoice ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+		if ( ! $order && '' !== $customer ) {
+			$order = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $orders WHERE stripe_customer_id = %s ORDER BY id DESC LIMIT 1", $customer ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+		if ( ! is_array( $order ) ) {
+			Arvator_Repo::log_event( 'dispute_unmatched', null, array( 'charge' => $charge_id ) );
+			return;
+		}
+		Arvator_Referral::on_order_reversed( (int) $order['id'], 'dispute' );
+		Arvator_Repo::log_event( 'dispute', (int) $order['user_id'], array( 'charge' => $charge_id ) );
+		wp_mail( Arvator_Pages::EMAIL, 'Arvator : contestation bancaire reçue', "Un client a contesté un paiement auprès de sa banque (paiement $charge_id).\nLa récompense de parrainage liée a été retirée. Répondez à la contestation depuis votre tableau de bord Stripe.\n" );
 	}
 
 	/* --------------------------------------------------------------------- Email */

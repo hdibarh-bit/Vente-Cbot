@@ -4,6 +4,12 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.5.1 — 21/10/2026
+- Pied de page : lien « Conditions du parrainage ».
+- Page « Parrainage » : mise en forme des deux récompenses (225 € et 10 %).
+- Correction : le texte des cases à cocher (achat, essai, parrainage) ne se coupe plus en colonnes quand il contient un lien.
+- Un peu d'espace sous les tableaux de l'espace membre.
+
 ### 0.5.0 — 21/10/2026
 - **Bandeau « Recommandez Arvator ! »** sur l'accueil (avant « Essayez avant d'acheter ») : « 225 €* par recommandation », image à droite (en dessous sur mobile), renvoi « *Récompense de recommandation versée 30 jours après l'achat, s'il n'est pas remboursé. Inscription gratuite, voir conditions ». Montant et délai repris de `config/reglages.json`.
 - Le bandeau n'apparaît que lorsque la page « Parrainage » (adresse `parrainage`) est publiée : jamais d'offre sans ses conditions.
@@ -34,6 +40,19 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.5.0 — 21/10/2026 — Parrainage
+- **Pages créées automatiquement** : « Parrainage » (montants, inscription gratuite) et « Conditions du programme de parrainage » (provisoire, à faire valider par un avocat). Le bandeau « Recommandez Arvator » de l'accueil s'affiche dès que la page Parrainage existe.
+- **Devenir parrain** : gratuit, sans achat, depuis la page Parrainage (création du compte + email avec le lien) ou en un clic depuis l'espace membre.
+- **Lien de recommandation** `?ref=CODE` mémorisé 90 jours ; le code est prérempli (et modifiable) sur la page d'achat, puis transmis à Stripe. Le parrain est fixé au premier achat.
+- **Récompenses** : 225 € par achat du robot et 10 % de chaque abonnement payé (premier abonnement compris), « à payer » 30 jours après le paiement. Aucun doublon si Stripe renvoie un message.
+- **Remboursement** du prix du robot : la prime est annulée (ou déduite des récompenses suivantes si elle a déjà été versée). **Contestation bancaire** : prime et premier abonnement retirés, Hamid prévenu par email.
+- **Anti-fraude** : même compte, même email, même client Stripe ou même carte → récompenses bloquées + email d'alerte.
+- **Espace membre > Parrainage** : lien à copier, récompenses par état, IBAN (enregistré chiffré, affiché masqué), particulier ou entreprise (SIRET).
+- **Administration > Arvator > Parrainage** : virements (lot → fichier CSV nom/IBAN/montant → « virements effectués » → email au parrain), récompenses (débloquer/annuler), parrains (suspendre un lien), réglages (montants, taux, délai, seuil).
+- Textes mis à jour (seulement si vous ne les avez pas modifiés) : Cookies (cookie de recommandation) et Confidentialité (données des parrains).
+- Stripe : **2 événements à ajouter au webhook** : `invoice.paid` et `charge.dispute.created` (voir `docs/12-preparer-stripe.md`).
+- 309 tests automatiques réussis (dont 90 pour le parrainage).
 
 ### 0.4.0 — 21/10/2026
 - **Page « Essai gratuit de 14 jours »** (créée automatiquement) : email, numéro du compte démo cTrader, case obligatoire de **renonciation au droit de rétractation annoncée avant la demande**, consentement. Un seul essai par email et par numéro de compte. La demande est enregistrée et envoyée à contact@cosmartis.com ; le demandeur reçoit une confirmation avec le rappel. La licence d'essai elle-même arrive avec l'étape licence.

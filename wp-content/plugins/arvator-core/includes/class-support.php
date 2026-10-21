@@ -48,6 +48,12 @@ final class Arvator_Support {
 			'essai_deja'       => array( 'err', 'Un essai a déjà été demandé avec cette adresse email ou ce numéro de compte. L’essai est limité à un par personne : vous pouvez écrire depuis la page Contact.' ),
 			'achat_renonciation' => array( 'err', 'Vous avez demandé l’essai gratuit : pour acheter, merci de cocher la case de renonciation au droit de rétractation.' ),
 			'portal_erreur'    => array( 'err', 'La gestion de l’abonnement n’a pas pu s’ouvrir. Réessayez dans un instant ou écrivez-nous depuis la page Contact.' ),
+			'achat_code'       => array( 'err', 'Ce code de recommandation n’est pas valable. Vérifiez-le, ou laissez le champ vide.' ),
+			'parrain_mail'     => array( 'ok', 'Merci ! Un email vient de vous être envoyé à cette adresse : il contient la suite des instructions.' ),
+			'parrain_invalid'  => array( 'err', 'Merci d’indiquer une adresse email valide et d’accepter les conditions du programme de parrainage.' ),
+			'parrain_ok'       => array( 'ok', 'C’est fait : voici votre lien de recommandation.' ),
+			'iban_ok'          => array( 'ok', 'Vos coordonnées de virement sont enregistrées.' ),
+			'iban_invalid'     => array( 'err', 'Coordonnées non enregistrées : vérifiez le nom du titulaire, l’IBAN et, pour une entreprise, le numéro SIRET (14 chiffres).' ),
 			'download_denied'  => array( 'err', 'Le téléchargement n’est pas disponible pour votre compte.' ),
 		);
 	}

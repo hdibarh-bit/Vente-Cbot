@@ -137,7 +137,7 @@ p { margin: 0 0 1em; }
 .results__tab[aria-selected="true"] .results__badge { color: var(--bg); }
 .results__title { font-size: 1.1rem; font-family: var(--sans); font-weight: 600; margin-bottom: .8rem; }
 .results__panel + .results__panel { margin-top: 2rem; }
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+.table-wrap { margin-bottom: 1.5rem; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
 .results__table { width: 100%; border-collapse: collapse; min-width: 640px; font-variant-numeric: tabular-nums; }
 .results__table th, .results__table td { padding: .85rem 1rem; text-align: right; border-bottom: 1px solid var(--line-soft); white-space: nowrap; }
 .results__table thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); font-weight: 600; background: var(--surface-2); }
@@ -219,8 +219,8 @@ p { margin: 0 0 1em; }
 	width: 100%; max-width: 560px; padding: .75rem .9rem; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 10px; font: inherit; }
 .arv-form textarea { max-width: 100%; min-height: 9rem; resize: vertical; }
 .arv-form input:focus, .arv-form select:focus, .arv-form textarea:focus { outline: 2px solid var(--gold-light); outline-offset: 1px; }
-.arv-check label { display: flex; gap: .6rem; align-items: flex-start; font-weight: 400; color: var(--muted); }
-.arv-check input { margin-top: .35rem; accent-color: var(--gold); }
+.arv-check label { display: block; position: relative; padding-left: 1.7rem; font-weight: 400; color: var(--muted); }
+.arv-check input { position: absolute; left: 0; top: .35rem; margin: 0; accent-color: var(--gold); }
 .arv-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .arv-form--inline { display: flex; flex-wrap: wrap; gap: .7rem; }
 .arv-notice { margin: 0 0 1.4rem; padding: .9rem 1.1rem; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
@@ -320,3 +320,10 @@ p { margin: 0 0 1em; }
 	.referral { grid-template-columns: 1.35fr 1fr; }
 	.referral__media img { max-height: none; min-height: 100%; }
 }
+
+/* Page « Parrainage » : les deux récompenses */
+.arv-ref-summary { display: grid; gap: 1rem; grid-template-columns: 1fr; margin: 1.5rem 0; }
+.arv-ref-summary__item { display: flex; flex-direction: column; gap: .3rem; padding: 1.2rem 1.4rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.arv-ref-summary__item strong { font-family: var(--serif); font-size: 2rem; line-height: 1.1; background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.arv-ref-summary__item span { color: var(--muted); }
+@media (min-width: 720px) { .arv-ref-summary { grid-template-columns: 1fr 1fr; } }

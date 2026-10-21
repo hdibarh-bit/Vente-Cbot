@@ -21,3 +21,12 @@ Deux récompenses distinctes. **Seul le parrain direct est payé**, jamais les n
 
 ## Décision du 21/10/2026
 Un parrain qui n'est pas client touche ses commissions comme les autres.
+
+## Ce qui est codé (plugin 0.5.0, 21/10/2026)
+- Tables `referrers` (code, IBAN chiffré, statut, SIRET), `referrals` (filleul → parrain, fixé au 1er achat), `commissions` (montants signés, origine unique = pas de doublon).
+- Lien `?ref=CODE` : cookie `arv_ref` (90 jours, HttpOnly) + champ « Code de recommandation » prérempli à l'achat, transmis à Stripe.
+- Prime de 225 € et 10 % du 1er abonnement créées à l'achat ; 10 % de chaque renouvellement (`invoice.paid`). **Hypothèse retenue** : les récompenses sur abonnement attendent aussi 30 jours avant d'être « à payer » (comme la prime), puis sont versées à partir de 50 € cumulés.
+- Remboursement du prix du robot : prime annulée (ou déduite si déjà versée) ; la récompense sur le 1er abonnement reste due (cet abonnement n'est pas remboursé). Contestation bancaire : prime + 1er abonnement retirés.
+- Anti-fraude : même compte, même email, même client Stripe ou même carte (empreinte Stripe) → récompenses bloquées + email d'alerte ; l'administrateur débloque ou annule.
+- Administration (Arvator > Parrainage) : virements (lot → CSV nom/IBAN/montant → « virements effectués » → email au parrain), récompenses, parrains (suspendre), réglages.
+- Le parrain ne voit aucune donnée personnelle de ses filleuls.
