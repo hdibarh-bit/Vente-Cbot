@@ -8,6 +8,12 @@ Hamid vend un **logiciel** : jamais d'accès à l'argent ni au compte du client.
 ## Règle n°0 — fichier de liaison Drive
 **Avant toute session ou conversation, lire en entier `SYNC-BOT-ICT.md` sur Google Drive** (le chercher par titre `SYNC-BOT-ICT`, son identifiant change à chaque mise à jour). C'est le canal avec Claude/Cowork (chef de projet) ; il contient les décisions figées (section 2) et les consignes (section 5). **À la fin de chaque session, y écrire** : fait, bloqué, besoins. Mise à jour = créer le nouveau fichier (même nom, même dossier), vérifier qu'il est complet, puis mettre l'ancien à la corbeille. Jamais de secret dedans. Ne pas changer une décision de la section 2 sans l'accord écrit de Hamid. Ne pas le confondre avec `SYNC.md` (autre projet).
 
+## Règle n°0 bis — hiérarchie des sources et doute
+Les documents du projet (contexte, prompt, brief) viennent en partie de Cowork, depuis un autre compte, et Hamid les corrige au fil de l'eau jusqu'à avoir le vrai contexte et la bonne directive. Ils peuvent donc contenir des erreurs ou des outils dépassés.
+1. **Ce qui fait foi : les dernières instructions de Hamid** (le prompt final et ses messages). Elles passent avant tout le reste, y compris ce dépôt, `SYNC-BOT-ICT.md` et le brief d'origine.
+2. Décision déjà prise avec Hamid : site = **thème + plugin sur WordPress** (tableau de bord WordPress que Hamid maîtrise). Si un document cite d'autres outils (Next.js, Supabase, Vercel, WooCommerce…), ne pas les utiliser.
+3. **Au moindre doute, contradiction ou information qui manque : demander à Hamid avant d'agir.** Hamid tranche et donne les raisons. Ne pas deviner, ne pas trancher à sa place.
+
 ## Règle de travail n°1
 **La construction démarre quand Hamid envoie son prompt final** (décidé le 21/10/2026), pas avant. **Réserve** : `SYNC-BOT-ICT.md` §5 exige aussi un « feu vert site » écrit par Claude (chef de projet) ; tant qu'il n'y est pas, demander à Hamid avant de coder. Étapes : thème + accueil → pages publiques → paiement Stripe (mode test) → espace client → parrainage → admin. Tout en **mode test** jusqu'à validation explicite du passage en production.
 
