@@ -1,0 +1,22 @@
+{
+  "_note": "Performances simulées. Source unique des chiffres affichés sur le site. Référence du site : risque 1 %.",
+  "compteInitial": 100000,
+  "devise": "EUR",
+  "periode": { "debut": "2025-01-01", "fin": "2026-10-07" },
+  "donnees": "Bougies 15 minutes 2019-2026, 14 actifs, frais du broker inclus, entrées du dimanche 23h59 au vendredi 17h, sans retrait, robot AMD exclu",
+  "niveaux": [
+    { "risque": 1, "reference": true, "annee2025": 81, "annee2026": 36, "pireMois": -8, "baisseMaxFinsDeMois": -9 },
+    { "risque": 2, "reference": false, "annee2025": 195, "annee2026": 76, "pireMois": -17, "baisseMaxFinsDeMois": -18 },
+    { "risque": 3, "reference": false, "annee2025": 332, "annee2026": 106, "pireMois": -26, "baisseMaxFinsDeMois": -27 }
+  ],
+  "limites": [
+    "En cours de mois, les baisses ont pu être plus fortes : à 3 %, jusqu'à -35 à -40 % au pire moment.",
+    "2025 a été la meilleure année, 2026 la plus difficile. À 2 %, 9 mois sur 22 ont été perdants.",
+    "Sur 2019-2026 avec un risque élevé, la baisse maximale a atteint 77 %.",
+    "Sous 5 000 € de capital, les résultats sont très irréguliers (ex. +12 % en 2024 avec 2 000 €).",
+    "Les réglages ont été choisis sur le même historique que celui qui les teste : les résultats futurs seront probablement moins bons.",
+    "Il n'y a pas encore d'historique en argent réel : les bots tournent en démo depuis septembre 2026.",
+    "L'avenir peut être très positif, nul ou négatif, avec une perte possible de tout le capital engagé."
+  ],
+  "ne_pas_afficher_en_titre": "Cumuls à risque élevé (ex. +809 % sur 2025-2026 à 3 %) : rapport détaillé uniquement."
+}

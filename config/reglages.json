@@ -1,0 +1,34 @@
+{
+  "_note": "Valeurs initiales de la table de réglages (modifiables depuis l'admin). Prix TTC/HT à trancher.",
+  "produit": { "nomProvisoire": "Aurum ICT", "domaine": null },
+  "prix": {
+    "achatCbot": 1500,
+    "abonnementMensuel": 39.9,
+    "abonnementAnnuelTotal": 358.8,
+    "abonnementAnnuelParMois": 29.9,
+    "economieAnnuelle": 120,
+    "devise": "EUR",
+    "tvaTrancheEnAttente": true
+  },
+  "capitalConseille": 5000,
+  "risque": { "defaut": 1, "choix": [1, 2, 3], "plafond": 3 },
+  "parrainage": {
+    "niveaux": 1,
+    "primeParAchat": 225,
+    "delaiPaiementJours": 30,
+    "tauxAffiliationAbonnement": 0.1,
+    "seuilVirementAffiliation": 50,
+    "cookieJours": 90
+  },
+  "licence": {
+    "algorithme": "ECDSA-P256-SHA256",
+    "margeApresFinPeriodeJours": 5,
+    "graceJours": 3,
+    "essaiJours": 14,
+    "changementsCompteParAn": 2,
+    "websocketPort": 25345,
+    "websocketActif": false
+  },
+  "relancesPaiementEchecJours": [1, 3, 7],
+  "rappelFinLicenceJours": 5
+}
