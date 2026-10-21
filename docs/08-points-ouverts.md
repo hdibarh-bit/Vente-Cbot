@@ -5,6 +5,7 @@
 - [x] TVA : auto-entrepreneur, pas de TTC/HT au départ (décidé le 21/10).
 - [x] Parrain non client : touche ses commissions (décidé le 21/10).
 - [x] Domaine : bot.cosmartis.com (décidé le 21/10).
+- [x] Résultats : backtest du bot sur 2024-2026, jamais « 7 ans » (décidé le 21/10). Nouveau PDF à 1 %, 2 % et 3 % **à recevoir de Hamid** ; bot livré à 1 %, client libre jusqu'à 3 % (décidé le 21/10).
 - [ ] Nom du produit (provisoire « Aurum ICT »).
 - [ ] « Feu vert site » (voir `SYNC-BOT-ICT.md` §5/§6) et prompt final.
 - [ ] Offre Hostinger actuelle (hébergement WordPress, Cloud ou VPS).

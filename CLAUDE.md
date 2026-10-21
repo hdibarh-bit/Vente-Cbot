@@ -26,7 +26,7 @@ Les documents du projet (contexte, prompt, brief) viennent en partie de Cowork, 
 - `docs/06-regles-legales-communication.md` — interdits / obligatoires (à respecter dans CHAQUE texte)
 - `docs/07-theme-dore.md` — charte graphique
 - `docs/08-points-ouverts.md` — décisions et tâches en attente
-- `config/resultats-backtest.json` — chiffres de backtest (source unique, modifiable ; **transcrit depuis le PDF** `assets/rapports/Simulation-bots-cTrader-2024-2026.pdf` mais **statut `en_attente_arbitrage`, ne pas publier** : PDF au risque 3 %/3 %, contradiction avec le risque 1 % et le ton à revoir)
+- `config/resultats-backtest.json` — chiffres de backtest (source unique, modifiable ; **provisoire** : transcrit du PDF `assets/rapports/Simulation-bots-cTrader-2024-2026.pdf` (risque 3 %/3 %) ; **Hamid enverra un nouveau PDF à 1 %, 2 % et 3 %** ; bot livré à 1 %, le client peut monter jusqu'à 3 % ; période de test 2024-2026 ; ne rien publier avant)
 - `config/reglages.json` — prix, taux, seuils (source unique, modifiable)
 - `prompt-claude-code.md` — brief complet de la mission (référence)
 - `.env.example` — variables d'environnement attendues

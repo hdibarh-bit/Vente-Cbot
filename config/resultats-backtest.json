@@ -1,6 +1,6 @@
 {
-  "_note": "TRANSCRIPTION FIDÈLE du PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf (daté du 20/10/2026, lu par Claude Code le 21/10/2026). NE PAS PUBLIER AVANT ARBITRAGE DE HAMID : (1) ces résultats sont au risque 3 %/3 %, alors que la décision figée est risque 1 % par défaut et résultats à 1 % en référence ; (2) le ton du PDF (« Combien rapporte le bot », multiplicateurs ×28,3, soldes finaux) contredit les règles de communication (aucune promesse de gain, aucun cumul spectaculaire en titre) ; (3) la période réelle est janv. 2024 → 7 oct. 2026, pas « 7 ans ». Performances simulées.",
-  "statut": "en_attente_arbitrage",
+  "_note": "TRANSCRIPTION FIDÈLE du PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf (daté du 20/10/2026, lu par Claude Code le 21/10/2026). **PROVISOIRE : ce PDF est au risque 3 %/3 %. Hamid va envoyer un nouveau PDF avec les simulations à 1 %, 2 % et 3 %** ; le site dira que le bot est livré à 1 % de risque et que le client peut monter jusqu'à 3 %, pas plus, à sa guise. Ne rien publier avant ce nouveau PDF. Les résultats sont à présenter comme un backtest du bot sur 2024-2025-2026 (performances simulées), décidé par Hamid. Période de test : 2024-2026, jamais « 7 ans ».",
+  "statut": "provisoire_en_attente_nouveau_pdf_1_2_3_pourcent",
   "source": "assets/rapports/Simulation-bots-cTrader-2024-2026.pdf",
   "datePdf": "2026-10-20",
   "periode": {
@@ -10,7 +10,8 @@
   "reglageDuPdf": {
     "libelle": "Bot principal 3 % + bot test 3 %, sans le robot AMD et sans l'argent (XAGUSD)",
     "risqueParTrade": "3 %",
-    "risqueConformeADecisionSYNC": false
+    "risqueConformeADecisionSYNC": false,
+    "remarque": "Le client reçoit le bot à 1 % de risque et peut aller jusqu'à 3 % maximum, à sa guise (décision de Hamid). Le nouveau PDF doit montrer 1 %, 2 % et 3 %."
   },
   "devise": "EUR",
   "methode": [

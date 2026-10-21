@@ -5,7 +5,7 @@ Site en **français**, thème doré (voir `07-theme-dore.md`). Nom provisoire : 
 ## Pages publiques
 | Page | Contenu |
 |---|---|
-| Accueil | « Un robot ICT/SMC transparent, testé sur 7 ans de données », 3 étapes, résultats simulés à 1 % + pire baisse, appel à l'essai gratuit et au rapport gratuit |
+| Accueil | « Un robot ICT/SMC transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées), 3 étapes, résultats simulés (backtest 2024-2026) au risque livré de 1 % + solde le plus bas, appel à l'essai gratuit et au rapport gratuit |
 | La stratégie | Tendance H1, setups ICT A+, garde-fous, actifs, horaires |
 | Résultats | Backtest 2024-2026 par montant de capital (de 500 € à environ 10 000 €) avec le solde le plus bas, d'après le PDF ; explication du capital conseillé de 5 000 € ; méthode, limites ; PDF en téléchargement |
 | Tarifs | Achat + mensuel ou annuel (annuel mis en avant), inclus, capital conseillé 5 000 € (avec l'explication : au-dessous, beaucoup de trades refusés) |

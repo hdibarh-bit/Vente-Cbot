@@ -33,7 +33,7 @@ Domaine : bot.cosmartis.com
 - Style : banque privée, pas casino. Aucun visuel de billets, de voitures de luxe ou de gains.
 
 # Pages publiques
-1. Accueil : promesse sobre (« Un robot ICT/SMC transparent, testé sur 7 ans de données »), fonctionnement en 3 étapes, résultats simulés à 1 % avec la pire baisse, appel à l'essai gratuit, appel au rapport gratuit.
+1. Accueil : promesse sobre (« Un robot ICT/SMC transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées)), fonctionnement en 3 étapes, résultats simulés (backtest 2024-2026) avec le solde le plus bas, appel à l'essai gratuit, appel au rapport gratuit.
 2. La stratégie : explication claire, actifs, horaires, garde-fous.
 3. Résultats : tableau ci-dessous, graphique, méthode, limites (texte fourni plus bas).
 4. Tarifs : achat + mensuel ou annuel (annuel mis en avant), ce qui est inclus, capital conseillé.
