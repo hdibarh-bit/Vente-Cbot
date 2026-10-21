@@ -7,7 +7,7 @@ Ce dépôt contient le **code** du site, pas WordPress lui-même.
 | `wp-content/themes/arvator/` | Thème doré (affichage uniquement) |
 | `wp-content/plugins/arvator-core/` | Plugin maison (licences, parrainage, espace client, admin, webhooks) : à venir |
 | `config/` | Source unique des chiffres et réglages |
-| `bin/sync-resultats.sh` | Copie `config/resultats-backtest.json` dans le thème |
+| `bin/sync-resultats.sh` | Régénère `data/resultats.php` et `data/tarifs.php` du thème depuis `config/*.json` (seuls les champs publics sont copiés : aucune note interne, aucun réglage de licence ou de parrainage) |
 | `bin/build-zip.sh` | Fabrique `dist/arvator-theme.zip` (à installer dans WordPress) |
 | `docs/maquettes/` | Captures d'écran des maquettes (ordinateur, mobile) |
 
@@ -15,6 +15,7 @@ Ce dépôt contient le **code** du site, pas WordPress lui-même.
 - Aucune ressource externe (polices hébergées dans le thème, pas de Google Fonts : respect du RGPD), pas de jQuery, un seul CSS et un seul JS.
 - Tout texte affiché est échappé (`esc_html`, `esc_url`, `esc_attr`).
 - Aucune description de la stratégie sur le site (voir `06-regles-legales-communication.md`).
+- Les données du thème sont des fichiers PHP protégés (`ABSPATH`), jamais des JSON : un JSON dans le dossier du thème serait lisible par n'importe qui.
 - La logique métier va dans le plugin, jamais dans le thème : changer de thème ne doit jamais casser les licences ni les commissions.
 
 ## Tester le thème sur un WordPress jetable (hors dépôt)

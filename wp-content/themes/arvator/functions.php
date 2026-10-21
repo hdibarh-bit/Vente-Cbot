@@ -16,6 +16,7 @@ define( 'ARVATOR_THEME_VERSION', '0.1.0' );
 
 require_once get_theme_file_path( 'inc/template-tags.php' );
 require_once get_theme_file_path( 'inc/results.php' );
+require_once get_theme_file_path( 'inc/settings.php' );
 
 add_action(
 	'after_setup_theme',

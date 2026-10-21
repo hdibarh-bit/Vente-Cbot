@@ -10,7 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$data = arvator_results();
+$data  = arvator_results();
+$price = arvator_pricing();
+$cfg   = arvator_settings();
+$grace = (int) ( $cfg['graceJours'] ?? 3 );
+$trial = (int) ( $cfg['essaiJours'] ?? 14 );
+$cap   = (int) ( $cfg['capitalConseille'] ?? 5000 );
 
 // Ligne « capital conseillé » du réglage livré (1 %), pour la carte du haut de page.
 $hero_row = null;
@@ -128,7 +133,68 @@ get_header();
 	</div>
 </section>
 
-<section class="section" aria-labelledby="titre-essai">
+<section class="section" id="tarifs" aria-labelledby="titre-tarifs">
+	<div class="container">
+		<p class="eyebrow">Tarifs</p>
+		<h2 id="titre-tarifs">Ce que ça coûte, sans surprise</h2>
+		<p class="section__intro">
+			Deux éléments : un <strong>achat unique</strong> pour le robot, puis un <strong>abonnement</strong> qui garde votre licence active.
+			Au moment du paiement, vous réglez l’achat et le premier abonnement en une seule fois.
+		</p>
+
+		<div class="pricing">
+			<article class="plan" aria-labelledby="plan-mensuel">
+				<h3 id="plan-mensuel">Abonnement mensuel</h3>
+				<p class="plan__price"><span class="plan__amount"><?php echo esc_html( arvator_fmt_price( $price['mensuel'] ) ); ?></span> <span class="plan__unit">par mois</span></p>
+				<dl class="plan__rows">
+					<div><dt>Achat du robot (une seule fois)</dt><dd><?php echo esc_html( arvator_fmt_price( $price['achat'] ) ); ?></dd></div>
+					<div><dt>Premier paiement</dt><dd><?php echo esc_html( arvator_fmt_price( $price['premier_paiement_m'] ) ); ?></dd></div>
+					<div><dt>Ensuite, chaque mois</dt><dd><?php echo esc_html( arvator_fmt_price( $price['mensuel'] ) ); ?></dd></div>
+					<div class="plan__total"><dt>Coût de la première année</dt><dd><?php echo esc_html( arvator_fmt_price( $price['annee1_mensuel'] ) ); ?></dd></div>
+				</dl>
+			</article>
+
+			<article class="plan plan--featured" aria-labelledby="plan-annuel">
+				<p class="plan__flag">Le plus avantageux<?php echo $price['economie'] > 0 ? ' · ' . esc_html( arvator_fmt_price( $price['economie'] ) ) . ' d’économie par an' : ''; ?></p>
+				<h3 id="plan-annuel">Abonnement annuel</h3>
+				<p class="plan__price"><span class="plan__amount"><?php echo esc_html( arvator_fmt_price( $price['annuel_par_mois'] ) ); ?></span> <span class="plan__unit">par mois, payés d’avance pour l’année</span></p>
+				<dl class="plan__rows">
+					<div><dt>Achat du robot (une seule fois)</dt><dd><?php echo esc_html( arvator_fmt_price( $price['achat'] ) ); ?></dd></div>
+					<div><dt>Premier paiement</dt><dd><?php echo esc_html( arvator_fmt_price( $price['premier_paiement_a'] ) ); ?></dd></div>
+					<div><dt>Ensuite, chaque année</dt><dd><?php echo esc_html( arvator_fmt_price( $price['annuel_total'] ) ); ?></dd></div>
+					<div class="plan__total"><dt>Coût de la première année</dt><dd><?php echo esc_html( arvator_fmt_price( $price['annee1_annuel'] ) ); ?></dd></div>
+				</dl>
+			</article>
+		</div>
+
+		<div class="pricing-info">
+			<div>
+				<h3>Ce que vous recevez</h3>
+				<ul class="checklist">
+					<li>Le robot Arvator, prêt à installer sur votre compte cTrader</li>
+					<li>Votre licence, renouvelée tant que votre abonnement est à jour</li>
+					<li>Un guide d’installation pas à pas</li>
+					<li>Votre espace client : téléchargement, licence, abonnement et factures</li>
+				</ul>
+			</div>
+			<div>
+				<h3>Bon à savoir avant d’acheter</h3>
+				<ul class="checklist">
+					<li>L’abonnement est obligatoire : sans abonnement à jour, la licence expire. Après <?php echo esc_html( (string) $grace ); ?> jours de grâce, le robot ne prend plus de nouvelles positions.</li>
+					<li>Le capital que vous placez sur votre compte cTrader est à part du prix du robot, et reste chez votre courtier. Nous conseillons au moins <?php echo esc_html( arvator_fmt_capital( $cap ) ); ?> (voir plus haut pourquoi).</li>
+					<li>Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site.</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="hero__cta">
+			<a class="btn btn--primary" href="<?php echo esc_url( arvator_url( 'tarifs' ) ); ?>">Voir les tarifs et acheter</a>
+			<a class="btn btn--ghost" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>">Essayer d’abord <?php echo esc_html( (string) $trial ); ?> jours sur compte démo</a>
+		</div>
+	</div>
+</section>
+
+<section class="section section--surface" aria-labelledby="titre-essai">
 	<div class="container">
 		<div class="cta-band">
 			<div>

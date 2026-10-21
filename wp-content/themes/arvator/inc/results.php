@@ -2,7 +2,8 @@
 /**
  * Résultats de backtest (performances simulées).
  *
- * Les chiffres viennent de data/resultats-backtest.json (copie de config/resultats-backtest.json du dépôt).
+ * Les chiffres viennent de data/resultats.php, généré par bin/sync-donnees.php à partir de config/resultats-backtest.json
+ * (seuls les champs publics sont copiés).
  * Le plugin « Arvator Core » pourra les remplacer par des valeurs modifiables dans le tableau de bord,
  * via le filtre « arvator_results ».
  */
@@ -20,9 +21,8 @@ function arvator_results(): array {
 	static $data = null;
 
 	if ( null === $data ) {
-		$file = get_theme_file_path( 'data/resultats-backtest.json' );
-		$json = is_readable( $file ) ? file_get_contents( $file ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$data = false === $json ? array() : json_decode( $json, true );
+		$file = get_theme_file_path( 'data/resultats.php' );
+		$data = is_readable( $file ) ? include $file : array();
 		$data = is_array( $data ) ? $data : array();
 		$data = apply_filters( 'arvator_results', $data );
 	}
@@ -50,6 +50,12 @@ function arvator_fmt_pct( int|float $n, bool $signed = true ): string {
 		return "\u{2212}" . $abs . "\u{00A0}%";
 	}
 	return ( $signed ? '+' : '' ) . $abs . "\u{00A0}%";
+}
+
+/** Prix : décimales seulement si nécessaire (« 1 500 € », « 39,90 € »). */
+function arvator_fmt_price( int|float $n ): string {
+	$decimals = ( abs( $n - round( $n ) ) < 0.005 ) ? 0 : 2;
+	return number_format( (float) $n, $decimals, ',', "\u{202F}" ) . "\u{00A0}€";
 }
 
 /** Libellé de capital : « 5 000 € ». */

@@ -6,7 +6,7 @@ Site en **français**, thème doré (voir `07-theme-dore.md`). Nom du produit : 
 > **Règle du 21/10/2026 (Hamid)** : aucune page ni aucun texte ne décrit la stratégie ni ses détails techniques (pas d'ICT/SMC, pas d'unités de temps, pas de noms d'indices ou d'actifs, pas d'objectifs ni de garde-fous). Le public visé n'est pas fait de traders : il veut comprendre ce que fait le robot et voir ses performances simulées en pourcentage. Page « La stratégie » supprimée.
 | Page | Contenu |
 |---|---|
-| Accueil | « Un robot de trading automatique, transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées), 3 étapes, résultats simulés (backtest 2024-2026) au risque livré de 1 % + solde le plus bas, appel à l'essai gratuit et au rapport gratuit |
+| Accueil | « Un robot de trading automatique, transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées), 3 étapes, résultats simulés (backtest 2024-2026) au risque livré de 1 % + solde le plus bas, **section Tarifs** (achat 1 500 € + abonnement mensuel 39,90 € ou annuel 29,90 €/mois, premier paiement et coût de la première année, ce qui est inclus, abonnement obligatoire, capital à part), appel à l'essai gratuit et au rapport gratuit |
 | Résultats | Backtest 2024-2026 par montant de capital (de 500 € à environ 10 000 €) avec le solde le plus bas, d'après le PDF ; explication du capital conseillé de 5 000 € ; méthode, limites ; PDF en téléchargement |
 | Tarifs | Achat + mensuel ou annuel (annuel mis en avant), inclus, capital conseillé 5 000 € (avec l'explication : au-dessous, beaucoup de trades refusés) |
 | Essai gratuit 14 j | Email + n° de compte **DÉMO** cTrader → licence d'essai par email |
