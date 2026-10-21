@@ -1,0 +1,13 @@
+/*
+Theme Name: Arvator
+Theme URI: https://bot.cosmartis.com
+Author: Hamid
+Description: Thème doré sur mesure pour le site de vente du robot Arvator. Léger (sans jQuery, sans service externe, polices hébergées), accessible et sécurisé. La logique métier (licences, parrainage, espace client, administration) est dans le plugin « Arvator Core », pas dans ce thème.
+Version: 0.1.0
+Requires at least: 6.4
+Requires PHP: 8.1
+License: Proprietary
+Text Domain: arvator
+*/
+
+/* Les styles sont dans assets/css/main.css (chargé par functions.php). */

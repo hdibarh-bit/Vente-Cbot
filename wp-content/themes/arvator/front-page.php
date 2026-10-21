@@ -1,0 +1,144 @@
+<?php
+/**
+ * Page d'accueil Arvator.
+ *
+ * Règle de communication : on présente le robot et ses performances simulées en pourcentage.
+ * On ne décrit jamais la stratégie ni aucun détail technique, et on ne promet aucun gain.
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$data = arvator_results();
+
+// Ligne « capital conseillé » du réglage livré (1 %), pour la carte du haut de page.
+$hero_row = null;
+foreach ( $data['risques'] ?? array() as $risk ) {
+	if ( 1 === (int) $risk['risquePct'] ) {
+		foreach ( $risk['lignes'] as $row ) {
+			if ( 5000 === (int) $row['capital'] ) {
+				$hero_row = $row;
+			}
+		}
+	}
+}
+
+get_header();
+?>
+
+<section class="hero">
+	<div class="container hero__inner">
+		<div class="hero__copy">
+			<p class="eyebrow">Arvator · robot de trading automatique</p>
+			<h1>Un robot de trading automatique, transparent, testé sur&nbsp;2024, 2025 et&nbsp;2026</h1>
+			<p class="lead">
+				Arvator s’installe sur votre propre compte cTrader et fonctionne dans le cloud, même ordinateur éteint.
+				Vous gardez la main sur votre compte et sur votre niveau de risque.
+			</p>
+			<p class="lead lead--sub">
+				Les résultats présentés sont des <strong>performances simulées</strong> (backtest), pas des résultats réels :
+				nous les montrons toujours avec les baisses qui vont avec.
+			</p>
+			<div class="hero__cta">
+				<a class="btn btn--primary" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>">Essayer 14 jours sur compte démo</a>
+				<a class="btn btn--ghost" href="<?php echo esc_url( arvator_url( 'rapport-gratuit' ) ); ?>">Recevoir le rapport gratuit</a>
+			</div>
+		</div>
+
+		<?php if ( $hero_row ) : ?>
+			<aside class="hero__card" aria-label="Exemple de performances simulées">
+				<p class="hero__card-kicker">Performances simulées · risque 1 %</p>
+				<p class="hero__card-title">Capital de départ de <?php echo esc_html( arvator_fmt_capital( $hero_row['capital'] ) ); ?></p>
+				<dl class="stat-list">
+					<?php
+					$labels = array(
+						'2024'          => '2024',
+						'2025'          => '2025',
+						'2026_au_7_oct' => '2026 (au 7 oct.)',
+					);
+					foreach ( $labels as $key => $label ) :
+						?>
+						<div class="stat-list__row">
+							<dt><?php echo esc_html( $label ); ?></dt>
+							<dd><?php echo esc_html( arvator_fmt_pct( $hero_row['parAnnee'][ $key ]['gainPct'] ) ); ?></dd>
+						</div>
+					<?php endforeach; ?>
+					<div class="stat-list__row stat-list__row--neg">
+						<dt>Pire baisse sur la période</dt>
+						<dd><?php echo esc_html( arvator_fmt_pct( $hero_row['troisAns']['pireBaissePct'] ) ); ?></dd>
+					</div>
+					<div class="stat-list__row stat-list__row--neg">
+						<dt>Solde le plus bas</dt>
+						<dd><?php echo esc_html( arvator_fmt_eur( $hero_row['troisAns']['plusBasDuCompte'] ) ); ?></dd>
+					</div>
+				</dl>
+				<p class="hero__card-note muted">Backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026. Ne préjuge pas des résultats futurs.</p>
+			</aside>
+		<?php endif; ?>
+	</div>
+</section>
+
+<section class="section" id="comment-ca-marche" aria-labelledby="titre-etapes">
+	<div class="container">
+		<p class="eyebrow">Comment ça marche</p>
+		<h2 id="titre-etapes">Trois étapes, sans rien de compliqué</h2>
+		<ol class="steps">
+			<li class="steps__item">
+				<span class="steps__num" aria-hidden="true">1</span>
+				<h3>Vous choisissez votre formule</h3>
+				<p>Un achat du robot, puis un abonnement mensuel ou annuel pour garder votre licence active. Vous pouvez d’abord l’essayer 14&nbsp;jours sur un compte démo.</p>
+			</li>
+			<li class="steps__item">
+				<span class="steps__num" aria-hidden="true">2</span>
+				<h3>Vous l’installez sur votre compte cTrader</h3>
+				<p>Vous recevez votre licence et un guide pas à pas. Le robot tourne dans le cloud cTrader, sans que votre ordinateur reste allumé.</p>
+			</li>
+			<li class="steps__item">
+				<span class="steps__num" aria-hidden="true">3</span>
+				<h3>Vous gardez le contrôle du risque</h3>
+				<p>Le robot est livré réglé à 1&nbsp;% de risque par trade. Vous pouvez le monter à 2&nbsp;% ou 3&nbsp;%, jamais au-delà. Vous restez seul responsable de votre compte.</p>
+			</li>
+		</ol>
+		<p class="trust-line">Nous ne touchons jamais à votre argent ni à votre compte : nous vendons un logiciel.</p>
+	</div>
+</section>
+
+<section class="section section--surface" id="resultats" aria-labelledby="titre-resultats">
+	<div class="container">
+		<p class="eyebrow">Résultats simulés</p>
+		<h2 id="titre-resultats">Ce que le robot aurait fait entre 2024 et 2026, avec ses baisses</h2>
+		<p class="section__intro">
+			Un backtest rejoue le robot sur des prix passés. C’est utile pour comprendre son comportement, mais ce n’est pas une promesse :
+			regardez toujours la pire baisse à côté de chaque gain.
+		</p>
+
+		<?php get_template_part( 'template-parts/results', 'tabs', array( 'data' => $data ) ); ?>
+
+		<div class="callout" role="note">
+			<h3>Pourquoi nous conseillons au moins 5&nbsp;000&nbsp;€</h3>
+			<p>
+				Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu :
+				le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers.
+				Plus le capital est élevé, moins il y a de trades refusés.
+			</p>
+		</div>
+
+		<p class="section__more"><a class="btn btn--ghost" href="<?php echo esc_url( arvator_url( 'resultats' ) ); ?>">Voir tous les résultats détaillés</a></p>
+	</div>
+</section>
+
+<section class="section" aria-labelledby="titre-essai">
+	<div class="container">
+		<div class="cta-band">
+			<div>
+				<h2 id="titre-essai">Essayez avant d’acheter</h2>
+				<p>14 jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader.</p>
+			</div>
+			<a class="btn btn--primary" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>">Demander mon essai gratuit</a>
+		</div>
+	</div>
+</section>
+
+<?php
+get_footer();
