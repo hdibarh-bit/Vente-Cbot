@@ -37,5 +37,5 @@ Tableau de bord (ventes, abonnements actifs par formule, impayés, revenus du mo
 **Entonnoir** : contenus utiles (pas de pub Forex/CFD) → rapport gratuit contre email → séquence email 5-7 mails sur 2 semaines (stratégie, résultats avec baisses, risques, installation, FAQ, invitation à l'essai) → essai démo 14 j → offre principale → après achat : guide d'installation, email de bienvenue, rappel 5 j avant fin de licence, invitation au parrainage après 30 j.
 Options plus tard : aide à l'installation en visio (payante) ; proposer le passage mensuel → annuel au 3e mois.
 
-## Base de données (minimum, RLS Supabase activée)
-`clients`, `commandes`, `abonnements`, `licences`, `parrains`, `parrainages` (filleul → parrain), `commissions`, `reglages`, `evenements` (journal). Chaque client ne voit que ses données.
+## Base de données (tables dédiées du plugin maison, base MySQL de WordPress)
+`clients`, `commandes`, `abonnements`, `licences`, `parrains`, `parrainages` (filleul → parrain), `commissions`, `reglages`, `evenements` (journal). Chaque client ne voit que ses données (contrôle d'accès strict côté plugin, pas de RLS sous WordPress). Comptes clients : utilisateurs WordPress avec rôle dédié sans accès à l'admin.

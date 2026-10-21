@@ -6,7 +6,7 @@ Bouchra n'est pas technicienne : parle-lui en **français simple**, propose, et 
 Elle vend un **logiciel** : elle ne touche jamais à l'argent ni au compte du client.
 
 ## Règle de travail n°1
-**Ne rien coder tant que Bouchra n'a pas validé le plan.** Étapes : plan court → maquette thème + accueil → pages publiques → paiement Stripe (mode test) → licences → espace client → parrainage → admin. Tout en **mode test** jusqu'à validation explicite du passage en production.
+**La construction démarre quand Bouchra envoie son prompt final** (décidé le 21/10/2026), pas avant. Étapes : thème + accueil → pages publiques → paiement Stripe (mode test) → espace client → parrainage → admin. Tout en **mode test** jusqu'à validation explicite du passage en production.
 
 ## Où trouver quoi
 - `docs/01-contexte-projet.md` — état du projet, décisions, abandons
@@ -22,8 +22,14 @@ Elle vend un **logiciel** : elle ne touche jamais à l'argent ni au compte du cl
 - `prompt-claude-code.md` — brief complet de la mission (référence)
 - `.env.example` — variables d'environnement attendues
 
-## Stack recommandée
-Next.js (App Router) + TypeScript + Tailwind · Supabase (PostgreSQL + lien magique, RLS activée) · Stripe (Checkout, Billing, portail, webhooks idempotents) · Resend · n8n existant (n8n.cosmartis.com, webhooks signés) · Vercel. Aucune clé secrète dans le code.
+## Stack (décidée le 21/10/2026 — remplace Next.js/Supabase/Vercel)
+- **WordPress sur Hostinger** (CMS que Bouchra maîtrise). Objectif : léger, rapide, sûr.
+- **Coût fixe zéro** : aucun plugin payant, pas de WooCommerce. Bouchra ne paie que des commissions Stripe quand elle vend.
+- **Livrables** : (1) un **thème doré complet**, (2) **un plugin maison** (séparé du thème) avec toute la logique : espace client, parrainage, admin, webhooks. Installation = 2 fichiers zip. Seuls outils tiers : sécurité et sauvegardes gratuits.
+- **Stripe seul** : Checkout hébergé (achat 1 500 € + 1er abonnement dans le même passage), Billing, portail client, factures, webhooks idempotents. Aucune donnée de carte sur le site.
+- **n8n** (n8n.cosmartis.com) : détecte le paiement, génère et envoie la licence, le cBot la récupère via le port cloud cTrader (WebSocket 25345, **test cTrader encore à faire** ; repli : envoi par email). La clé privée de licence reste côté n8n/serveur, jamais dans WordPress ni dans le thème.
+- Sécurité WordPress : 2FA admin, limitation des connexions, XML-RPC et éditeur de fichiers désactivés, sauvegardes quotidiennes hors serveur, requêtes préparées, nonces, échappement systématique, isolation stricte des données par client.
+- Aucune clé secrète dans le code (constantes `wp-config.php`).
 
 ## Interdits absolus (résumé)
 Aucune promesse de gain · toujours « performances simulées » + pire baisse à côté de chaque gain · aucun cumul spectaculaire en titre · aucune pub Forex/CFD · aucun lien d'affiliation broker · vocabulaire « récompense de recommandation », jamais « revenu » ou « opportunité ». Textes juridiques = provisoires, marqués « à faire valider par un avocat ».

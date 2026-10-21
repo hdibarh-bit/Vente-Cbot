@@ -17,6 +17,9 @@ Signature : **ECDSA P-256 / SHA-256** (compatible .NET 6 du cBot). Dossier `/cbo
 - Mauvais compte / clé modifiée → refuse de trader, l'indique dans son journal.
 - Clé d'essai → 14 jours, compte **démo** uniquement (le cBot doit savoir reconnaître un compte démo : faisable dans cTrader, à coder).
 
+## Décision du 21/10/2026
+**C'est n8n qui détecte le paiement (Stripe), génère la licence et la livre au bot.** Le cBot la récupère via le port cloud. Le site WordPress n'héberge ni le service de licence ni la clé privée ; il affiche la licence dans l'espace client (reçue de n8n) et envoie les événements à n8n. Le dossier `/cbot-licence` du brief (service Node) n'est donc plus à construire dans WordPress. Réserve : la connexion WebSocket depuis le cloud cTrader reste à tester ; repli = envoi par email.
+
 ## Livraison de la clé (décision selon un test)
 - **Automatique** : le cBot se connecte 1×/jour à un serveur de licences (WebSocket, **port 25345**, seul port autorisé dans le cloud cTrader). La doc cTrader se contredit : **test réel à faire** avec Bouchra. Service Node séparé, codé et documenté mais activé seulement si le test réussit.
 - **Manuelle (déjà sûre)** : n8n envoie la nouvelle clé par email 5 jours avant la fin ; le client la colle dans les réglages. Clé de 12 mois pour les abonnés annuels.
