@@ -1,6 +1,6 @@
 {
   "_note": "Valeurs initiales de la table de réglages (modifiables depuis l'admin). Auto-entrepreneur au départ : pas de mention TTC/HT ; prix en TTC au passage en société.",
-  "produit": { "nomProvisoire": "Aurum ICT", "domaine": "bot.cosmartis.com" },
+  "produit": { "nom": "Arvator", "domaine": "bot.cosmartis.com" },
   "prix": {
     "achatCbot": 1500,
     "abonnementMensuel": 39.9,

@@ -5,8 +5,9 @@
 # Mission
 Construis le site de vente complet d'un robot de trading vendu sous forme de cBot cTrader. Le site est en français, avec un thème doré haut de gamme. Il gère la vente, les abonnements, les licences, un espace client, un programme de parrainage à un seul niveau et une administration. La propriétaire, Hamid, n'est pas développeuse : explique-lui chaque étape en français simple et demande-lui les comptes et clés nécessaires au bon moment.
 
-Nom du produit : [NOM DU PRODUIT] (provisoire : « Aurum ICT »)
+Nom du produit : Arvator
 Domaine : bot.cosmartis.com
+Hébergement : Hostinger, offre « Hébergement Premium » (mutualisé)
 
 # Le produit
 - Un cBot cTrader (robot de trading) que le client installe dans le cloud cTrader, sur son propre compte broker. Il tourne même ordinateur éteint.
@@ -45,7 +46,7 @@ Domaine : bot.cosmartis.com
 8. FAQ, page Risques complète, Mentions légales, CGV, Confidentialité, Cookies, Conditions du programme de parrainage (textes provisoires clairement marqués « à faire valider par un avocat »).
 
 # Résultats à afficher (décision de Hamid, 21/10/2026 — remplace le tableau d'origine à 100 000 €)
-Source : le PDF « Simulation bots cTrader 2024-2026 » (`assets/rapports/Simulation-bots-cTrader-2024-2026.pdf`) : simulations par montant de capital, de 500 € à environ 10 000 €, sur 2024, 2025 et 2026, avec le solde le plus bas pour chaque montant. À présenter comme un backtest (performances simulées) sur ces trois années, avec le solde le plus bas à côté de chaque gain. L'ancien tableau à 100 000 € est abandonné (simulation sur une prop firm, sans rapport avec le bot vendu).
+Source : le PDF « Simulation bots cTrader 2024-2026 » (`docs/sources/ARCHIVE-NE-PAS-DIFFUSER-Simulation-bots-cTrader-2024-2026.pdf`) : simulations par montant de capital, de 500 € à environ 10 000 €, sur 2024, 2025 et 2026, avec le solde le plus bas pour chaque montant. À présenter comme un backtest (performances simulées) sur ces trois années, avec le solde le plus bas à côté de chaque gain. L'ancien tableau à 100 000 € est abandonné (simulation sur une prop firm, sans rapport avec le bot vendu).
 Expliquer le capital conseillé de 5 000 € : ce n'est pas une obligation ; en dessous, le manque de capital fait refuser beaucoup de trades (lot minimum du broker) ; à partir de 5 000 €, beaucoup moins de refus.
 Les chiffres vont dans `config/resultats-backtest.json` pour que Hamid puisse les mettre à jour. N'affiche jamais de cumul spectaculaire en titre.
 

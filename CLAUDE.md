@@ -1,7 +1,7 @@
 # CLAUDE.md — Site de vente du cBot ICT/SMC
 
 ## Qui / quoi
-Hamid vend son bot de trading ICT/SMC (cBot cTrader) via un site à thème doré, codé ici avec Claude Code.
+Hamid vend son bot de trading, nom du produit **Arvator** (cBot cTrader), via un site à thème doré, codé ici avec Claude Code.
 Hamid n'est pas technicien : parle en **français simple**, propose, et laisse Hamid décider.
 Hamid vend un **logiciel** : jamais d'accès à l'argent ni au compte du client.
 
@@ -26,13 +26,13 @@ Les documents du projet (contexte, prompt, brief) viennent en partie de Cowork, 
 - `docs/06-regles-legales-communication.md` — interdits / obligatoires (à respecter dans CHAQUE texte)
 - `docs/07-theme-dore.md` — charte graphique
 - `docs/08-points-ouverts.md` — décisions et tâches en attente
-- `config/resultats-backtest.json` — chiffres de backtest (source unique, modifiable ; **provisoire** : transcrit du PDF `assets/rapports/Simulation-bots-cTrader-2024-2026.pdf` (risque 3 %/3 %) ; **Hamid enverra un nouveau PDF à 1 %, 2 % et 3 %** ; bot livré à 1 %, le client peut monter jusqu'à 3 % ; période de test 2024-2026 ; ne rien publier avant)
+- `config/resultats-backtest.json` — chiffres de backtest (source unique, modifiable) : **transcrits du PDF** `assets/rapports/Backtest-cTrader-risque-1-2-3-pourcent.pdf` (1 %, 2 %, 3 %, capitaux 500 € à 10 000 €, 2024-2026, reçu le 21/10/2026). L'ancien PDF est archivé dans `docs/sources/` (**ne pas diffuser**, contient des détails de stratégie). Bot livré à 1 %, le client peut monter jusqu'à 3 %.
 - `config/reglages.json` — prix, taux, seuils (source unique, modifiable)
 - `prompt-claude-code.md` — brief complet de la mission (référence)
 - `.env.example` — variables d'environnement attendues
 
 ## Stack (décidée le 21/10/2026 — remplace Next.js/Supabase/Vercel)
-- **WordPress sur Hostinger** (CMS que Hamid maîtrise). Objectif : léger, rapide, sûr.
+- **WordPress sur Hostinger, offre « Hébergement Premium »** (mutualisé ; précisé par Hamid le 21/10/2026) (CMS que Hamid maîtrise). Objectif : léger, rapide, sûr. Conséquence : pas de service Node permanent sur cet hébergement (le service WebSocket de licence, s'il est activé, tourne ailleurs).
 - **Coût fixe zéro** : aucun plugin payant, pas de WooCommerce. Hamid ne paie que des commissions Stripe quand une vente a lieu.
 - **Livrables** : (1) un **thème doré complet**, (2) **un plugin maison** (séparé du thème) avec toute la logique : espace client, parrainage, admin, webhooks. Installation = 2 fichiers zip. Seuls outils tiers : sécurité et sauvegardes gratuits.
 - **Stripe seul** : Checkout hébergé (achat 1 500 € + 1er abonnement dans le même passage), Billing, portail client, factures, webhooks idempotents. Aucune donnée de carte sur le site.

@@ -9,7 +9,7 @@ S'appliquent à **chaque page, email et publication**. À faire valider par un a
 - Conseils personnalisés sur les trades ou gestion du compte d'un client (agrément requis).
 - Présenter le parrainage comme source de revenus ou d'enrichissement.
 - **Décrire la stratégie ou ses détails techniques sur le site** (règle de Hamid, 21/10/2026) : ni ICT/SMC, ni unités de temps (15 minutes, 1 heure), ni noms d'indices ou d'actifs (US 500, Nasdaq, DAX, or, BTC…), ni objectifs en R, stops, garde-fous, horaires. On parle du robot et de ses performances en pourcentage, toujours en simulation (backtest 2024-2026).
-- Le **nom du produit** ne doit pas contenir « ICT » (le nom provisoire « Aurum ICT » est à revoir par Hamid).
+- Le **nom du produit** est **Arvator** (décidé le 21/10/2026) : il ne contient pas « ICT », ce qui respecte la règle ci-dessus.
 - Mettre en avant des cumuls spectaculaires en titre (règle générale ; l'exemple de l'ancien test à 100 000 € est abandonné).
 
 ## Obligatoire

@@ -7,10 +7,10 @@
 - [x] Domaine : bot.cosmartis.com (décidé le 21/10).
 - [x] Résultats : backtest du bot sur 2024-2026, jamais « 7 ans » (décidé le 21/10). Nouveau PDF à 1 %, 2 % et 3 % **à recevoir de Hamid** ; bot livré à 1 %, client libre jusqu'à 3 % (décidé le 21/10).
 - [x] Le site ne décrit pas la stratégie ni les détails techniques (décidé le 21/10). Page « La stratégie » supprimée.
-- [ ] Nom du produit (provisoire « Aurum ICT ») : **contient « ICT », à revoir** puisque le site ne parle pas d'ICT.
-- [ ] Le PDF de résultats à publier doit être **sans détails de stratégie** (le PDF actuel contient « Le détail du réglage retenu » et nomme les actifs) : à retirer dans le nouveau PDF ou à ne pas diffuser tel quel.
+- [x] Nom du produit : **Arvator** (décidé le 21/10). Le logo existant porte « BOT.COSMARTIS.COM » : à refaire ou adapter au nom Arvator.
+- [x] PDF de résultats : le nouveau PDF (1 %, 2 %, 3 %) ne contient aucun détail de stratégie. L'ancien PDF est archivé, ne pas le diffuser.
 - [ ] « Feu vert site » (voir `SYNC-BOT-ICT.md` §5/§6) et prompt final.
-- [ ] Offre Hostinger actuelle (hébergement WordPress, Cloud ou VPS).
+- [x] Hébergement : Hostinger « Hébergement Premium » (mutualisé), précisé par Hamid le 21/10. **À clarifier** : existe-t-il aussi un serveur (VPS) pour le service de licence automatique (port 25345) ? Où tourne n8n.cosmartis.com ?
 
 ## Avant le lancement public (priorité)
 - [ ] Compiler le cBot `IctSmcTendance` dans cTrader (onglet Algo → Build) et corriger les erreurs.
