@@ -42,15 +42,10 @@ Domaine : bot.cosmartis.com
 7. Parrainage : fonctionnement, montants, inscription gratuite.
 8. FAQ, page Risques complète, Mentions légales, CGV, Confidentialité, Cookies, Conditions du programme de parrainage (textes provisoires clairement marqués « à faire valider par un avocat »).
 
-# Résultats à afficher (performances simulées, compte de 100 000 €, janv. 2025 → 7 oct. 2026, frais inclus)
-| Risque | 2025 | 2026 (au 7 oct.) | Pire mois | Baisse max entre fins de mois |
-|---|---|---|---|---|
-| 1 % (référence) | +81 % | +36 % | −8 % | environ −9 % |
-| 2 % | +195 % | +76 % | −17 % | environ −18 % |
-| 3 % | +332 % | +106 % | −26 % | environ −27 % |
-
-Texte obligatoire sous le tableau : données 15 minutes 2019–2026 sur 14 actifs ; en cours de mois les baisses ont pu être plus fortes (jusqu'à −35/−40 % à 3 %) ; 2025 meilleure année, 2026 la plus difficile ; sur 2019–2026 à risque élevé la baisse maximale a atteint 77 % ; sous 5 000 € les résultats sont très irréguliers ; les réglages ont été choisis sur le même historique, donc les résultats futurs seront probablement moins bons ; pas encore d'historique en argent réel ; l'avenir peut être très positif, nul ou négatif, avec une perte possible de tout le capital.
-N'affiche jamais de cumul spectaculaire en titre. Mets ces données dans un fichier de configuration pour que Hamid puisse les mettre à jour (voir `config/resultats-backtest.json`).
+# Résultats à afficher (décision de Hamid, 21/10/2026 — remplace le tableau d'origine à 100 000 €)
+Source : le PDF « Simulation bots cTrader 2024-2026 » (`assets/rapports/Simulation-bots-cTrader-2024-2026.pdf`) : simulations par montant de capital, de 500 € à environ 10 000 €, sur 2024, 2025 et 2026, avec le solde le plus bas pour chaque montant. À présenter comme un backtest (performances simulées) sur ces trois années, avec le solde le plus bas à côté de chaque gain. L'ancien tableau à 100 000 € est abandonné (simulation sur une prop firm, sans rapport avec le bot vendu).
+Expliquer le capital conseillé de 5 000 € : ce n'est pas une obligation ; en dessous, le manque de capital fait refuser beaucoup de trades (lot minimum du broker) ; à partir de 5 000 €, beaucoup moins de refus.
+Les chiffres vont dans `config/resultats-backtest.json` pour que Hamid puisse les mettre à jour. N'affiche jamais de cumul spectaculaire en titre.
 
 # Parrainage et affiliation (UN SEUL niveau, ne jamais payer les niveaux supérieurs)
 - Inscription gratuite comme parrain, sans obligation d'acheter.

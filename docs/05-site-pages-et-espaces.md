@@ -7,8 +7,8 @@ Site en **français**, thème doré (voir `07-theme-dore.md`). Nom provisoire : 
 |---|---|
 | Accueil | « Un robot ICT/SMC transparent, testé sur 7 ans de données », 3 étapes, résultats simulés à 1 % + pire baisse, appel à l'essai gratuit et au rapport gratuit |
 | La stratégie | Tendance H1, setups ICT A+, garde-fous, actifs, horaires |
-| Résultats | Tableau des 3 niveaux de risque, courbe solde/baisses, méthode, limites |
-| Tarifs | Achat + mensuel ou annuel (annuel mis en avant), inclus, capital conseillé 5 000 € |
+| Résultats | Backtest 2024-2026 par montant de capital (de 500 € à environ 10 000 €) avec le solde le plus bas, d'après le PDF ; explication du capital conseillé de 5 000 € ; méthode, limites ; PDF en téléchargement |
+| Tarifs | Achat + mensuel ou annuel (annuel mis en avant), inclus, capital conseillé 5 000 € (avec l'explication : au-dessous, beaucoup de trades refusés) |
 | Essai gratuit 14 j | Email + n° de compte **DÉMO** cTrader → licence d'essai par email |
 | Rapport gratuit | PDF de backtest contre email (case RGPD) → événement n8n |
 | Parrainage | Fonctionnement, montants, inscription gratuite |

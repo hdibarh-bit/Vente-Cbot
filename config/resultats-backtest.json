@@ -1,22 +1,29 @@
 {
-  "_note": "EN ATTENTE DE DÉCISION DE HAMID (21/10) : le PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf montre des capitaux de 500 € à ~10 000 € sur 2024-2026, ce qui contredit ces chiffres (100 000 €, 2025-2026). Ne pas utiliser avant arbitrage. Performances simulées. Source unique des chiffres affichés sur le site. Référence du site : risque 1 %.",
-  "compteInitial": 100000,
-  "devise": "EUR",
-  "periode": { "debut": "2025-01-01", "fin": "2026-10-07" },
-  "donnees": "Bougies 15 minutes 2019-2026, 14 actifs, frais du broker inclus, entrées du dimanche 23h59 au vendredi 17h, sans retrait, robot AMD exclu",
-  "niveaux": [
-    { "risque": 1, "reference": true, "annee2025": 81, "annee2026": 36, "pireMois": -8, "baisseMaxFinsDeMois": -9 },
-    { "risque": 2, "reference": false, "annee2025": 195, "annee2026": 76, "pireMois": -17, "baisseMaxFinsDeMois": -18 },
-    { "risque": 3, "reference": false, "annee2025": 332, "annee2026": 106, "pireMois": -26, "baisseMaxFinsDeMois": -27 }
+  "_note": "EN ATTENTE : chiffres à extraire du PDF assets/rapports/Simulation-bots-cTrader-2024-2026.pdf (Hamid, 21/10/2026). Ne rien inventer. L'ancien tableau à 100 000 € (simulation prop firm, sans rapport avec le bot vendu) a été retiré ; il reste dans l'historique git. Performances simulées.",
+  "source": "assets/rapports/Simulation-bots-cTrader-2024-2026.pdf",
+  "annees": [
+    2024,
+    2025,
+    2026
   ],
-  "limites": [
-    "En cours de mois, les baisses ont pu être plus fortes : à 3 %, jusqu'à -35 à -40 % au pire moment.",
-    "2025 a été la meilleure année, 2026 la plus difficile. À 2 %, 9 mois sur 22 ont été perdants.",
-    "Sur 2019-2026 avec un risque élevé, la baisse maximale a atteint 77 %.",
-    "Sous 5 000 € de capital, les résultats sont très irréguliers (ex. +12 % en 2024 avec 2 000 €).",
+  "devise": "EUR",
+  "montantsCapital": [],
+  "resultats": [],
+  "_structureAttendue": {
+    "capital": "montant en euros (de 500 à environ 10000)",
+    "annee": "2024 | 2025 | 2026",
+    "gainPourcent": null,
+    "soldeLePlusBas": null
+  },
+  "capitalConseille": {
+    "montant": 5000,
+    "obligatoire": false,
+    "raison": "Sous 5 000 €, beaucoup de trades sont refusés (lot minimum du broker, garde-fou du bot), donc moins de trades pris et des résultats irréguliers. À partir de 5 000 €, beaucoup moins de refus."
+  },
+  "limitesCommunes": [
     "Les réglages ont été choisis sur le même historique que celui qui les teste : les résultats futurs seront probablement moins bons.",
     "Il n'y a pas encore d'historique en argent réel : les bots tournent en démo depuis septembre 2026.",
     "L'avenir peut être très positif, nul ou négatif, avec une perte possible de tout le capital engagé."
   ],
-  "ne_pas_afficher_en_titre": "Cumuls à risque élevé (ex. +809 % sur 2025-2026 à 3 %) : rapport détaillé uniquement."
+  "limitesARevalider": "Les autres limites de l'ancien test (baisses jusqu'à -35/-40 %, baisse max 77 %, meilleure/pire année) portaient sur l'ancienne simulation : à réécrire d'après le PDF."
 }

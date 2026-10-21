@@ -27,5 +27,14 @@ cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, m
 - Sans abonnement payé : le cBot cesse d'ouvrir de nouveaux trades en fin de licence (voir `04-licences.md`).
 - **TVA (décidé le 21/10/2026)** : auto-entrepreneur au départ, donc aucune mention TTC/HT. Passage en société plus tard : prix en TTC.
 
-## Résultats de backtest
-Voir `config/resultats-backtest.json` (source unique) et `06-regles-legales-communication.md` pour les règles d'affichage. Référence du site : **1 % de risque**, toujours avec la pire baisse à côté.
+## Pourquoi un capital conseillé de 5 000 € minimum (à expliquer sur le site)
+Explication donnée par Hamid le 21/10/2026. **Ce n'est pas une obligation** : le client peut démarrer avec moins.
+- C'est **la seule raison** : un manque de capital fait **refuser des trades** (par le bot ou par le broker). Avec le lot minimum du broker, un petit compte ferait risquer plus que le risque prévu, donc le trade est refusé (garde-fou du bot : refus si le lot minimum fait risquer plus de 1,5 fois le risque prévu).
+- Avec 500 € (ou moins de 5 000 €), beaucoup de trades sont refusés, donc le bot trade moins et les résultats sont irréguliers.
+- À partir de 5 000 €, beaucoup moins de trades sont refusés : le bot prend plus de trades, ce qui rapproche le comportement réel de la simulation.
+- À afficher (en plus de la FAQ) sur les pages Tarifs et Résultats, sans promettre de gains. Ne jamais présenter le capital minimum comme une garantie de résultat.
+
+## Résultats de backtest (décision de Hamid, 21/10/2026)
+- **Source : le PDF « Simulation bots cTrader 2024-2026 »** (`assets/rapports/Simulation-bots-cTrader-2024-2026.pdf`). Simulations par **montant de capital, de 500 € à environ 10 000 €**, sur **2024, 2025 et 2026**, avec le **solde le plus bas** pour chaque montant. À présenter comme un backtest sur ces trois années.
+- **L'ancien tableau à 100 000 € est abandonné** : il venait d'une simulation faite sur une prop firm, sans rapport avec le bot vendu.
+- Chiffres à extraire du PDF vers `config/resultats-backtest.json` (source unique) une fois la lecture du PDF autorisée par Hamid. Règles d'affichage dans `06-regles-legales-communication.md` : toujours « performances simulées » et solde le plus bas à côté de chaque gain.
