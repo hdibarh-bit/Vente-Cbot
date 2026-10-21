@@ -1,3 +1,5 @@
+> **⚠ RÈGLE DU 21/10/2026 (Hamid) : le site ne parle PAS de la stratégie ni de détails techniques (ni ICT/SMC, ni unités de temps, ni noms d'indices ou d'actifs, ni objectifs, ni garde-fous). Seulement : le robot et ses performances en pourcentage, toujours en simulation (backtest 2024-2026). Les réels viendront plus tard.**
+>
 > **⚠ Brief d'origine, partiellement dépassé (21/10/2026).** La stack est désormais **WordPress sur Hostinger + Stripe seul + thème et plugin maison, 0 € fixe** ; la licence est gérée par **n8n** ; risque par défaut **1 %** ; **auto-entrepreneur** (pas de TTC/HT) ; **parrain non client payé** ; **grâce de 3 jours**. Voir `CLAUDE.md`, `docs/` et `SYNC-BOT-ICT.md` (Drive). Les sections « Stack recommandée », « Base de données » et « Licences » ci-dessous sont à lire avec ces changements.
 
 # Mission
@@ -8,7 +10,7 @@ Domaine : bot.cosmartis.com
 
 # Le produit
 - Un cBot cTrader (robot de trading) que le client installe dans le cloud cTrader, sur son propre compte broker. Il tourne même ordinateur éteint.
-- Stratégie : suivi de tendance H1 (or, BTC, Nasdaq, DAX, ETH) avec stop suiveur de 3 ATR, et setups ICT A+ de prise de liquidité en 15 minutes (Nasdaq, EURUSD, US 500, ETH). Objectifs fixes 5R et 7R. Garde-fous : 1 trade par actif, 3 positions max, 2 pertes max par jour. Entrées du dimanche 23h59 au vendredi 17h (Paris).
+- [INTERNE — NE JAMAIS PUBLIER SUR LE SITE, voir règle du 21/10/2026] Stratégie : suivi de tendance H1 (or, BTC, Nasdaq, DAX, ETH) avec stop suiveur de 3 ATR, et setups ICT A+ de prise de liquidité en 15 minutes (Nasdaq, EURUSD, US 500, ETH). Objectifs fixes 5R et 7R. Garde-fous : 1 trade par actif, 3 positions max, 2 pertes max par jour. Entrées du dimanche 23h59 au vendredi 17h (Paris).
 - Capital conseillé : 5 000 € minimum. Risque conseillé : 1 % par trade. Le client peut changer lui-même son risque dans les réglages du cBot, au choix 1 %, 2 % ou 3 % (liste fixe codée dans le cBot, rien au-delà de 3 %) (à expliquer dans la FAQ et le guide d'installation).
 - Hamid vend un logiciel : elle ne gère jamais l'argent ni le compte du client.
 
@@ -33,8 +35,8 @@ Domaine : bot.cosmartis.com
 - Style : banque privée, pas casino. Aucun visuel de billets, de voitures de luxe ou de gains.
 
 # Pages publiques
-1. Accueil : promesse sobre (« Un robot ICT/SMC transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées)), fonctionnement en 3 étapes, résultats simulés (backtest 2024-2026) avec le solde le plus bas, appel à l'essai gratuit, appel au rapport gratuit.
-2. La stratégie : explication claire, actifs, horaires, garde-fous.
+1. Accueil : promesse sobre (« Un robot de trading automatique, transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées ; ne jamais écrire ICT, SMC, unités de temps ni noms d'indices)), fonctionnement en 3 étapes, résultats simulés (backtest 2024-2026) avec le solde le plus bas, appel à l'essai gratuit, appel au rapport gratuit.
+2. (Page « La stratégie » SUPPRIMÉE le 21/10/2026 : le site ne décrit pas la stratégie. Il présente le robot et ses performances simulées en pourcentage.)
 3. Résultats : tableau ci-dessous, graphique, méthode, limites (texte fourni plus bas).
 4. Tarifs : achat + mensuel ou annuel (annuel mis en avant), ce qui est inclus, capital conseillé.
 5. Essai gratuit 14 jours : formulaire email + numéro de compte DÉMO cTrader → licence d'essai envoyée par email.

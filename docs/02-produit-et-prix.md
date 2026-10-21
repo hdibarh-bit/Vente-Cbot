@@ -3,6 +3,8 @@
 ## Le produit
 cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, même ordinateur éteint.
 
+> **INTERNE — NE JAMAIS PUBLIER SUR LE SITE (règle de Hamid du 21/10/2026).** Le site ne décrit pas la stratégie ; ce qui suit sert uniquement de contexte technique.
+
 **Stratégie (bot principal + bot test réunis)**
 - Suivi de tendance H1 : or, BTC, Nasdaq, DAX, ETH. Stop suiveur 3 ATR (activé à +2R pour le principal, dès l'entrée pour le test).
 - Setups ICT A+ (prise de liquidité) en 15 min : Nasdaq, EURUSD, US 500, ETH.

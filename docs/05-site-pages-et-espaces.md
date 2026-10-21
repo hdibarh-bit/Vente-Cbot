@@ -3,10 +3,10 @@
 Site en **français**, thème doré (voir `07-theme-dore.md`). Nom provisoire : « Aurum ICT » (à confirmer). Domaine : **bot.cosmartis.com** (confirmé le 21/10/2026).
 
 ## Pages publiques
+> **Règle du 21/10/2026 (Hamid)** : aucune page ni aucun texte ne décrit la stratégie ni ses détails techniques (pas d'ICT/SMC, pas d'unités de temps, pas de noms d'indices ou d'actifs, pas d'objectifs ni de garde-fous). Le public visé n'est pas fait de traders : il veut comprendre ce que fait le robot et voir ses performances simulées en pourcentage. Page « La stratégie » supprimée.
 | Page | Contenu |
 |---|---|
-| Accueil | « Un robot ICT/SMC transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées), 3 étapes, résultats simulés (backtest 2024-2026) au risque livré de 1 % + solde le plus bas, appel à l'essai gratuit et au rapport gratuit |
-| La stratégie | Tendance H1, setups ICT A+, garde-fous, actifs, horaires |
+| Accueil | « Un robot de trading automatique, transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées), 3 étapes, résultats simulés (backtest 2024-2026) au risque livré de 1 % + solde le plus bas, appel à l'essai gratuit et au rapport gratuit |
 | Résultats | Backtest 2024-2026 par montant de capital (de 500 € à environ 10 000 €) avec le solde le plus bas, d'après le PDF ; explication du capital conseillé de 5 000 € ; méthode, limites ; PDF en téléchargement |
 | Tarifs | Achat + mensuel ou annuel (annuel mis en avant), inclus, capital conseillé 5 000 € (avec l'explication : au-dessous, beaucoup de trades refusés) |
 | Essai gratuit 14 j | Email + n° de compte **DÉMO** cTrader → licence d'essai par email |
@@ -34,7 +34,7 @@ Tableau de bord (ventes, abonnements actifs par formule, impayés, revenus du mo
 - Webhooks Stripe **idempotents**. Échec d'abonnement : pas de nouvelle licence, événement à n8n.
 - Factures conformes : auto-entrepreneur au départ, sans mention TTC/HT ; passage en société plus tard (prix en TTC).
 
-**Entonnoir** : contenus utiles (pas de pub Forex/CFD) → rapport gratuit contre email → séquence email 5-7 mails sur 2 semaines (stratégie, résultats avec baisses, risques, installation, FAQ, invitation à l'essai) → essai démo 14 j → offre principale → après achat : guide d'installation, email de bienvenue, rappel 5 j avant fin de licence, invitation au parrainage après 30 j.
+**Entonnoir** : contenus utiles (pas de pub Forex/CFD) → rapport gratuit contre email → séquence email 5-7 mails sur 2 semaines (le robot et ses performances simulées avec leurs baisses, risques, installation, FAQ, invitation à l'essai ; sans détail de stratégie) → essai démo 14 j → offre principale → après achat : guide d'installation, email de bienvenue, rappel 5 j avant fin de licence, invitation au parrainage après 30 j.
 Options plus tard : aide à l'installation en visio (payante) ; proposer le passage mensuel → annuel au 3e mois.
 
 ## Base de données (tables dédiées du plugin maison, base MySQL de WordPress)
