@@ -58,6 +58,34 @@ final class Arvator_Repo {
 		return $subs > 0;
 	}
 
+	public static function has_paid_order( int $user_id ): bool {
+		if ( $user_id <= 0 ) {
+			return false;
+		}
+		global $wpdb;
+		return (int) $wpdb->get_var(
+			$wpdb->prepare( 'SELECT COUNT(*) FROM ' . self::table( 'orders' ) . " WHERE user_id = %d AND status = 'paid'", $user_id ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		) > 0;
+	}
+
+	/** Identifiant client Stripe du compte (pour le portail), vide s'il n'y en a pas. */
+	public static function stripe_customer_for_user( int $user_id ): string {
+		if ( $user_id <= 0 ) {
+			return '';
+		}
+		global $wpdb;
+		$id = $wpdb->get_var(
+			$wpdb->prepare( 'SELECT stripe_customer_id FROM ' . self::table( 'subscriptions' ) . " WHERE user_id = %d AND stripe_customer_id IS NOT NULL AND stripe_customer_id <> '' AND is_test = %d ORDER BY id DESC LIMIT 1", $user_id, Arvator_Stripe::is_test_key() ? 1 : 0 ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		);
+		return is_string( $id ) ? $id : '';
+	}
+
+	/** Annule l'enregistrement d'un événement (pour que Stripe puisse le renvoyer après une erreur). */
+	public static function release_event( string $external_id ): void {
+		global $wpdb;
+		$wpdb->delete( self::table( 'events' ), array( 'external_id' => substr( $external_id, 0, 190 ) ), array( '%s' ) );
+	}
+
 	/**
 	 * Journalise un événement. Avec $external_id, un même événement n'est enregistré qu'une fois
 	 * (retourne false s'il existait déjà).

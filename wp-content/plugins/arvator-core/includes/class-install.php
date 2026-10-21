@@ -51,6 +51,8 @@ final class Arvator_Install {
   user_id BIGINT UNSIGNED NOT NULL,
   stripe_session_id VARCHAR(190) NULL,
   stripe_payment_intent VARCHAR(190) NULL,
+  stripe_invoice_id VARCHAR(190) NULL,
+  stripe_customer_id VARCHAR(190) NULL,
   product VARCHAR(40) NOT NULL,
   amount_cents INT UNSIGNED NOT NULL,
   currency CHAR(3) NOT NULL DEFAULT 'eur',
@@ -59,7 +61,9 @@ final class Arvator_Install {
   created_at DATETIME NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY stripe_session_id (stripe_session_id),
-  KEY user_id (user_id)
+  KEY user_id (user_id),
+  KEY stripe_invoice_id (stripe_invoice_id),
+  KEY stripe_customer_id (stripe_customer_id)
 ) $charset;"
 		);
 

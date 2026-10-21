@@ -262,6 +262,13 @@ Lorsque vous payez, vous êtes redirigé vers la page de paiement sécurisée de
 TXT,
 	),
 
+	'acheter' => array(
+		'title' => 'Acheter Arvator',
+		'text'  => <<<'TXT'
+[arvator_achat]
+TXT,
+	),
+
 	'espace-membre' => array(
 		'title' => 'Espace membre',
 		'text'  => <<<'TXT'

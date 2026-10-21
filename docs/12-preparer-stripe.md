@@ -35,3 +35,33 @@ Stripe limite ou refuse certaines activités liées au trading et aux marchés f
 1. Les trois identifiants de prix (`price_…`).
 2. La confirmation que le mode test est prêt et le portail client activé.
 Je vous guide ensuite pour placer les clés dans `wp-config.php`.
+
+
+## 6. Branchement du site (étape C) — à faire une fois le plugin 0.3.0 installé
+
+### 6.1 Les lignes à ajouter dans `wp-config.php`
+À coller **avant** la ligne « C'est tout, ne touchez pas à ce qui suit » (jamais ailleurs, jamais dans un message) :
+
+```php
+define( 'ARVATOR_STRIPE_SECRET', 'rk_test_...' );            // votre clé restreinte du bac à sable
+define( 'ARVATOR_STRIPE_WEBHOOK_SECRET', 'whsec_...' );      // à l'étape 6.2
+define( 'ARVATOR_STRIPE_PRICE_BOT', 'price_1UT3ndGi3zUNJ20g6odvYqxI' );
+define( 'ARVATOR_STRIPE_PRICE_ANNUAL', 'price_1UT3pjGi3zUNJ20gRPhyyN9U' );
+define( 'ARVATOR_STRIPE_PRICE_MONTHLY', 'price_1UT3qVGi3zUNJ20grHHXX4zU' );
+```
+(Les 3 `price_…` ci-dessus sont ceux du bac à sable. En production, on en crée 3 nouveaux et on remplace les 5 lignes.)
+
+### 6.2 Le webhook (Stripe prévient le site après chaque paiement)
+1. Stripe (en bac à sable) → Développeurs → Webhooks → **Ajouter un point de terminaison**.
+2. Adresse : `https://bot.cosmartis.com/wp-json/arvator/v1/stripe`
+3. Événements à cocher : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`, `charge.refunded`.
+4. Après l'enregistrement, copier le **secret de signature** (`whsec_…`) dans la ligne `ARVATOR_STRIPE_WEBHOOK_SECRET`.
+
+### 6.3 Droits de la clé restreinte
+Écriture : Checkout Sessions, Customers, Subscriptions (nécessaire pour arrêter l'abonnement lors d'un remboursement), Customer portal sessions. Lecture : Prices, Products, Invoices, Charges, PaymentIntents. Si un droit manque, Stripe répond par une erreur claire (visible dans Développeurs → Journaux) : cocher la case indiquée.
+
+### 6.4 Essai de bout en bout (bac à sable, 5 minutes)
+1. Page « Acheter Arvator » → choisir l'annuel → payer avec la carte de test `4242 4242 4242 4242` (date future, code au choix).
+2. Vérifier : email de confirmation reçu, compte créé, achat et abonnement visibles dans l'espace membre.
+3. Espace membre → « Gérer mon abonnement » → le portail Stripe s'ouvre.
+4. Dans Stripe : rembourser **1 500 €** de la facture → l'achat passe à « remboursé » et l'abonnement est arrêté.

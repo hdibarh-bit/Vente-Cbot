@@ -285,3 +285,11 @@ p { margin: 0 0 1em; }
 	html { scroll-behavior: auto; }
 	.btn { transition: none; }
 }
+
+/* Page d'achat */
+.arv-buy{max-width:46rem}
+.arv-plans{border:0;margin:0 0 1.25rem;padding:0}
+.arv-plans legend{font-family:var(--font-serif,inherit);font-size:1.25rem;margin-bottom:.75rem;padding:0}
+.arv-plan{display:flex;gap:.9rem;align-items:flex-start;border:1px solid rgba(201,162,39,.35);border-radius:10px;padding:1rem 1.1rem;margin-bottom:.75rem;cursor:pointer}
+.arv-plan:has(input:checked){border-color:#C9A227;background:rgba(201,162,39,.08)}
+.arv-plan input{margin-top:.3rem;accent-color:#C9A227}

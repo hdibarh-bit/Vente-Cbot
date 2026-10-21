@@ -187,7 +187,7 @@ get_header();
 		</div>
 
 		<div class="hero__cta">
-			<?php arvator_button( 'tarifs', 'Voir les tarifs et acheter', 'btn btn--primary' ); ?>
+			<?php arvator_button( 'acheter', 'Acheter Arvator', 'btn btn--primary' ); ?>
 			<?php arvator_button( 'essai-gratuit', 'Essayer d’abord ' . $trial . ' jours sur compte démo', 'btn btn--ghost' ); ?>
 		</div>
 	</div>

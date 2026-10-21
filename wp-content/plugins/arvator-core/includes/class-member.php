@@ -174,11 +174,21 @@ final class Arvator_Member {
 				);
 			}
 			echo '</tbody></table></div>';
+			if ( '' !== Arvator_Repo::stripe_customer_for_user( $user_id ) ) {
+				?>
+				<form class="arv-form arv-form--inline" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="arvator_portal">
+					<?php wp_nonce_field( 'arvator_portal', '_arv_nonce' ); ?>
+					<button class="btn btn--primary btn--sm" type="submit">Gérer mon abonnement, mes factures et ma carte</button>
+				</form>
+				<p class="muted">Vous pouvez résilier à tout moment : la résiliation prend effet à la fin de la période déjà payée, qui n’est pas remboursée.</p>
+				<?php
+			}
 		}
 
 		echo '<h3>Achats</h3>';
 		if ( ! $orders ) {
-			echo '<p>Aucun achat pour le moment.</p>';
+			echo '<p>Aucun achat pour le moment. <a href="' . esc_url( Arvator_Checkout::url() ) . '">Acheter Arvator</a></p>';
 			return;
 		}
 		echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">Date</th><th scope="col">Produit</th><th scope="col">Montant</th><th scope="col">État</th></tr></thead><tbody>';

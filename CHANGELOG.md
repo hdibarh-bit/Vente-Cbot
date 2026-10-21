@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.3.1 — 21/10/2026
+- Bouton « Acheter Arvator » dans la section Tarifs (page d'achat) ; mise en forme du choix d'abonnement.
+
 ### 0.3.0 — 21/10/2026
 - Styles des nouvelles pages : FAQ (questions qui se déplient), formulaire de contact, espace membre (tableau de bord, achats, licence avec bouton « Copier », téléchargements, informations), avis « version provisoire » des textes légaux.
 - Menu et pied de page : FAQ, À propos, Contact, Espace membre ; lien « Connexion » / « Mon espace » en haut à droite.
@@ -22,6 +25,14 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.3.0 — 21/10/2026 (étape C : paiement Stripe, bac à sable)
+- **Page « Acheter Arvator »** (créée automatiquement) : choix annuel ou mensuel, email, deux cases obligatoires (CGV, risques), départ vers la page de paiement Stripe. Robot (paiement unique) et premier abonnement dans le même paiement. Aucune donnée de carte sur le site.
+- **Retour de paiement (webhook Stripe)** : signature vérifiée, messages de plus de 5 minutes refusés, chaque événement traité une seule fois, nouvel essai automatique par Stripe en cas d'erreur. Crée le compte client (email pour choisir son mot de passe), l'achat et l'abonnement ; suit les changements d'abonnement et les résiliations.
+- **Remboursement** : dès que le montant remboursé couvre le prix du robot, l'achat passe à « remboursé », la licence est révoquée et l'abonnement est arrêté chez Stripe (l'abonnement de la première période n'est pas remboursé).
+- **Espace membre** : bouton « Gérer mon abonnement, mes factures et ma carte » (portail client Stripe).
+- Réglages dans `wp-config.php` (clé, secret du webhook, 3 prix) : voir `docs/12-preparer-stripe.md`.
+- Tests automatiques : 186 contrôles (fausse API Stripe, aucun appel réel).
 
 ### 0.2.1 — 21/10/2026
 - **Règles de remboursement précisées** dans la FAQ et les CGV : achat sans essai = 14 jours, remboursement du prix du robot, pas de remboursement de l'abonnement de la première période, le remboursement met fin à la licence ; achat après essai = renonciation au droit de rétractation, annoncée avant l'essai ; résiliation à la fin de la période payée, période en cours non remboursée.

@@ -113,7 +113,7 @@ if ( '/%postname%/' !== get_option( 'permalink_structure' ) ) {
 	flush_rewrite_rules();
 }
 // Départ propre : on supprime les pages du plugin et on les recrée comme à la première installation.
-foreach ( array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'espace-membre' ) as $arv_slug ) {
+foreach ( array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'acheter', 'espace-membre' ) as $arv_slug ) {
 	$arv_old = get_page_by_path( $arv_slug, OBJECT, 'page' );
 	if ( $arv_old ) {
 		wp_delete_post( $arv_old->ID, true );
@@ -127,7 +127,7 @@ $tag = substr( md5( (string) microtime( true ) ), 0, 6 );
 
 /* ======================================================================== A. Pages */
 title( 'A. Pages créées' );
-$slugs = array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'espace-membre' );
+$slugs = array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'acheter', 'espace-membre' );
 $anon  = new Browser( $url );
 foreach ( $slugs as $s ) {
 	$page = get_page_by_path( $s, OBJECT, 'page' );
@@ -442,6 +442,218 @@ check( 0 === $count_demos(), 'clients de démonstration supprimés', $rd['code']
 check( 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'licenses' ) . " WHERE license_key LIKE 'CLÉ-DE-DÉMONSTRATION%'" ), 'leurs fausses données aussi' );
 $r = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_upload_file', '_arv_nonce' => 'faux' ) );
 check( in_array( $r['code'], array( 403, 302 ), true ) && ! str_contains( $r['body'], 'Fichier mis en ligne' ), 'téléversement sans clé de sécurité valide refusé' );
+
+
+/* ======================================================================== H. Paiement Stripe (fausse API) */
+title( 'H. Paiement Stripe (bac à sable simulé)' );
+$stripe_log = (string) getenv( 'ARV_STRIPE_LOG' );
+$stripe_fix = (string) getenv( 'ARV_STRIPE_FIXTURES' );
+@unlink( $stripe_log );
+$set_fix  = static function ( array $fix ) use ( $stripe_fix ): void {
+	file_put_contents( $stripe_fix, wp_json_encode( $fix ) );
+};
+$stripe_calls = static function () use ( $stripe_log ): array {
+	return is_file( $stripe_log ) ? array_map( static fn( $l ) => json_decode( $l, true ), file( $stripe_log, FILE_IGNORE_NEW_LINES ) ) : array();
+};
+$sign = static function ( string $payload, ?int $ts = null ): string {
+	$ts = $ts ?? time();
+	return 't=' . $ts . ',v1=' . hash_hmac( 'sha256', $ts . '.' . $payload, 'whsec_test_fake' );
+};
+// Envoi du corps brut (JSON) : curl direct, car Browser::req envoie un formulaire.
+$post_raw = static function ( string $payload, string $sig ) use ( $url ): array {
+	$ch = curl_init( $url . '/wp-json/arvator/v1/stripe' );
+	curl_setopt_array( $ch, array( CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_POSTFIELDS => $payload, CURLOPT_HTTPHEADER => array( 'Content-Type: application/json', 'Stripe-Signature: ' . $sig ), CURLOPT_TIMEOUT => 60 ) );
+	$body = (string) curl_exec( $ch );
+	$code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+	curl_close( $ch );
+	return array( 'code' => $code, 'json' => json_decode( $body, true ), 'body' => $body );
+};
+
+// -- Unités : signature et encodage
+$p = '{"id":"evt_1"}';
+check( Arvator_Stripe::verify_signature( $p, $sign( $p ), 'whsec_test_fake' ), 'signature valide acceptée' );
+check( ! Arvator_Stripe::verify_signature( $p, $sign( $p ), 'whsec_autre' ), 'signature avec un autre secret refusée' );
+check( ! Arvator_Stripe::verify_signature( $p . ' ', $sign( $p ), 'whsec_test_fake' ), 'corps modifié refusé' );
+check( ! Arvator_Stripe::verify_signature( $p, $sign( $p, time() - 3600 ), 'whsec_test_fake' ), 'message vieux d\'une heure refusé (rejeu)' );
+check( ! Arvator_Stripe::verify_signature( $p, '', 'whsec_test_fake' ) && ! Arvator_Stripe::verify_signature( $p, 'n\'importe quoi', 'whsec_test_fake' ), 'en-tête absent ou illisible refusé' );
+check( 'a%5Bb%5D%5B0%5D=c&d=true' === Arvator_Stripe::encode( array( 'a' => array( 'b' => array( 'c' ) ), 'd' => true ) ), 'encodage des paramètres imbriqués' );
+
+// -- Page d'achat
+$buy = $anon->get( '/acheter/' );
+check( 200 === $buy['code'] && str_contains( $buy['body'], 'value="annual" checked' ) && str_contains( $buy['body'], 'name="cgv"' ) && str_contains( $buy['body'], 'name="risks"' ), 'page d\'achat : formule annuelle par défaut, deux cases obligatoires' );
+check( ! preg_match( '/card|carte bancaire.*<input|cvc/i', preg_replace( '/Paiement sécurisé.*?site\./su', '', $buy['body'] ) ), 'page d\'achat : aucun champ de carte bancaire' );
+check( str_contains( $buy['headers'], 'no-store' ), 'page d\'achat jamais mise en cache' );
+$nonce = field_in_form( $buy['body'], 'arvator_checkout', '_arv_nonce' );
+$buyer = "acheteur_$tag@example.org";
+$good  = array( 'action' => 'arvator_checkout', '_arv_nonce' => $nonce, 'plan' => 'annual', 'email' => $buyer, 'cgv' => '1', 'risks' => '1' );
+
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_test_x', 'url' => 'https://checkout.stripe.com/c/pay/cs_test_x' ) ) );
+$r = $anon->post( '/wp-admin/admin-post.php', array( '_arv_nonce' => 'faux' ) + $good );
+check( 'generic_invalid' === notice_of( $r ), 'achat sans clé de sécurité valide refusé' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'cgv' => '' ) + $good );
+check( 'achat_invalid' === notice_of( $r ), 'achat sans case CGV refusé' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'risks' => '' ) + $good );
+check( 'achat_invalid' === notice_of( $r ), 'achat sans case risques refusé' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'plan' => 'gratuit' ) + $good );
+check( 'achat_invalid' === notice_of( $r ), 'formule inconnue refusée' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'email' => 'pas-un-email' ) + $good );
+check( 'achat_invalid' === notice_of( $r ), 'email invalide refusé' );
+check( 0 === count( $stripe_calls() ), 'aucun appel à Stripe pour les demandes refusées' );
+
+$r = $anon->post( '/wp-admin/admin-post.php', $good );
+check( 303 === $r['code'] && 'https://checkout.stripe.com/c/pay/cs_test_x' === $r['location'], 'achat valide : départ vers la page de paiement Stripe', $r['code'] . ' ' . $r['location'] );
+$calls = $stripe_calls();
+$body  = array();
+parse_str( (string) ( $calls[0]['body'] ?? '' ), $body );
+check( 'POST checkout/sessions' === ( $calls[0]['key'] ?? '' ) && 'Bearer rk_test_fake' === ( $calls[0]['auth'] ?? '' ), 'appel Checkout avec la clé du wp-config' );
+check( 'subscription' === ( $body['mode'] ?? '' ) && 'price_annual_test' === ( $body['line_items'][0]['price'] ?? '' ) && 'price_bot_test' === ( $body['line_items'][1]['price'] ?? '' ), 'robot + abonnement annuel dans le même paiement' );
+check( $buyer === ( $body['customer_email'] ?? '' ) && str_contains( (string) ( $body['success_url'] ?? '' ), 'arv_notice=achat_ok' ) && str_contains( (string) ( $body['cancel_url'] ?? '' ), '/acheter/' ), 'email et adresses de retour fixées par le site' );
+
+$r2 = $anon->post( '/wp-admin/admin-post.php', array( 'plan' => 'monthly' ) + $good );
+$body = array();
+parse_str( (string) ( $stripe_calls()[1]['body'] ?? '' ), $body );
+check( 'price_monthly_test' === ( $body['line_items'][0]['price'] ?? '' ), 'formule mensuelle : le bon prix est envoyé' );
+
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_x', 'url' => 'https://evil.example.com/pay' ) ) );
+$r = $anon->post( '/wp-admin/admin-post.php', $good );
+check( 'achat_erreur' === notice_of( $r ), 'adresse de paiement hors Stripe refusée (pas de redirection)' );
+$set_fix( array() );
+$r = $anon->post( '/wp-admin/admin-post.php', $good );
+check( 'achat_erreur' === notice_of( $r ), 'Stripe en panne : message clair, pas d\'erreur technique affichée' );
+
+// -- Webhook : sécurité
+$sess_id = "cs_test_$tag";
+$event   = static function ( string $id, string $type, array $object, bool $live = false ): string {
+	return (string) wp_json_encode( array( 'id' => $id, 'type' => $type, 'livemode' => $live, 'data' => array( 'object' => $object ) ) );
+};
+$ev1 = $event( "evt_{$tag}_1", 'checkout.session.completed', array( 'id' => $sess_id, 'payment_status' => 'paid' ) );
+$r   = $post_raw( $ev1, 't=1,v1=abc' );
+check( 400 === $r['code'], 'webhook : signature fausse → 400' );
+$r = $post_raw( $ev1, $sign( $ev1, time() - 3600 ) );
+check( 400 === $r['code'], 'webhook : message trop ancien → 400' );
+check( 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'" ), 'rien n\'est enregistré avec une mauvaise signature' );
+
+// -- Webhook : achat complet (client inconnu → compte créé)
+$full = array(
+	'id' => $sess_id, 'payment_status' => 'paid', 'customer' => "cus_$tag", 'customer_email' => $buyer,
+	'customer_details' => array( 'email' => $buyer ), 'invoice' => "in_$tag", 'payment_intent' => null, 'currency' => 'eur',
+	'line_items' => array( 'data' => array(
+		array( 'price' => array( 'id' => 'price_annual_test' ), 'amount_total' => 35880 ),
+		array( 'price' => array( 'id' => 'price_bot_test' ), 'amount_total' => 150000 ),
+	) ),
+	'subscription' => array(
+		'id' => "sub_$tag", 'status' => 'active', 'cancel_at_period_end' => false,
+		'items' => array( 'data' => array( array( 'price' => array( 'id' => 'price_annual_test' ), 'current_period_end' => 1900000000 ) ) ),
+	),
+);
+$set_fix( array( "GET checkout/sessions/$sess_id" => $full ) );
+@unlink( $log );
+$r = $post_raw( $ev1, $sign( $ev1 ) );
+check( 200 === $r['code'] && 'ok' === ( $r['json']['status'] ?? '' ), 'webhook : achat accepté', $r['code'] . ' ' . $r['body'] );
+$buyer_user = get_user_by( 'email', $buyer );
+check( $buyer_user instanceof WP_User && in_array( Arvator_Roles::CLIENT, $buyer_user->roles, true ) && ! user_can( $buyer_user, 'edit_posts' ), 'compte créé avec le rôle client, sans droit d\'administration' );
+$order = $buyer_user ? $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'", ARRAY_A ) : null;
+check( is_array( $order ) && 'paid' === $order['status'] && 150000 === (int) $order['amount_cents'] && 'cbot' === $order['product'] && 1 === (int) $order['is_test'] && (int) $order['user_id'] === (int) $buyer_user->ID, 'commande : robot 1 500 €, payée, marquée « test », au bon compte' );
+$sub = $buyer_user ? $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub_$tag'", ARRAY_A ) : null;
+check( is_array( $sub ) && 'annual' === $sub['plan'] && 'active' === $sub['status'] && 0 === (int) $sub['cancel_at_period_end'] && str_starts_with( (string) $sub['current_period_end'], '2030-03-17' ), 'abonnement annuel enregistré avec sa date de fin' );
+$m = mails();
+check( 1 === count( $m ) && $buyer === $m[0]->to && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'performances simulées' ), 'email de confirmation avec lien pour choisir le mot de passe' );
+check( Arvator_Repo::is_entitled( (int) $buyer_user->ID ), 'le client peut télécharger le robot' );
+
+// -- Idempotence : même événement, renvoyé plusieurs fois
+$again = $post_raw( $ev1, $sign( $ev1 ) );
+$third = $post_raw( $ev1, $sign( $ev1 ) );
+check( 200 === $again['code'] && 'duplicate' === ( $again['json']['status'] ?? '' ) && 'duplicate' === ( $third['json']['status'] ?? '' ), 'même événement renvoyé : reconnu, rien refait' );
+check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'" ) && 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub_$tag'" ) && 1 === count( mails() ), 'toujours 1 commande, 1 abonnement, 1 email' );
+// Un autre événement pour la MÊME session (cas réel : checkout.session.async_payment_succeeded, ou renvoi sous un autre id).
+$ev1b = $event( "evt_{$tag}_1b", 'checkout.session.completed', array( 'id' => $sess_id, 'payment_status' => 'paid' ) );
+$post_raw( $ev1b, $sign( $ev1b ) );
+check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'" ), 'même session sous un autre identifiant d\'événement : toujours 1 seule commande' );
+
+// -- Paiement non encaissé
+$ev2 = $event( "evt_{$tag}_2", 'checkout.session.completed', array( 'id' => "cs_unpaid_$tag", 'payment_status' => 'unpaid' ) );
+$r   = $post_raw( $ev2, $sign( $ev2 ) );
+check( 200 === $r['code'] && 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'cs_unpaid_$tag'" ), 'paiement non encaissé : aucune commande' );
+
+// -- Type d'événement non géré
+$ev3 = $event( "evt_{$tag}_3", 'customer.created', array( 'id' => 'cus_x' ) );
+$r   = $post_raw( $ev3, $sign( $ev3 ) );
+check( 200 === $r['code'] && 'ignored' === ( $r['json']['status'] ?? '' ), 'événement non géré : ignoré proprement' );
+
+// -- Erreur pendant le traitement : l'événement est relâché, Stripe peut le renvoyer
+$sess2 = "cs_test2_$tag";
+$ev4   = $event( "evt_{$tag}_4", 'checkout.session.completed', array( 'id' => $sess2, 'payment_status' => 'paid' ) );
+$set_fix( array() );
+$r = $post_raw( $ev4, $sign( $ev4 ) );
+check( 500 === $r['code'], 'Stripe injoignable pendant le traitement → 500 (Stripe renverra)' );
+$set_fix( array( "GET checkout/sessions/$sess2" => array_merge( $full, array( 'id' => $sess2, 'invoice' => "in2_$tag", 'subscription' => array_merge( $full['subscription'], array( 'id' => "sub2_$tag" ) ) ) ) ) );
+$r = $post_raw( $ev4, $sign( $ev4 ) );
+check( 200 === $r['code'] && 'ok' === ( $r['json']['status'] ?? '' ), 'renvoi après panne : traité normalement' );
+check( 2 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE user_id = {$buyer_user->ID}" ) && 1 === count( array_filter( mails(), static fn( $x ) => str_contains( $x->message, 'action=rp' ) ) ), 'achat rattaché au compte existant (par email), pas de 2e compte ni de 2e lien de mot de passe' );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess2'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub2_$tag'" );
+
+// -- Abonnement : changement et résiliation
+$evu = $event( "evt_{$tag}_5", 'customer.subscription.updated', array( 'id' => "sub_$tag", 'status' => 'past_due', 'cancel_at_period_end' => true, 'items' => array( 'data' => array( array( 'current_period_end' => 1910000000 ) ) ) ) );
+$post_raw( $evu, $sign( $evu ) );
+$sub = $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub_$tag'", ARRAY_A );
+check( 'past_due' === $sub['status'] && 1 === (int) $sub['cancel_at_period_end'] && str_starts_with( (string) $sub['current_period_end'], '2030-07-' ), 'abonnement mis à jour (paiement en retard, résiliation à l\'échéance, nouvelle date)' );
+$evd = $event( "evt_{$tag}_6", 'customer.subscription.deleted', array( 'id' => "sub_$tag", 'status' => 'canceled', 'items' => array( 'data' => array( array( 'current_period_end' => 1910000000 ) ) ) ) );
+$post_raw( $evd, $sign( $evd ) );
+check( 'canceled' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub_$tag'" ), 'abonnement résilié enregistré' );
+$evx = $event( "evt_{$tag}_7", 'customer.subscription.updated', array( 'id' => 'sub_inconnu', 'status' => 'active' ) );
+$r   = $post_raw( $evx, $sign( $evx ) );
+check( 200 === $r['code'], 'mise à jour d\'un abonnement encore inconnu : pas d\'erreur' );
+
+// -- Remboursement
+$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'status' => 'active' ), array( 'stripe_subscription_id' => "sub_$tag" ) );
+$wpdb->insert( Arvator_Repo::table( 'licenses' ), array( 'user_id' => $buyer_user->ID, 'license_key' => "TEST-$tag", 'plan' => 'annual', 'expires_at' => '2030-01-01 00:00:00', 'status' => 'active', 'is_test' => 1, 'created_at' => $now, 'updated_at' => $now ) );
+$set_fix( array( "DELETE subscriptions/sub_$tag" => array( 'id' => "sub_$tag", 'status' => 'canceled' ) ) );
+$evr = $event( "evt_{$tag}_8", 'charge.refunded', array( 'id' => "ch_$tag", 'customer' => "cus_$tag", 'invoice' => "in_$tag", 'amount' => 185880, 'amount_refunded' => 5000 ) );
+$post_raw( $evr, $sign( $evr ) );
+check( 'paid' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'" ), 'remboursement partiel (moins que le robot) : l\'achat reste valide' );
+$evr2 = $event( "evt_{$tag}_9", 'charge.refunded', array( 'id' => "ch_$tag", 'customer' => "cus_$tag", 'invoice' => "in_$tag", 'amount' => 185880, 'amount_refunded' => 150000 ) );
+$r    = $post_raw( $evr2, $sign( $evr2 ) );
+check( 200 === $r['code'], 'remboursement du prix du robot : message accepté' );
+check( 'refunded' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'" ), 'achat marqué « remboursé »' );
+check( 'revoked' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'licenses' ) . " WHERE license_key = 'TEST-$tag'" ), 'la licence prend fin' );
+check( 'canceled' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub_$tag'" ) && in_array( "DELETE subscriptions/sub_$tag", array_column( $stripe_calls(), 'key' ), true ), 'l\'abonnement est arrêté chez Stripe' );
+check( ! Arvator_Repo::is_entitled( (int) $buyer_user->ID ) || 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE user_id = {$buyer_user->ID} AND status = 'paid'" ), 'après remboursement : plus de droit de téléchargement' );
+$post_raw( $evr2, $sign( $evr2 ) );
+check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'events' ) . " WHERE type = 'refund' AND user_id = {$buyer_user->ID}" ), 'remboursement renvoyé : traité une seule fois' );
+
+// -- Portail client
+$pc = new Browser( $url );
+$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'status' => 'active' ), array( 'stripe_subscription_id' => "sub_$tag" ) );
+$pwd = 'Test-Only-Portail-12345';
+wp_set_password( $pwd, (int) $buyer_user->ID );
+member_login( $pc, $buyer, $pwd );
+$ach = $pc->get( '/espace-membre/?section=achats' );
+check( str_contains( $ach['body'], 'name="action" value="arvator_portal"' ) && str_contains( $ach['body'], 'fin de la période déjà payée' ), 'espace membre : bouton du portail et rappel de la règle de résiliation' );
+$pn = field_in_form( $ach['body'], 'arvator_portal', '_arv_nonce' );
+$r  = $pc->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_portal', '_arv_nonce' => 'faux' ) );
+check( 'generic_invalid' === notice_of( $r ), 'portail sans clé de sécurité valide refusé' );
+$set_fix( array( 'POST billing_portal/sessions' => array( 'url' => 'https://billing.stripe.com/p/session/test_x' ) ) );
+@unlink( $stripe_log );
+$r = $pc->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_portal', '_arv_nonce' => $pn ) );
+check( 303 === $r['code'] && 'https://billing.stripe.com/p/session/test_x' === $r['location'], 'portail : départ vers Stripe' );
+$pb = array();
+parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $pb );
+check( "cus_$tag" === ( $pb['customer'] ?? '' ), 'le portail est ouvert pour le client de ce compte, jamais un autre' );
+$r = $anon->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_portal', '_arv_nonce' => $pn ) );
+check( ! str_contains( $r['location'], 'stripe.com' ) && ! str_contains( $r['body'], 'billing.stripe.com' ), 'portail sans être connecté : refusé', (string) $r['code'] );
+// Un autre client (sans abonnement Stripe) ne peut pas ouvrir le portail de celui-ci.
+$other = new Browser( $url );
+member_login( $other, "ta$tag", $pwA );
+$ao = $other->get( '/espace-membre/?section=achats' );
+check( ! str_contains( $ao['body'], 'arvator_portal' ), 'un client sans abonnement Stripe ne voit pas le bouton du portail' );
+
+// -- Nettoyage du bloc H
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'events' ) . " WHERE external_id LIKE 'stripe:evt\\_{$tag}%'" );
+Arvator_Repo::delete_test_rows_for_user( (int) $buyer_user->ID );
+wp_delete_user( (int) $buyer_user->ID );
+@unlink( $stripe_log );
+@unlink( $stripe_fix );
 
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {

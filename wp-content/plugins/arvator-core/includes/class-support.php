@@ -37,6 +37,13 @@ final class Arvator_Support {
 			'privacy_limit'    => array( 'err', 'Vous avez déjà fait une demande aujourd’hui. Réessayez demain.' ),
 			'privacy_fail'     => array( 'err', 'La demande n’a pas pu être enregistrée. Écrivez-nous depuis la page Contact.' ),
 			'generic_invalid'  => array( 'err', 'Cette action n’a pas pu être effectuée (session expirée). Merci de réessayer.' ),
+			'achat_ok'         => array( 'ok', 'Merci pour votre commande ! Dès que Stripe confirme le paiement (quelques instants), vous recevez un email de confirmation. Connectez-vous ensuite pour retrouver votre achat.' ),
+			'achat_annule'     => array( 'err', 'Le paiement a été annulé : vous n’avez pas été débité. Vous pouvez recommencer quand vous le souhaitez.' ),
+			'achat_invalid'    => array( 'err', 'Merci de choisir un abonnement, d’indiquer une adresse email valide et de cocher les deux cases obligatoires.' ),
+			'achat_erreur'     => array( 'err', 'Le paiement n’a pas pu être lancé. Réessayez dans un instant, ou écrivez-nous depuis la page Contact.' ),
+			'achat_rate'       => array( 'err', 'Trop de tentatives. Merci de patienter un peu avant de réessayer.' ),
+			'achat_deja'       => array( 'err', 'Vous avez déjà acheté Arvator : retrouvez-le dans votre espace membre.' ),
+			'portal_erreur'    => array( 'err', 'La gestion de l’abonnement n’a pas pu s’ouvrir. Réessayez dans un instant ou écrivez-nous depuis la page Contact.' ),
 			'download_denied'  => array( 'err', 'Le téléchargement n’est pas disponible pour votre compte.' ),
 		);
 	}
