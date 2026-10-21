@@ -151,6 +151,30 @@ foreach ( $slugs as $s ) {
 }
 check( true, 'aucune page ne contient de mot interdit (ICT, SMC, unités de temps, indices, « bientôt »)' );
 
+check( str_contains( $faq['body'], 'première période n' ) && str_contains( $faq['body'], 'renonciez à votre droit de rétractation' ), 'FAQ : remboursement du prix du robot (pas de la 1re période) et renonciation avant l’essai' );
+$plain = static fn( string $html ): string => str_replace( array( '’', "\u{00A0}" ), array( "'", ' ' ), html_entity_decode( strip_tags( $html ), ENT_QUOTES, 'UTF-8' ) );
+check( str_contains( $plain( $cgv['body'] ), 'prix du robot (1 500 €)' ) && str_contains( $plain( $cgv['body'] ), "abonnement de la première période n'est pas remboursé" ), 'CGV : prix du robot remboursé, abonnement de la première période non remboursé' );
+
+title( 'A3. Mise à jour des textes améliorés' );
+global $wpdb;
+$faq_page = get_page_by_path( 'faq' );
+$cgv_page = get_page_by_path( 'cgv' );
+// Ancienne version du texte, page jamais touchée (même date de création et de modification).
+$wpdb->update( $wpdb->posts, array( 'post_content' => 'ANCIEN TEXTE FAQ', 'post_modified_gmt' => $faq_page->post_date_gmt, 'post_modified' => $faq_page->post_date ), array( 'ID' => $faq_page->ID ) );
+clean_post_cache( $faq_page->ID );
+$revs = get_option( 'arvator_pages_rev' ); $revs['faq'] = 1; $revs['cgv'] = 1; update_option( 'arvator_pages_rev', $revs, false );
+// CGV : modifiée par Hamid.
+wp_update_post( array( 'ID' => $cgv_page->ID, 'post_content' => 'TEXTE CGV MODIFIÉ PAR HAMID' ) );
+Arvator_Pages::create_missing();
+clean_post_cache( $faq_page->ID ); clean_post_cache( $cgv_page->ID );
+$f2 = get_post( $faq_page->ID );
+check( str_contains( $f2->post_content, 'première période' ), 'page jamais modifiée : le texte amélioré la remplace' );
+check( $f2->post_modified_gmt === $f2->post_date_gmt, 'elle reste « jamais touchée » (les prochaines améliorations s’appliqueront aussi)' );
+check( 'TEXTE CGV MODIFIÉ PAR HAMID' === get_post( $cgv_page->ID )->post_content, 'page modifiée par Hamid : jamais remplacée' );
+check( array_keys( Arvator_Pages::pages_to_review() ) === array( 'cgv' ), 'page modifiée : signalée « à relire » dans l’administration' );
+Arvator_Pages::dismiss_review();
+check( array() === Arvator_Pages::pages_to_review(), 'le message « à relire » peut être masqué' );
+
 title( 'A2. Création unique des pages' );
 $before = (int) wp_count_posts( 'page' )->publish;
 Arvator_Pages::create_missing();

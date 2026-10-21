@@ -17,6 +17,8 @@ final class Arvator_Admin {
 
 	public static function init(): void {
 		add_action( 'admin_menu', array( self::class, 'menu' ) );
+		add_action( 'admin_notices', array( self::class, 'review_notice' ) );
+		add_action( 'admin_post_arvator_dismiss_review', array( self::class, 'handle_dismiss_review' ) );
 		add_action( 'admin_post_arvator_upload_file', array( self::class, 'handle_upload' ) );
 		add_action( 'admin_post_arvator_delete_file', array( self::class, 'handle_delete' ) );
 		add_action( 'admin_post_arvator_demo_create', array( self::class, 'handle_demo_create' ) );
@@ -27,6 +29,37 @@ final class Arvator_Admin {
 		add_menu_page( 'Arvator', 'Arvator', 'manage_options', 'arvator', array( self::class, 'page_files' ), 'dashicons-lock', 58 );
 		add_submenu_page( 'arvator', 'Fichiers privés', 'Fichiers privés', 'manage_options', 'arvator', array( self::class, 'page_files' ) );
 		add_submenu_page( 'arvator', 'Clients de démonstration', 'Clients de démonstration', 'manage_options', 'arvator-demo', array( self::class, 'page_demo' ) );
+	}
+
+	/** Avis : un texte de page a été amélioré mais la page avait été modifiée, donc elle n'a pas été remplacée. */
+	public static function review_notice(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$pages = Arvator_Pages::pages_to_review();
+		if ( ! $pages ) {
+			return;
+		}
+		$links = array();
+		foreach ( $pages as $page ) {
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( (string) get_edit_post_link( $page->ID ) ), esc_html( get_the_title( $page ) ) );
+		}
+		$dismiss = wp_nonce_url( admin_url( 'admin-post.php?action=arvator_dismiss_review' ), 'arvator_dismiss_review' );
+		printf(
+			'<div class="notice notice-warning"><p><strong>Arvator :</strong> le texte de %s a été amélioré dans la dernière version du plugin (changement de règles de remboursement ou d\'essai), mais vous aviez modifié cette page : elle n\'a donc pas été remplacée. Relisez-la et mettez-la à jour à la main, ou demandez le nouveau texte à Claude. <a href="%s">Ne plus afficher ce message</a></p></div>',
+			wp_kses( implode( ', ', $links ), array( 'a' => array( 'href' => array() ) ) ),
+			esc_url( $dismiss )
+		);
+	}
+
+	public static function handle_dismiss_review(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Accès refusé.', '', array( 'response' => 403 ) );
+		}
+		check_admin_referer( 'arvator_dismiss_review' );
+		Arvator_Pages::dismiss_review();
+		wp_safe_redirect( admin_url( 'index.php' ) );
+		exit;
 	}
 
 	/* --------------------------------------------------------------------- Pages */

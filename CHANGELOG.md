@@ -23,6 +23,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.2.1 — 21/10/2026
+- **Règles de remboursement précisées** dans la FAQ et les CGV : achat sans essai = 14 jours, remboursement du prix du robot, pas de remboursement de l'abonnement de la première période, le remboursement met fin à la licence ; achat après essai = renonciation au droit de rétractation, annoncée avant l'essai ; résiliation à la fin de la période payée, période en cours non remboursée.
+- **Mise à jour des textes des pages** : un texte amélioré remplace celui de la page **seulement si vous ne l'avez jamais modifiée** ; sinon la page est conservée et un message dans l'administration vous invite à la relire.
+- Tests automatiques : 129 contrôles.
+
 ### 0.2.0 — 21/10/2026
 - **Pages créées automatiquement** (une seule fois, jamais écrasées) : À propos, FAQ, Contact, Risques, Mentions légales, CGV, Confidentialité, Cookies, Espace membre. Textes légaux provisoires, à faire valider par un avocat.
 - **Formulaire de contact** protégé (clé de sécurité, champ piège, délai, limites par adresse IP et par email, aucun message conservé sur le site) ; envoi à contact@cosmartis.com ; envoi par SMTP possible via wp-config.php.

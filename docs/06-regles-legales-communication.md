@@ -16,7 +16,10 @@ S'appliquent à **chaque page, email et publication**. À faire valider par un a
 - Avertissement risques visible sur chaque page + case à cocher avant paiement.
 - Pire baisse montrée à côté de chaque gain affiché.
 - CGV, mentions légales, politique de confidentialité (RGPD), bandeau cookies.
-- Renonciation expresse au droit de rétractation (case dédiée au paiement).
+- **Droit de rétractation (décision de Hamid, 21/10/2026)** :
+  - Achat **sans essai gratuit** : 14 jours pour demander le remboursement du **prix du robot** ; **l'abonnement de la première période n'est pas remboursé** ; le remboursement met fin à la licence. Aucune case de renonciation n'est demandée.
+  - Achat **après un essai gratuit** : le client a renoncé à son droit de rétractation ; l'achat n'est pas remboursable.
+  - La renonciation est **annoncée avant la demande d'essai** : sur la page d'essai gratuit, texte clair et **case obligatoire** (« Je comprends que, si j'achète le robot après l'essai, je renonce à mon droit de rétractation »), puis **rappelée au paiement** pour ceux qui ont fait l'essai. Formulation finale à faire valider par un avocat.
 - Factures conformes, mention TVA adaptée.
 
 **Pied de page type** : « Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu'à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement. »

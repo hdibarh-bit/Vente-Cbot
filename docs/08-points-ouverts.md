@@ -15,10 +15,10 @@
 ## Réponses de Hamid du 21/10/2026
 - [x] Contact : contact@cosmartis.com.
 - [x] Mentions légales : Hamid DIBARH, Fresnes-sur-Escaut, SIRET 80230131700029. **Adresse postale complète à ajouter** (obligatoire) ; mention de TVA à confirmer avec le comptable.
-- [x] Remboursement : 14 jours si achat sans essai ; pas de remboursement d'un achat fait après un essai. **À confirmer** : cela signifie qu'au paiement, la case de renonciation au droit de rétractation n'est demandée qu'au client qui a fait l'essai (étape C).
+- [x] Remboursement (confirmé le 21/10) : 14 jours si achat sans essai, remboursement du **prix du robot** (pas de l'abonnement de la première période) ; pas de remboursement d'un achat fait après un essai. La renonciation au droit de rétractation est annoncée **avant la demande d'essai** (case obligatoire sur la page d'essai) et rappelée au paiement pour ceux qui ont fait l'essai.
 - [x] Courtiers : « tout courtier proposant cTrader avec le cloud ».
 - [x] Stripe : compte existant (clés de test à fournir à l'étape C).
-- [ ] **Résiliation** : texte par défaut posé (« à tout moment depuis l'espace membre, effet à la fin de la période payée, pas de remboursement de la période en cours »). À confirmer par Hamid.
+- [x] Résiliation (confirmée le 21/10) : à tout moment depuis l'espace membre, effet à la fin de la période payée, période en cours non remboursée.
 - [ ] Avocat : valider CGV, confidentialité, cookies, mentions légales, risques (bandeau « provisoire » à retirer ensuite).
 - [ ] Envoi des emails : renseigner l'envoi SMTP dans wp-config.php (guide `10-installation-wordpress.md`).
 - [ ] Vérifier la raison sociale d'hébergeur (Hostinger International Ltd., Larnaca, Chypre) dans les mentions légales.

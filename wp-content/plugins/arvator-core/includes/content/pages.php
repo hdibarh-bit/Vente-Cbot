@@ -34,6 +34,7 @@ TXT,
 	),
 
 	'faq'      => array(
+		'rev'   => 2,
 		'title' => 'Questions fréquentes',
 		'text'  => <<<'TXT'
 ## Le robot
@@ -73,18 +74,18 @@ Votre licence expire. Après 3 jours de grâce, le robot ne prend plus de nouvel
 Dans votre [espace membre](/espace-membre/) : votre licence, le téléchargement du robot et votre abonnement.
 
 ?? Comment résilier mon abonnement ?
-Depuis votre espace membre, à tout moment. La résiliation prend effet à la fin de la période déjà payée : votre licence reste active jusqu'à cette date.
+Depuis votre espace membre, à tout moment. La résiliation prend effet à la fin de la période déjà payée : votre licence reste active jusqu'à cette date. La période en cours n'est pas remboursée.
 
 ## Essai gratuit
 ?? Puis-je essayer avant d'acheter ?
-Oui : un essai gratuit de 14 jours, uniquement sur un compte démo cTrader. Il vous permet de voir le robot travailler sans risquer d'argent.
+Oui : un essai gratuit de 14 jours, uniquement sur un compte démo cTrader. Il vous permet de voir le robot travailler sans risquer d'argent. **En demandant l'essai, vous acceptez que, si vous achetez ensuite, vous renonciez à votre droit de rétractation :** l'achat n'est alors plus remboursable.
 
 ## Paiement et remboursement
 ?? Comment le paiement est-il sécurisé ?
 Le paiement est traité par Stripe. Vos données de carte ne passent jamais par ce site.
 
 ?? Puis-je être remboursé ?
-Si vous achetez sans avoir fait l'essai gratuit, vous disposez de 14 jours à compter de l'achat pour demander le remboursement de votre achat. Si vous avez fait l'essai gratuit avant d'acheter, l'achat n'est pas remboursable. Pour demander un remboursement, écrivez à {{email}}.
+Si vous achetez sans avoir fait l'essai gratuit, vous disposez de 14 jours à compter de l'achat pour demander le remboursement du prix du robot (1 500 €). **L'abonnement de la première période n'est pas remboursé.** Le remboursement met fin à votre licence. Si vous avez fait l'essai gratuit avant d'acheter, vous avez renoncé à votre droit de rétractation : l'achat n'est pas remboursable. Pour demander un remboursement, écrivez à {{email}}.
 
 ## Compte et données
 ?? Comment accéder à mon espace membre ?
@@ -168,6 +169,7 @@ TXT,
 	),
 
 	'cgv'      => array(
+		'rev'   => 2,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 [provisoire]
@@ -192,11 +194,11 @@ La licence est valable pour la période d'abonnement payée. À son expiration, 
 Le robot et la licence sont accessibles dans l'espace membre du client après la validation du paiement.
 
 ## 7. Essai gratuit
-L'essai gratuit dure 14 jours et fonctionne uniquement sur un compte démo cTrader. Il est limité à un essai par personne.
+L'essai gratuit dure 14 jours et fonctionne uniquement sur un compte démo cTrader. Il est limité à un essai par personne. Avant de demander l'essai, le client est informé et accepte expressément que, s'il achète ensuite le robot, il renonce à son droit de rétractation.
 
 ## 8. Remboursement
-- Achat sans essai gratuit : le client peut demander le remboursement de son achat dans les 14 jours suivant l'achat, par email à {{email}}.
-- Achat après un essai gratuit : le client a pu tester le robot avant d'acheter ; l'achat n'est pas remboursable.
+- Achat sans essai gratuit : le client peut demander le remboursement du prix du robot (1 500 €) dans les 14 jours suivant l'achat, par email à {{email}}. L'abonnement de la première période n'est pas remboursé. Le remboursement met fin à la licence.
+- Achat après un essai gratuit : le client a pu tester le robot et a expressément renoncé à son droit de rétractation avant l'essai ; l'achat n'est pas remboursable.
 
 ## 9. Résiliation
 Le client peut résilier son abonnement à tout moment depuis son espace membre. La résiliation prend effet à la fin de la période déjà payée ; la période en cours n'est pas remboursée.

@@ -24,7 +24,7 @@ Les données apparaissent au fur et à mesure : achats et abonnements (étape C,
 - **Idempotence** : un même événement (par exemple un webhook Stripe) n'est enregistré qu'une fois (identifiant externe unique).
 
 ## Tests automatiques
-`ARV_WP=/chemin/vers/un/wordpress-de-test ./tests/run.sh` (voir `09-developpement-local.md`). 122 contrôles au 21/10/2026 : pages, contact (robots, injection d'en-têtes, limites), isolation entre trois clients, accès refusés (visiteur, autre client, tableau de bord), téléchargement (clé de sécurité, droit retiré, noms de fichiers piégés), mot de passe, RGPD, limite des connexions, XML-RPC, administration.
+`ARV_WP=/chemin/vers/un/wordpress-de-test ./tests/run.sh` (voir `09-developpement-local.md`). 129 contrôles au 21/10/2026 : pages, contact (robots, injection d'en-têtes, limites), isolation entre trois clients, accès refusés (visiteur, autre client, tableau de bord), téléchargement (clé de sécurité, droit retiré, noms de fichiers piégés), mot de passe, RGPD, limite des connexions, XML-RPC, administration.
 
 ## Limites connues
 - Le dossier privé est protégé par un emplacement hors site public ou par `.htaccess` (non testable avec le serveur de test) : à vérifier sur l'hébergement (tenter d'ouvrir l'adresse d'un fichier du dossier privé doit donner une erreur).

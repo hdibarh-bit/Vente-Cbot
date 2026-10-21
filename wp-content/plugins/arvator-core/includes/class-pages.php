@@ -16,10 +16,24 @@ final class Arvator_Pages {
 
 	public const EMAIL = 'contact@cosmartis.com';
 
-	/** Création des pages manquantes (appelée à l'installation et à chaque mise à jour du plugin). */
+	private const OPT_CREATED = 'arvator_pages_created';
+	private const OPT_REV     = 'arvator_pages_rev';
+	private const OPT_REVIEW  = 'arvator_pages_review';
+
+	/**
+	 * Création des pages manquantes et mise à jour des textes améliorés (appelée à l'installation et à chaque
+	 * mise à jour du plugin).
+	 *
+	 * - Page absente et jamais créée : elle est créée.
+	 * - Page supprimée volontairement : elle n'est pas recréée.
+	 * - Texte amélioré dans une nouvelle version : remplacé SEULEMENT si la page n'a jamais été modifiée dans
+	 *   l'éditeur ; sinon la page est conservée telle quelle et signalée dans l'administration.
+	 */
 	public static function create_missing(): void {
 		$defs    = require ARVATOR_CORE_DIR . 'includes/content/pages.php';
-		$done    = (array) get_option( 'arvator_pages_created', array() );
+		$done    = (array) get_option( self::OPT_CREATED, array() );
+		$revs    = (array) get_option( self::OPT_REV, array() );
+		$review  = (array) get_option( self::OPT_REVIEW, array() );
 		$authors = get_users(
 			array(
 				'role'   => 'administrator',
@@ -30,10 +44,24 @@ final class Arvator_Pages {
 		$author  = $authors ? (int) $authors[0] : 0;
 
 		foreach ( $defs as $slug => $def ) {
+			$rev  = (int) ( $def['rev'] ?? 1 );
+			$page = get_page_by_path( $slug, OBJECT, 'page' );
+
 			if ( in_array( $slug, $done, true ) ) {
+				// Page déjà créée auparavant : mise à jour éventuelle du texte.
+				if ( $page instanceof WP_Post && (int) ( $revs[ $slug ] ?? 1 ) < $rev ) {
+					if ( self::is_untouched( $page ) ) {
+						self::replace_content( $page, self::to_blocks( $def['text'] ) );
+						$revs[ $slug ] = $rev;
+						$review        = array_values( array_diff( $review, array( $slug ) ) );
+					} elseif ( ! in_array( $slug, $review, true ) ) {
+						$review[] = $slug;
+					}
+				}
 				continue;
 			}
-			if ( null === get_page_by_path( $slug, OBJECT, 'page' ) ) {
+
+			if ( null === $page ) {
 				wp_insert_post(
 					array(
 						'post_type'      => 'page',
@@ -46,11 +74,43 @@ final class Arvator_Pages {
 						'ping_status'    => 'closed',
 					)
 				);
+				$revs[ $slug ] = $rev;
 			}
 			$done[] = $slug;
 		}
 
-		update_option( 'arvator_pages_created', array_values( array_unique( $done ) ), false );
+		update_option( self::OPT_CREATED, array_values( array_unique( $done ) ), false );
+		update_option( self::OPT_REV, $revs, false );
+		update_option( self::OPT_REVIEW, $review, false );
+	}
+
+	/** Une page « jamais touchée » a la même date de création et de dernière modification. */
+	private static function is_untouched( WP_Post $page ): bool {
+		return $page->post_modified_gmt === $page->post_date_gmt;
+	}
+
+	/** Remplace le texte en conservant les dates d'origine (la page reste « jamais touchée »). */
+	private static function replace_content( WP_Post $page, string $content ): void {
+		global $wpdb;
+		$wpdb->update( $wpdb->posts, array( 'post_content' => $content ), array( 'ID' => $page->ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		clean_post_cache( $page->ID );
+	}
+
+	/** Pages dont le texte a été amélioré mais que Hamid a modifiées (donc non remplacées). */
+	public static function pages_to_review(): array {
+		$out = array();
+		foreach ( (array) get_option( self::OPT_REVIEW, array() ) as $slug ) {
+			$page = get_page_by_path( (string) $slug, OBJECT, 'page' );
+			if ( $page instanceof WP_Post ) {
+				$out[ (string) $slug ] = $page;
+			}
+		}
+		return $out;
+	}
+
+	/** Efface la liste « à relire ». */
+	public static function dismiss_review(): void {
+		update_option( self::OPT_REVIEW, array(), false );
 	}
 
 	/**
