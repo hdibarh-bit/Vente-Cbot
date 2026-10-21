@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( '' !== arvator_page_url( 'espace-client' ) ) : ?>
 					<a class="link-quiet" href="<?php echo esc_url( arvator_page_url( 'espace-client' ) ); ?>"><?php esc_html_e( 'Espace client', 'arvator' ); ?></a>
 				<?php endif; ?>
-				<?php arvator_button( 'essai-gratuit', 'Essai gratuit', 'btn btn--primary btn--sm', 'Essai gratuit · bientôt' ); ?>
+				<?php arvator_button( 'essai-gratuit', 'Essai gratuit', 'btn btn--primary btn--sm' ); ?>
 			</div>
 		</nav>
 	</div>

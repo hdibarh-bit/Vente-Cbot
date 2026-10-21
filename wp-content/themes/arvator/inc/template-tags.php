@@ -48,19 +48,26 @@ function arvator_menu_target( string $slug ): string {
 }
 
 /**
- * Bouton : lien si la page existe, sinon pastille « bientôt disponible » (aucun lien mort).
+ * Bouton : lien si la page existe. Sinon, aucun bouton (jamais de lien mort ni de mention « bientôt »).
  */
-function arvator_button( string $slug, string $label, string $classes = 'btn btn--primary', string $soon_label = '' ): void {
+function arvator_button( string $slug, string $label, string $classes = 'btn btn--primary' ): void {
+	$url = arvator_page_url( $slug );
+	if ( '' === $url ) {
+		return;
+	}
+	printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( $url ), esc_html( $label ) );
+}
+
+/**
+ * Bouton avec solution de repli : lien vers la page si elle existe, sinon vers une section de l'accueil.
+ */
+function arvator_button_or_anchor( string $slug, string $label, string $classes, string $fallback_label, string $anchor ): void {
 	$url = arvator_page_url( $slug );
 	if ( '' !== $url ) {
 		printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( $url ), esc_html( $label ) );
 		return;
 	}
-	printf(
-		'<span class="%s is-soon" aria-disabled="true">%s</span>',
-		esc_attr( $classes ),
-		esc_html( '' !== $soon_label ? $soon_label : $label . ' · bientôt' )
-	);
+	printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( home_url( '/#' . $anchor ) ), esc_html( $fallback_label ) );
 }
 
 /**

@@ -43,8 +43,8 @@ get_header();
 				nous les montrons toujours avec les baisses qui vont avec.
 			</p>
 			<div class="hero__cta">
-				<?php arvator_button( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary', 'Essai gratuit · bientôt disponible' ); ?>
-				<?php arvator_button( 'rapport-gratuit', 'Recevoir le rapport gratuit', 'btn btn--ghost', 'Rapport gratuit · bientôt' ); ?>
+				<?php arvator_button_or_anchor( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary', 'Voir les tarifs', 'tarifs' ); ?>
+				<?php arvator_button_or_anchor( 'rapport-gratuit', 'Recevoir le rapport gratuit', 'btn btn--ghost', 'Voir les résultats', 'resultats' ); ?>
 			</div>
 		</div>
 
@@ -187,12 +187,13 @@ get_header();
 		</div>
 
 		<div class="hero__cta">
-			<?php arvator_button( 'tarifs', 'Voir les tarifs et acheter', 'btn btn--primary', 'Achat bientôt disponible' ); ?>
-			<?php arvator_button( 'essai-gratuit', 'Essayer d’abord ' . $trial . ' jours sur compte démo', 'btn btn--ghost', 'Essai gratuit · bientôt disponible' ); ?>
+			<?php arvator_button( 'tarifs', 'Voir les tarifs et acheter', 'btn btn--primary' ); ?>
+			<?php arvator_button( 'essai-gratuit', 'Essayer d’abord ' . $trial . ' jours sur compte démo', 'btn btn--ghost' ); ?>
 		</div>
 	</div>
 </section>
 
+<?php if ( '' !== arvator_page_url( 'essai-gratuit' ) ) : ?>
 <section class="section section--surface" aria-labelledby="titre-essai">
 	<div class="container">
 		<div class="cta-band">
@@ -200,10 +201,11 @@ get_header();
 				<h2 id="titre-essai">Essayez avant d’acheter</h2>
 				<p>14 jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader.</p>
 			</div>
-			<?php arvator_button( 'essai-gratuit', 'Demander mon essai gratuit', 'btn btn--primary', 'Essai gratuit · bientôt disponible' ); ?>
+			<?php arvator_button( 'essai-gratuit', 'Demander mon essai gratuit', 'btn btn--primary' ); ?>
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <?php
 get_footer();

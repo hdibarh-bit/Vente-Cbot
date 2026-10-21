@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.2.1 — 21/10/2026
+- Toutes les mentions « bientôt » sont retirées du site. Un bouton dont la page n'existe pas est simplement masqué ; en haut de l'accueil, les boutons de repli mènent aux sections « Tarifs » et « Résultats ». Le bandeau « Essayez avant d'acheter » n'apparaît que lorsque la page d'essai gratuit existe.
+
 ### 0.2.0 — 21/10/2026
 - Logo, icône du site (favicon), menus et textes de l'accueil modifiables depuis Apparence > Personnaliser.
 - Plus de lien vers une page qui n'existe pas encore : le menu n'affiche que les pages publiées, les boutons concernés indiquent « bientôt disponible ».

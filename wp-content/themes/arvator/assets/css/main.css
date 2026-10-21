@@ -75,8 +75,6 @@ p { margin: 0 0 1em; }
 .btn--ghost { border-color: var(--line); color: var(--gold-light); background: transparent; }
 .btn--ghost:hover { background: rgba(201, 162, 39, .1); color: var(--text); }
 .btn--sm { padding: .55rem 1.05rem; font-size: .92rem; }
-.btn.is-soon { opacity: .6; cursor: default; box-shadow: none; pointer-events: none; }
-.btn--primary.is-soon { background: transparent; color: var(--gold-light); border-color: var(--line); }
 
 /* En-tête */
 .site-header { position: sticky; top: 0; z-index: 50; background: rgba(11, 11, 12, .88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); }
