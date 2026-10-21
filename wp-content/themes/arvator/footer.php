@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="site-footer__grid">
 			<div class="site-footer__brand">
 				<?php arvator_brand(); ?>
-				<p class="muted">Un robot de trading automatique qui s’installe sur votre propre compte cTrader. Nous ne touchons jamais à votre argent ni à votre compte.</p>
+				<p class="muted"><?php echo esc_html( arvator_text( 'footer_blurb' ) ); ?></p>
 			</div>
 			<nav aria-label="<?php esc_attr_e( 'Pied de page', 'arvator' ); ?>">
 				<h2 class="footer-title"><?php esc_html_e( 'Découvrir', 'arvator' ); ?></h2>

@@ -17,6 +17,53 @@ function arvator_url( string $slug ): string {
 }
 
 /**
+ * Adresse d'une page du site SI cette page existe et est publiée, sinon chaîne vide.
+ * Évite les liens qui mènent à une page « introuvable » tant que la page n'est pas créée.
+ */
+function arvator_page_url( string $slug ): string {
+	static $cache = array();
+
+	$slug = trim( $slug, '/' );
+	if ( ! array_key_exists( $slug, $cache ) ) {
+		$page          = get_page_by_path( $slug );
+		$cache[ $slug ] = ( $page instanceof WP_Post && 'publish' === $page->post_status ) ? (string) get_permalink( $page ) : '';
+	}
+
+	return $cache[ $slug ];
+}
+
+/**
+ * Adresse vers laquelle mène un lien du menu par défaut : la page si elle existe,
+ * sinon (pour « résultats » et « tarifs ») la section correspondante de l'accueil, sinon rien.
+ */
+function arvator_menu_target( string $slug ): string {
+	$url = arvator_page_url( $slug );
+	if ( '' !== $url ) {
+		return $url;
+	}
+	if ( in_array( $slug, array( 'resultats', 'tarifs' ), true ) ) {
+		return home_url( '/#' . $slug );
+	}
+	return '';
+}
+
+/**
+ * Bouton : lien si la page existe, sinon pastille « bientôt disponible » (aucun lien mort).
+ */
+function arvator_button( string $slug, string $label, string $classes = 'btn btn--primary', string $soon_label = '' ): void {
+	$url = arvator_page_url( $slug );
+	if ( '' !== $url ) {
+		printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( $url ), esc_html( $label ) );
+		return;
+	}
+	printf(
+		'<span class="%s is-soon" aria-disabled="true">%s</span>',
+		esc_attr( $classes ),
+		esc_html( '' !== $soon_label ? $soon_label : $label . ' · bientôt' )
+	);
+}
+
+/**
  * Liens utilisés quand aucun menu n'est défini dans le tableau de bord WordPress.
  *
  * @return array<int, array{0:string,1:string}>
@@ -68,9 +115,13 @@ function arvator_nav( string $location, string $class ): void {
 
 	echo '<ul class="' . esc_attr( $class ) . '">';
 	foreach ( arvator_default_links( $location ) as $link ) {
+		$target = arvator_menu_target( $link[1] );
+		if ( '' === $target ) {
+			continue; // la page n'existe pas encore : pas de lien mort.
+		}
 		printf(
 			'<li><a href="%s">%s</a></li>',
-			esc_url( arvator_url( $link[1] ) ),
+			esc_url( $target ),
 			esc_html( $link[0] )
 		);
 	}
@@ -82,11 +133,22 @@ function arvator_nav( string $location, string $class ): void {
  */
 function arvator_brand(): void {
 	echo '<a class="brand" href="' . esc_url( home_url( '/' ) ) . '" aria-label="' . esc_attr( get_bloginfo( 'name' ) . ' — accueil' ) . '">';
-	if ( has_custom_logo() ) {
-		echo wp_kses_post( get_custom_logo() );
+
+	$logo_id = (int) get_theme_mod( 'custom_logo' );
+	if ( $logo_id > 0 && wp_attachment_is_image( $logo_id ) ) {
+		echo wp_get_attachment_image(
+			$logo_id,
+			'full',
+			false,
+			array(
+				'class'    => 'custom-logo',
+				'alt'      => esc_attr( get_bloginfo( 'name' ) ),
+				'decoding' => 'async',
+			)
+		);
 	} else {
 		echo '<svg class="brand__mark" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false"><defs><linearGradient id="arvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6C766"/><stop offset="1" stop-color="#A8841B"/></linearGradient></defs><path d="M16 3 29 28h-6.4L16 14.6 9.4 28H3z" fill="url(#arvg)"/><rect x="11" y="21" width="10" height="2.2" fill="#0B0B0C"/></svg>';
-		echo '<span class="brand__name">Arvator</span>';
+		echo '<span class="brand__name">' . esc_html( get_bloginfo( 'name' ) ?: 'Arvator' ) . '</span>';
 	}
 	echo '</a>';
 }

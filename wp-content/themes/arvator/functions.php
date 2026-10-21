@@ -12,11 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARVATOR_THEME_VERSION', '0.1.0' );
+define( 'ARVATOR_THEME_VERSION', '0.2.0' );
 
 require_once get_theme_file_path( 'inc/template-tags.php' );
 require_once get_theme_file_path( 'inc/results.php' );
 require_once get_theme_file_path( 'inc/settings.php' );
+require_once get_theme_file_path( 'inc/customizer.php' );
 
 add_action(
 	'after_setup_theme',
@@ -109,4 +110,20 @@ add_action(
 		wp_deregister_script( 'wp-embed' );
 	},
 	100
+);
+
+/*
+ * Icône du site (favicon) : celle choisie dans Apparence > Personnaliser > Identité du site.
+ * Tant qu'aucune n'est choisie, une icône dorée intégrée évite une requête vers une icône absente.
+ */
+add_action(
+	'wp_head',
+	static function (): void {
+		if ( has_site_icon() ) {
+			return;
+		}
+		$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0B0B0C"/><path d="M16 5 27 27h-5.4L16 15.6 10.4 27H5z" fill="#C9A227"/></svg>';
+		printf( '<link rel="icon" href="data:image/svg+xml,%s" type="image/svg+xml">' . "\n", rawurlencode( $svg ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	},
+	2
 );

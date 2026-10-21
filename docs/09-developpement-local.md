@@ -5,10 +5,12 @@ Ce dépôt contient le **code** du site, pas WordPress lui-même.
 | Dossier | Contenu |
 |---|---|
 | `wp-content/themes/arvator/` | Thème doré (affichage uniquement) |
-| `wp-content/plugins/arvator-core/` | Plugin maison (licences, parrainage, espace client, admin, webhooks) : à venir |
+| `wp-content/plugins/arvator-core/` | Plugin maison : sécurité (v0.1.0) ; licences, parrainage, espace client, admin, webhooks : à venir |
+| `releases/` | Fichiers zip prêts à installer (régénérés par `bin/build-zip.sh`) |
+| `CHANGELOG.md` | Journal des versions |
 | `config/` | Source unique des chiffres et réglages |
 | `bin/sync-resultats.sh` | Régénère `data/resultats.php` et `data/tarifs.php` du thème depuis `config/*.json` (seuls les champs publics sont copiés : aucune note interne, aucun réglage de licence ou de parrainage) |
-| `bin/build-zip.sh` | Fabrique `dist/arvator-theme.zip` (à installer dans WordPress) |
+| `bin/build-zip.sh` | Fabrique `releases/arvator-theme.zip` et `releases/arvator-core.zip` (à installer dans WordPress, voir `10-installation-wordpress.md`) |
 | `docs/maquettes/` | Captures d'écran des maquettes (ordinateur, mobile) |
 
 ## Règles de construction (rappel)

@@ -35,19 +35,16 @@ get_header();
 <section class="hero">
 	<div class="container hero__inner">
 		<div class="hero__copy">
-			<p class="eyebrow">Arvator · robot de trading automatique</p>
-			<h1>Un robot de trading automatique, transparent, testé sur&nbsp;2024, 2025 et&nbsp;2026</h1>
-			<p class="lead">
-				Arvator s’installe sur votre propre compte cTrader et fonctionne dans le cloud, même ordinateur éteint.
-				Vous gardez la main sur votre compte et sur votre niveau de risque.
-			</p>
+			<p class="eyebrow"><?php echo esc_html( arvator_text( 'hero_eyebrow' ) ); ?></p>
+			<h1><?php echo esc_html( arvator_text( 'hero_title' ) ); ?></h1>
+			<p class="lead"><?php echo esc_html( arvator_text( 'hero_lead' ) ); ?></p>
 			<p class="lead lead--sub">
 				Les résultats présentés sont des <strong>performances simulées</strong> (backtest), pas des résultats réels :
 				nous les montrons toujours avec les baisses qui vont avec.
 			</p>
 			<div class="hero__cta">
-				<a class="btn btn--primary" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>">Essayer 14 jours sur compte démo</a>
-				<a class="btn btn--ghost" href="<?php echo esc_url( arvator_url( 'rapport-gratuit' ) ); ?>">Recevoir le rapport gratuit</a>
+				<?php arvator_button( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary', 'Essai gratuit · bientôt disponible' ); ?>
+				<?php arvator_button( 'rapport-gratuit', 'Recevoir le rapport gratuit', 'btn btn--ghost', 'Rapport gratuit · bientôt' ); ?>
 			</div>
 		</div>
 
@@ -129,7 +126,9 @@ get_header();
 			</p>
 		</div>
 
-		<p class="section__more"><a class="btn btn--ghost" href="<?php echo esc_url( arvator_url( 'resultats' ) ); ?>">Voir tous les résultats détaillés</a></p>
+		<?php if ( '' !== arvator_page_url( 'resultats' ) ) : ?>
+			<p class="section__more"><?php arvator_button( 'resultats', 'Voir tous les résultats détaillés', 'btn btn--ghost' ); ?></p>
+		<?php endif; ?>
 	</div>
 </section>
 
@@ -188,8 +187,8 @@ get_header();
 		</div>
 
 		<div class="hero__cta">
-			<a class="btn btn--primary" href="<?php echo esc_url( arvator_url( 'tarifs' ) ); ?>">Voir les tarifs et acheter</a>
-			<a class="btn btn--ghost" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>">Essayer d’abord <?php echo esc_html( (string) $trial ); ?> jours sur compte démo</a>
+			<?php arvator_button( 'tarifs', 'Voir les tarifs et acheter', 'btn btn--primary', 'Achat bientôt disponible' ); ?>
+			<?php arvator_button( 'essai-gratuit', 'Essayer d’abord ' . $trial . ' jours sur compte démo', 'btn btn--ghost', 'Essai gratuit · bientôt disponible' ); ?>
 		</div>
 	</div>
 </section>
@@ -201,7 +200,7 @@ get_header();
 				<h2 id="titre-essai">Essayez avant d’acheter</h2>
 				<p>14 jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader.</p>
 			</div>
-			<a class="btn btn--primary" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>">Demander mon essai gratuit</a>
+			<?php arvator_button( 'essai-gratuit', 'Demander mon essai gratuit', 'btn btn--primary', 'Essai gratuit · bientôt disponible' ); ?>
 		</div>
 	</div>
 </section>

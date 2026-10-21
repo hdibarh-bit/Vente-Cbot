@@ -31,8 +31,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<nav id="menu-principal" class="site-nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'arvator' ); ?>">
 			<?php arvator_nav( 'primary', 'site-nav__list' ); ?>
 			<div class="site-nav__actions">
-				<a class="link-quiet" href="<?php echo esc_url( arvator_url( 'espace-client' ) ); ?>"><?php esc_html_e( 'Espace client', 'arvator' ); ?></a>
-				<a class="btn btn--primary btn--sm" href="<?php echo esc_url( arvator_url( 'essai-gratuit' ) ); ?>"><?php esc_html_e( 'Essai gratuit', 'arvator' ); ?></a>
+				<?php if ( '' !== arvator_page_url( 'espace-client' ) ) : ?>
+					<a class="link-quiet" href="<?php echo esc_url( arvator_page_url( 'espace-client' ) ); ?>"><?php esc_html_e( 'Espace client', 'arvator' ); ?></a>
+				<?php endif; ?>
+				<?php arvator_button( 'essai-gratuit', 'Essai gratuit', 'btn btn--primary btn--sm', 'Essai gratuit · bientôt' ); ?>
 			</div>
 		</nav>
 	</div>
