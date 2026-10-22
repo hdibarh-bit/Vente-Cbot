@@ -81,6 +81,10 @@ final class Arvator_Privacy {
 			) );
 		}
 
+		if ( '' !== Arvator_License::account_for( $uid ) ) {
+			$data[] = self::item( 'arvator-licences', 'Licences Arvator', 'account-' . $uid, array( 'Compte cTrader' => Arvator_License::account_for( $uid ) ) );
+		}
+
 		$ref = Arvator_Referral::referrer( $uid );
 		if ( $ref ) {
 			$data[] = self::item( 'arvator-parrainage', 'Parrainage Arvator', 'referrer-' . $uid, array(
@@ -130,6 +134,8 @@ final class Arvator_Privacy {
 			}
 		}
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'licenses' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		delete_user_meta( $uid, 'arv_ctrader_account' );
 
 		// Parrainage : fiche de parrain (IBAN compris) et rattachements supprimés ; les récompenses (pièces comptables)
 		// sont gardées sans lien avec l'identité.

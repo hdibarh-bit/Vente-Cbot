@@ -45,6 +45,15 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.6.0 — 22/10/2026 — Licence automatique (n8n)
+- **Le site prévient le workflow n8n « Licences cBot – Paiements »** : achat et chaque renouvellement payé → licence prolongée ; résiliation ou remboursement → licence coupée. Jamais deux prolongations pour le même paiement, même si Stripe renvoie un message.
+- **Numéro de compte cTrader** : champ facultatif sur la page d'achat, et rubrique « Ma licence » de l'espace membre (« Activer ma licence »). Verrouillé après activation ; un changement passe par Hamid.
+- **Essai gratuit** activé automatiquement par le serveur de licences ; Hamid reçoit un email pour envoyer le robot. Si n8n ne répond pas, la demande arrive à Hamid comme avant.
+- **n8n en panne** : nouvel essai toutes les heures, email à Hamid après 10 échecs. Nouvel écran **Arvator > Licences** (suivi, bouton « Renvoyer »).
+- Espace membre : plus de clé à copier, la licence est récupérée par le robot ; date de fin et compte affichés.
+- Réglage à ajouter dans wp-config.php : `ARVATOR_N8N_TOKEN` (voir `docs/12-preparer-stripe.md` §8).
+- 361 tests automatiques réussis (fausse API n8n : aucun appel au vrai serveur pendant les tests).
+
 ### 0.5.1 — 22/10/2026
 - Le cookie de recommandation (`arv_ref`) n'est plus déposé **qu'avec l'accord** du visiteur (bandeau cookies du thème 0.6.0). S'il retire son accord, le cookie est effacé à la visite suivante.
 - Sans accord, le code du parrain reste utilisable : prérempli sur la page d'achat s'il est dans l'adresse (`/acheter/?ref=CODE`), sinon saisi à la main.

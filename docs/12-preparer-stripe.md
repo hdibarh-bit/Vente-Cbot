@@ -83,3 +83,31 @@ Sans cette ligne, le chiffrement utilise les clés secrètes de WordPress. Ne ch
 3. Se connecter avec A → Espace membre → Parrainage : prime de 225 € « en attente » et 35,88 € (10 % de l'annuel), disponibles dans 30 jours. Saisir un IBAN de test (par exemple `FR76 3000 6000 0112 3456 7890 189`).
 4. Dans Stripe, rembourser 1 500 € à B → la prime passe à « annulée ».
 5. Arvator → Parrainage (tableau de bord WordPress) : onglets Virements, Récompenses, Parrains, Réglages.
+
+## 8. Licence automatique via n8n (plugin 0.6.0)
+
+Circuit retenu (A) : Stripe prévient le site, le site prévient le workflow n8n « Licences cBot – Paiements », qui prolonge ou coupe la licence sur le serveur de licences. Le robot récupère sa licence tout seul.
+
+### 8.1 Une ligne dans `wp-config.php`
+Le jeton est celui de l'identifiant n8n « Licences cBot - jeton admin » (en-tête `x-admin-token`). Ne l'envoyez jamais par message :
+
+```php
+define( 'ARVATOR_N8N_TOKEN', 'le jeton admin du workflow' );
+```
+(Adresse par défaut : `https://n8n.cosmartis.com/webhook`. Pour une autre adresse : `define( 'ARVATOR_N8N_URL', '...' );`.)
+
+Sans cette ligne, rien n'est perdu : les envois attendent (Arvator > Licences) et partent dès que la ligne est ajoutée.
+
+### 8.2 Ce qui se passe
+- **Achat** : si le client a indiqué son numéro de compte cTrader, la licence est activée tout de suite ; sinon elle attend qu'il l'indique dans son espace membre (rubrique « Ma licence »).
+- **Chaque renouvellement payé** : la licence est prolongée d'une période (jamais deux fois pour le même paiement).
+- **Résiliation ou remboursement** : la licence est coupée.
+- **Essai gratuit** : la licence d'essai est créée tout de suite ; vous recevez un email pour envoyer le robot au client.
+- **n8n en panne** : nouvel essai toutes les heures ; après 10 échecs, vous recevez un email et le bouton « Renvoyer » apparaît dans Arvator > Licences.
+- **Changement de compte cTrader** après activation : le client vous écrit ; vous le faites dans n8n / le serveur de licences (pas encore automatique).
+
+### 8.3 Essai de bout en bout (bac à sable, 5 minutes)
+1. Acheter avec la carte `4242 4242 4242 4242` en indiquant un numéro de compte **démo** à vous.
+2. Arvator > Licences : une ligne « Paiement · Fait ». Dans n8n, la table `Clients_cBot` a une nouvelle ligne.
+3. Espace membre > Ma licence : licence active, date de fin, compte.
+4. Rembourser 1 500 € dans Stripe : une ligne « Résiliation · Fait ».

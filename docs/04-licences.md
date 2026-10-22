@@ -35,3 +35,10 @@ Vérification de licence, mode essai démo, risque par défaut 1 %, choix 1/2/3 
 5. **Récap quotidien Telegram** : ventes, abonnements, impayés, commissions.
 
 Événements envoyés par le site à n8n (webhook signé) : vente, paiement d'abonnement, échec de paiement, nouvelle commission, inscription au rapport gratuit, demande d'essai.
+
+## Ce qui est codé côté site (plugin 0.6.0, 22/10/2026)
+- Circuit A validé par Hamid : Stripe → WordPress → workflow n8n `licence-paiement` (corps JSON `compte`, `plan` = mensuel/annuel, `action` = paiement/resilier, `email`, `nom` ; en-tête `x-admin-token`). Essai : `licence-essai` (`compte`, `email`).
+- Table `license_sync` : un envoi par paiement / résiliation, origine unique (`pay:inv:<facture>`, `res:sub:<abonnement>`) → jamais deux prolongations pour un même paiement ; nouvel essai horaire, alerte après 10 échecs.
+- Numéro de compte cTrader : à l'achat (facultatif) ou dans l'espace membre ; verrouillé après activation (changement = demande à Hamid).
+- Le site n'affiche pas de clé : le serveur renvoie seulement `ok` et `expiration`, le robot récupère sa licence lui-même.
+- **Risque connu** : si n8n traite un envoi mais que sa réponse se perd (coupure réseau), l'envoi est retenté et la licence peut être prolongée deux fois. Peu probable ; à surveiller dans `Clients_cBot`. Remède durable : que le serveur de licences ignore un même identifiant de paiement reçu deux fois (le site pourrait l'envoyer).

@@ -325,7 +325,7 @@ final class Arvator_Referral {
 			return;
 		}
 		$invoice_id = (string) ( $invoice['id'] ?? '' );
-		$sub_id     = self::invoice_subscription( $invoice );
+		$sub_id     = Arvator_Stripe::invoice_subscription( $invoice );
 		$paid       = (int) ( $invoice['amount_paid'] ?? 0 );
 		if ( '' === $invoice_id || '' === $sub_id || $paid <= 0 ) {
 			return;
@@ -340,24 +340,6 @@ final class Arvator_Referral {
 			return;
 		}
 		self::add_commission( (int) $referral['referrer_user_id'], $user_id, null, 'affiliation', 'aff:inv:' . $invoice_id, self::affiliation_cents( $paid ), 'blocked' === $referral['status'], $live, (string) $referral['note'] );
-	}
-
-	/** Identifiant de l'abonnement d'une facture (son emplacement dépend de la version de l'API Stripe). */
-	private static function invoice_subscription( array $invoice ): string {
-		$candidates = array(
-			$invoice['subscription'] ?? null,
-			$invoice['parent']['subscription_details']['subscription'] ?? null,
-			$invoice['lines']['data'][0]['subscription'] ?? null,
-		);
-		foreach ( $candidates as $c ) {
-			if ( is_array( $c ) ) {
-				$c = $c['id'] ?? null;
-			}
-			if ( is_string( $c ) && '' !== $c ) {
-				return $c;
-			}
-		}
-		return '';
 	}
 
 	/**

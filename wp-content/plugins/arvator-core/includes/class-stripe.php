@@ -136,6 +136,24 @@ final class Arvator_Stripe {
 		return implode( '&', $flat );
 	}
 
+	/** Identifiant de l'abonnement d'une facture (son emplacement dépend de la version de l'API Stripe). */
+	public static function invoice_subscription( array $invoice ): string {
+		$candidates = array(
+			$invoice['subscription'] ?? null,
+			$invoice['parent']['subscription_details']['subscription'] ?? null,
+			$invoice['lines']['data'][0]['subscription'] ?? null,
+		);
+		foreach ( $candidates as $c ) {
+			if ( is_array( $c ) ) {
+				$c = $c['id'] ?? null;
+			}
+			if ( is_string( $c ) && '' !== $c ) {
+				return $c;
+			}
+		}
+		return '';
+	}
+
 	/**
 	 * Vérifie la signature d'un webhook : en-tête « t=...,v1=... », HMAC-SHA256 de « t.corps ».
 	 * Refuse les messages trop anciens (5 minutes) pour empêcher le rejeu.

@@ -8,9 +8,11 @@ export ARV_URL="http://127.0.0.1:${PORT}"
 export ARV_MAILLOG="${ARV_MAILLOG:-/tmp/arvator-mail.log}"
 export ARV_STRIPE_LOG="${ARV_STRIPE_LOG:-/tmp/arvator-stripe.log}"
 export ARV_STRIPE_FIXTURES="${ARV_STRIPE_FIXTURES:-/tmp/arvator-stripe-fixtures.json}"
-# Fausse API Stripe pour les tests (aucun appel réel à Stripe).
+export ARV_N8N_LOG="${ARV_N8N_LOG:-/tmp/arvator-n8n.log}"
+export ARV_N8N_FIXTURES="${ARV_N8N_FIXTURES:-/tmp/arvator-n8n-fixtures.json}"
+# Fausses API Stripe et n8n, journal des emails (aucun appel réel, aucun email envoyé).
 mkdir -p "$ARV_WP/wp-content/mu-plugins"
-cp "$(dirname "$0")/mu-plugins/arvator-test-stripe.php" "$(dirname "$0")/mu-plugins/arvator-test-mail.php" "$ARV_WP/wp-content/mu-plugins/"
+cp "$(dirname "$0")/mu-plugins/arvator-test-stripe.php" "$(dirname "$0")/mu-plugins/arvator-test-mail.php" "$(dirname "$0")/mu-plugins/arvator-test-n8n.php" "$ARV_WP/wp-content/mu-plugins/"
 php -S "127.0.0.1:${PORT}" -t "$ARV_WP" >/tmp/arvator-test-server.log 2>&1 &
 SERVER=$!
 trap 'kill $SERVER 2>/dev/null || true' EXIT

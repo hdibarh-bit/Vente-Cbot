@@ -96,6 +96,12 @@ final class Arvator_Checkout {
 			<?php endif; ?>
 
 			<p>
+				<label for="arv-buy-account">Numéro de votre compte cTrader <span class="muted">(facultatif maintenant)</span></label>
+				<input id="arv-buy-account" name="account" type="text" inputmode="numeric" pattern="[0-9]{4,12}" maxlength="12" autocomplete="off" value="<?php echo esc_attr( $user_id ? Arvator_License::account_for( $user_id ) : '' ); ?>">
+				<span class="muted">Le compte sur lequel le robot va tourner : la licence y est liée. Vous pouvez aussi l’indiquer plus tard dans votre espace membre.</span>
+			</p>
+
+			<p>
 				<label for="arv-buy-ref">Code de recommandation <span class="muted">(facultatif)</span></label>
 				<input id="arv-buy-ref" name="ref" type="text" maxlength="12" autocomplete="off" value="<?php echo esc_attr( self::prefill_code() ); ?>">
 				<span class="muted">Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé.</span>
@@ -167,6 +173,11 @@ final class Arvator_Checkout {
 			Arvator_Support::redirect( $back, 'achat_code' );
 		}
 
+		$account = isset( $_POST['account'] ) ? Arvator_License::clean_account( sanitize_text_field( wp_unslash( (string) $_POST['account'] ) ) ) : '';
+		if ( '' !== $account && ! Arvator_License::valid_account( $account ) ) {
+			Arvator_Support::redirect( $back, 'achat_compte' );
+		}
+
 		$waiver = ! empty( $_POST['waiver'] );
 		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
 			Arvator_Support::redirect( $back, 'achat_renonciation' );
@@ -193,6 +204,7 @@ final class Arvator_Checkout {
 				'source'        => 'arvator',
 				'trial_waiver'  => $waiver ? '1' : '0',
 				'ref'           => $ref,
+				'compte'        => $account,
 			),
 			'subscription_data'     => array(
 				'metadata' => array(

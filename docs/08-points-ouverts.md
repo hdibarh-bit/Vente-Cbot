@@ -48,3 +48,9 @@
 
 ## Comptes / clés à demander au bon moment
 Stripe (clés test puis prod, webhook secret) · accès WordPress/Hostinger · n8n (URL webhook + secret) · paire de clés ECDSA P-256 pour les licences (clé privée côté n8n uniquement).
+
+## Licence (22/10/2026)
+- [ ] Hamid : ajouter `ARVATOR_N8N_TOKEN` dans wp-config.php (guide `12-preparer-stripe.md` §8).
+- [ ] Changement de compte cTrader après activation : aujourd'hui manuel (le client écrit, Hamid change dans n8n). À automatiser si le serveur de licences reçoit une action « changer de compte ».
+- [ ] Essai gratuit : la licence est automatique, mais le fichier du robot est encore envoyé à la main par Hamid. Proposition : ouvrir le téléchargement aux personnes en essai depuis un compte membre.
+- [ ] Sécurité anti-doublon côté serveur de licences : ignorer un même identifiant de paiement reçu deux fois.

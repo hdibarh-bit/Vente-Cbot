@@ -77,7 +77,7 @@ final class Arvator_Webhook {
 				'checkout.session.completed'    => self::on_checkout_completed( $object, $live ),
 				'customer.subscription.updated',
 				'customer.subscription.deleted' => self::on_subscription_changed( $object, 'customer.subscription.deleted' === $type ),
-				'invoice.paid'                  => Arvator_Referral::on_invoice_paid( $object, $live ),
+				'invoice.paid'                  => self::on_invoice_paid( $object, $live ),
 				'invoice.payment_failed'        => self::on_payment_failed( $object ),
 				'charge.refunded'               => self::on_refund( $object ),
 				'charge.dispute.created'        => self::on_dispute( $object ),
@@ -160,6 +160,15 @@ final class Arvator_Webhook {
 		if ( $order_id > 0 ) {
 			Arvator_Referral::on_purchase( $user_id, $order_id, $full, $live );
 		}
+
+		// Licence : numéro de compte cTrader saisi à l'achat (s'il n'y en a pas déjà un), puis activation via n8n.
+		$account = Arvator_License::clean_account( (string) ( $full['metadata']['compte'] ?? '' ) );
+		if ( '' === Arvator_License::account_for( $user_id ) && Arvator_License::valid_account( $account ) && ! Arvator_License::activated( $user_id ) ) {
+			update_user_meta( $user_id, 'arv_ctrader_account', $account );
+		}
+		$plan = is_array( $full['subscription'] ?? null ) ? Arvator_Stripe::plan_for_price( (string) ( $full['subscription']['items']['data'][0]['price']['id'] ?? '' ) ) : '';
+		$plan = '' !== $plan ? $plan : (string) ( $full['metadata']['plan'] ?? 'monthly' );
+		Arvator_License::on_paid( $user_id, $plan, '' !== (string) ( $full['invoice'] ?? '' ) ? 'pay:inv:' . $full['invoice'] : 'pay:sess:' . $session_id );
 
 		Arvator_Repo::log_event( 'purchase', $user_id, array( 'session' => $session_id, 'amount_cents' => $amount ) );
 		self::send_confirmation( $user_id, $created );
@@ -257,6 +266,35 @@ final class Arvator_Webhook {
 				$sub_id
 			)
 		);
+		if ( $deleted ) {
+			$row = $wpdb->get_row( $wpdb->prepare( 'SELECT user_id, plan FROM ' . Arvator_Repo::table( 'subscriptions' ) . ' WHERE stripe_subscription_id = %s', $sub_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			if ( is_array( $row ) ) {
+				Arvator_License::on_cancel( (int) $row['user_id'], (string) $row['plan'], 'res:sub:' . $sub_id );
+			}
+		}
+	}
+
+	/**
+	 * Facture payée : renouvellement de la licence (le premier paiement est traité à l'achat) et récompense du parrain.
+	 *
+	 * @param array<string, mixed> $invoice
+	 */
+	private static function on_invoice_paid( array $invoice, bool $live ): void {
+		Arvator_Referral::on_invoice_paid( $invoice, $live );
+		if ( 'subscription_create' === ( $invoice['billing_reason'] ?? '' ) || (int) ( $invoice['amount_paid'] ?? 0 ) <= 0 ) {
+			return;
+		}
+		$sub_id = Arvator_Stripe::invoice_subscription( $invoice );
+		$inv_id = (string) ( $invoice['id'] ?? '' );
+		if ( '' === $sub_id || '' === $inv_id ) {
+			return;
+		}
+		global $wpdb;
+		$sub = $wpdb->get_row( $wpdb->prepare( 'SELECT user_id, plan FROM ' . Arvator_Repo::table( 'subscriptions' ) . ' WHERE stripe_subscription_id = %s', $sub_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		if ( ! is_array( $sub ) || ! Arvator_Repo::has_paid_order( (int) $sub['user_id'] ) ) {
+			return;
+		}
+		Arvator_License::on_paid( (int) $sub['user_id'], (string) $sub['plan'], 'pay:inv:' . $inv_id );
 	}
 
 	/** @param array<string, mixed> $invoice */
@@ -307,8 +345,11 @@ final class Arvator_Webhook {
 			$wpdb->prepare( 'UPDATE ' . Arvator_Repo::table( 'licenses' ) . " SET status = 'revoked', updated_at = %s WHERE user_id = %d AND status = 'active'", $now, $user_id )
 		);
 
-		// Arrêt de l'abonnement chez Stripe pour qu'il ne soit plus facturé.
+		// Arrêt de l'abonnement chez Stripe pour qu'il ne soit plus facturé, et coupure de la licence (via n8n).
 		$subs = $wpdb->get_col( $wpdb->prepare( 'SELECT stripe_subscription_id FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE user_id = %d AND status IN ('active','trialing','past_due') AND stripe_subscription_id IS NOT NULL", $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$plan = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT plan FROM ' . Arvator_Repo::table( 'subscriptions' ) . ' WHERE user_id = %d ORDER BY id DESC LIMIT 1', $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// Même origine que la résiliation que Stripe enverra ensuite : la licence n'est coupée qu'une fois.
+		Arvator_License::on_cancel( $user_id, $plan, $subs ? 'res:sub:' . $subs[0] : 'res:order:' . (int) $order['id'] );
 		foreach ( (array) $subs as $sub_id ) {
 			$res = Arvator_Stripe::request( 'DELETE', 'subscriptions/' . rawurlencode( (string) $sub_id ) );
 			if ( is_wp_error( $res ) ) {

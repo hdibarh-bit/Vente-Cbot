@@ -684,7 +684,10 @@ check( 'essai_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', a
 check( 'essai_invalid' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'email' => 'nope' ) + $tgood ) ), 'email invalide refusé' );
 check( ! Arvator_Trial::has_trial( $trial_email ), 'rien d\'enregistré pour les demandes refusées' );
 @unlink( $log );
-check( 'essai_ok' === notice_of( $anon->post( '/wp-admin/admin-post.php', $tgood ) ), 'demande valide acceptée' );
+// n8n injoignable ici : la demande doit quand même être enregistrée et transmise à Hamid (activation à la main).
+file_put_contents( (string) getenv( 'ARV_N8N_FIXTURES' ), wp_json_encode( array( 'licence-essai' => array( '__down' => true ) ) ) );
+check( 'essai_ok' === notice_of( $anon->post( '/wp-admin/admin-post.php', $tgood ) ), 'demande valide acceptée (n8n injoignable : traitée à la main)' );
+@unlink( (string) getenv( 'ARV_N8N_FIXTURES' ) );
 check( Arvator_Trial::has_trial( $trial_email ) && Arvator_Trial::has_trial( strtoupper( $trial_email ) ), 'demande enregistrée (email insensible à la casse)' );
 $m = mails();
 check( 2 === count( $m ) && 'contact@cosmartis.com' === $m[0]->to && str_contains( $m[0]->message, $acct ) && $trial_email === $m[1]->to && str_contains( $m[1]->message, 'droit de rétractation' ), 'email à Hamid + confirmation au demandeur avec le rappel de renonciation' );
@@ -1064,6 +1067,215 @@ $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id LIKE '%$tag%'" );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'events' ) . " WHERE external_id LIKE 'stripe:evt\\_{$tag}%'" );
 $set_fix( array() );
+@unlink( $stripe_log );
+
+
+/* ======================================================================== K. Licence via n8n */
+title( 'K. Licence : liaison avec le workflow n8n (paiement, renouvellement, résiliation, essai)' );
+clear_transients();
+$n8n_log = (string) getenv( 'ARV_N8N_LOG' );
+$n8n_fix = (string) getenv( 'ARV_N8N_FIXTURES' );
+@unlink( $n8n_log );
+@unlink( $n8n_fix );
+$n8n_set   = static function ( array $fix ) use ( $n8n_fix ): void {
+	file_put_contents( $n8n_fix, wp_json_encode( $fix ) );
+};
+$n8n_calls = static function () use ( $n8n_log ): array {
+	return is_file( $n8n_log ) ? array_map( static fn( $l ) => json_decode( $l, true ), file( $n8n_log, FILE_IGNORE_NEW_LINES ) ) : array();
+};
+$sync = static function ( int $uid ) use ( $wpdb ): array {
+	return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'license_sync' ) . ' WHERE user_id = %d ORDER BY id', $uid ), ARRAY_A );
+};
+check( $wpdb->get_var( "SHOW TABLES LIKE '" . Arvator_Repo::table( 'license_sync' ) . "'" ) === Arvator_Repo::table( 'license_sync' ), 'table « license_sync » créée' );
+check( Arvator_License::valid_account( '5936574' ) && ! Arvator_License::valid_account( '12' ) && ! Arvator_License::valid_account( "59365'74" ) && '5936574' === Arvator_License::clean_account( ' 593 6574 ' ), 'numéro de compte : chiffres uniquement (4 à 12)' );
+
+// -- Page d'achat : numéro de compte facultatif, vérifié, transmis à Stripe
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_k', 'url' => 'https://checkout.stripe.com/c/pay/cs_k' ) ) );
+@unlink( $stripe_log );
+$kb    = new Browser( $url );
+$kpage = $kb->get( '/acheter/' );
+check( str_contains( $kpage['body'], 'name="account"' ) && ! preg_match( '/name="account"[^>]*required/', $kpage['body'] ), 'page d\'achat : champ « compte cTrader » facultatif' );
+$kgood = array( 'action' => 'arvator_checkout', '_arv_nonce' => field_in_form( $kpage['body'], 'arvator_checkout', '_arv_nonce' ), 'plan' => 'annual', 'email' => "k1_$tag@example.org", 'cgv' => '1', 'risks' => '1', 'account' => '7654321' );
+check( 'achat_compte' === notice_of( $kb->post( '/wp-admin/admin-post.php', array( 'account' => '12ab' ) + $kgood ) ) && 0 === count( $stripe_calls() ), 'numéro de compte invalide : refusé avant Stripe' );
+$kb->post( '/wp-admin/admin-post.php', $kgood );
+$kbody = array();
+parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $kbody );
+check( '7654321' === ( $kbody['metadata']['compte'] ?? '' ), 'numéro de compte transmis à Stripe avec la commande' );
+
+// -- Achat confirmé avec numéro de compte : licence activée via n8n
+$ksess = static function ( string $sid, string $email, string $compte, string $plan = 'annual' ) use ( $full ): array {
+	$s                       = $full;
+	$s['id']                 = $sid;
+	$s['customer']           = 'cus_' . $sid;
+	$s['customer_email']     = $email;
+	$s['customer_details']   = array( 'email' => $email );
+	$s['invoice']            = 'in_' . $sid;
+	$s['metadata']           = array( 'plan' => $plan, 'compte' => $compte );
+	$s['subscription']['id'] = 'sub_' . $sid;
+	$s['subscription']['items']['data'][0]['price']['id'] = 'annual' === $plan ? 'price_annual_test' : 'price_monthly_test';
+	return $s;
+};
+$k1 = "cs_k1_$tag";
+$buy_hook( $k1, $ksess( $k1, "k1_$tag@example.org", '7654321' ), "evt_{$tag}_k1" );
+$k1u   = get_user_by( 'email', "k1_$tag@example.org" );
+$k1id  = $k1u ? (int) $k1u->ID : 0;
+$calls = $n8n_calls();
+check( 1 === count( $calls ) && 'licence-paiement' === $calls[0]['endpoint'] && 'tok_test_fake' === $calls[0]['token'], 'achat : un appel au workflow n8n, avec le jeton du wp-config', wp_json_encode( $calls ) );
+check( array( 'compte' => '7654321', 'plan' => 'annuel', 'action' => 'paiement' ) === array_intersect_key( (array) ( $calls[0]['body'] ?? array() ), array_flip( array( 'compte', 'plan', 'action' ) ) ) && "k1_$tag@example.org" === ( $calls[0]['body']['email'] ?? '' ), 'données envoyées : compte, formule annuelle, paiement, email' );
+$klic = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'licenses' ) . ' WHERE user_id = %d', $k1id ), ARRAY_A );
+check( is_array( $klic ) && 'active' === $klic['status'] && '7654321' === $klic['account_number'] && str_starts_with( (string) $klic['expires_at'], '2030-01-15' ) && '' === $klic['license_key'], 'licence enregistrée : active, compte, date de fin renvoyée par le serveur' );
+$buy_hook( $k1, $ksess( $k1, "k1_$tag@example.org", '7654321' ), "evt_{$tag}_k1" );
+$buy_hook( $k1, $ksess( $k1, "k1_$tag@example.org", '7654321' ), "evt_{$tag}_k1b" );
+check( 1 === count( $n8n_calls() ), 'idempotence : achat reçu 3 fois → licence prolongée une seule fois' );
+
+// -- Renouvellements
+$e = $inv( "evt_{$tag}_k2", "sub_$k1", 35880, 'subscription_create' );
+$post_raw( $e, $sign( $e ) );
+check( 1 === count( $n8n_calls() ), 'facture de création : déjà traitée à l\'achat, pas de 2e prolongation' );
+$e = $inv( "evt_{$tag}_k3", "sub_$k1", 35880 );
+$post_raw( $e, $sign( $e ) );
+$post_raw( $e, $sign( $e ) );
+$calls = $n8n_calls();
+check( 2 === count( $calls ) && 'paiement' === $calls[1]['body']['action'] && 'annuel' === $calls[1]['body']['plan'], 'renouvellement payé : licence prolongée une fois (même reçu deux fois)' );
+
+// -- n8n injoignable : retenté plus tard, sans perte
+$n8n_set( array( 'licence-paiement' => array( '__down' => true ) ) );
+$e = $inv( "evt_{$tag}_k4", "sub_$k1", 35880 );
+$r = $post_raw( $e, $sign( $e ) );
+$last = $sync( $k1id );
+$last = end( $last );
+check( 200 === $r['code'] && 'pending' === $last['status'] && 1 === (int) $last['attempts'], 'n8n injoignable : Stripe reçoit « ok », l\'envoi reste à faire' );
+@unlink( $n8n_fix );
+Arvator_License::retry_pending();
+$last = $sync( $k1id );
+$last = end( $last );
+check( 'done' === $last['status'] && 4 === count( $n8n_calls() ), 'tâche horaire : l\'envoi part dès que n8n répond' );
+$n8n_set( array( 'licence-paiement' => array( '__down' => true ) ) );
+@unlink( $log );
+$e = $inv( "evt_{$tag}_k5", "sub_$k1", 35880 );
+$post_raw( $e, $sign( $e ) );
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'license_sync' ) . " SET attempts = 9 WHERE source_id = 'pay:inv:in_evt_{$tag}_k5'" );
+Arvator_License::retry_pending();
+check( 'error' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE source_id = 'pay:inv:in_evt_{$tag}_k5'" ) && (bool) array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to && str_contains( $x->subject, 'licence non mise à jour' ) ), 'après 10 essais : envoi en erreur et Hamid prévenu' );
+
+// -- Administration : suivi et « Renvoyer »
+@unlink( $n8n_fix );
+$la = $adm->get( '/wp-admin/admin.php?page=arvator-licences' );
+check( 200 === $la['code'] && str_contains( $la['body'], 'configurée' ) && str_contains( $la['body'], '7654321' ) && str_contains( $la['body'], 'Renvoyer' ), 'administration : page Licences, envoi en erreur avec bouton « Renvoyer »' );
+$err_id = (int) $wpdb->get_var( 'SELECT id FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE source_id = 'pay:inv:in_evt_{$tag}_k5'" );
+$rn     = '';
+foreach ( preg_split( '/<form\b/i', $la['body'] ) as $chunk ) {
+	if ( str_contains( $chunk, 'name="id" value="' . $err_id . '"' ) ) {
+		$rn = field( $chunk, '_arv_nonce' );
+	}
+}
+check( ! str_contains( $pb->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_license_retry', 'id' => $err_id, '_arv_nonce' => $rn ) )['location'], 'renvoye=1' ), 'un client ne peut pas relancer un envoi' );
+$adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_license_retry', 'id' => $err_id, '_arv_nonce' => $rn ) );
+check( 'done' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE id = $err_id" ), '« Renvoyer » : l\'envoi part' );
+
+// -- Refus du serveur de licences
+$n8n_set( array( 'licence-paiement' => array( 'ok' => false, 'raison' => 'compte bloqué' ) ) );
+@unlink( $log );
+$e = $inv( "evt_{$tag}_k6", "sub_$k1", 35880 );
+$post_raw( $e, $sign( $e ) );
+$row = $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE source_id = 'pay:inv:in_evt_{$tag}_k6'", ARRAY_A );
+check( 'error' === $row['status'] && 'compte bloqué' === $row['last_error'] && (bool) array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to ), 'refus du serveur : noté et Hamid prévenu' );
+@unlink( $n8n_fix );
+
+// -- Résiliation de l'abonnement : licence coupée une seule fois
+$before = count( $n8n_calls() );
+$e      = $event( "evt_{$tag}_k7", 'customer.subscription.deleted', array( 'id' => "sub_$k1", 'status' => 'canceled', 'items' => array( 'data' => array( array( 'current_period_end' => 1910000000 ) ) ) ) );
+$post_raw( $e, $sign( $e ) );
+$e2 = $event( "evt_{$tag}_k7b", 'customer.subscription.deleted', array( 'id' => "sub_$k1", 'status' => 'canceled' ) );
+$post_raw( $e2, $sign( $e2 ) );
+$calls = $n8n_calls();
+check( $before + 1 === count( $calls ) && 'resilier' === end( $calls )['body']['action'] && '7654321' === end( $calls )['body']['compte'], 'abonnement résilié : « resilier » envoyé une seule fois' );
+check( 'canceled' === $wpdb->get_var( $wpdb->prepare( 'SELECT status FROM ' . Arvator_Repo::table( 'licenses' ) . ' WHERE user_id = %d', $k1id ) ), 'licence affichée « résiliée »' );
+
+// -- Achat sans numéro de compte : la licence attend, puis s'active depuis l'espace membre
+@unlink( $n8n_log );
+$k2 = "cs_k2_$tag";
+$buy_hook( $k2, $ksess( $k2, "k2_$tag@example.org", '', 'monthly' ), "evt_{$tag}_k8" );
+$k2u  = get_user_by( 'email', "k2_$tag@example.org" );
+$k2id = (int) $k2u->ID;
+check( 0 === count( $n8n_calls() ) && 'waiting_account' === ( $sync( $k2id )[0]['status'] ?? '' ), 'achat sans numéro de compte : rien n\'est envoyé, la licence attend' );
+$kpw = 'Client-K2-Test-Only-' . $tag;
+wp_set_password( $kpw, $k2id );
+$kc = new Browser( $url );
+member_login( $kc, "k2_$tag@example.org", $kpw );
+check( str_contains( $kc->get( '/espace-membre/' )['body'], 'attend le numéro de votre compte cTrader' ), 'tableau de bord : rappel « indiquez votre numéro de compte »' );
+$ls = $kc->get( '/espace-membre/?section=licence' );
+$an = field_in_form( $ls['body'], 'arvator_account', '_arv_nonce' );
+check( '' !== $an && str_contains( $ls['body'], 'Activer ma licence' ), 'espace membre : formulaire « Activer ma licence »' );
+check( 'generic_invalid' === notice_of( $kc->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_account', '_arv_nonce' => 'faux', 'account' => '5550001' ) ) ), 'numéro de compte sans clé de sécurité valide refusé' );
+check( 'compte_invalide' === notice_of( $kc->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_account', '_arv_nonce' => $an, 'account' => '55a' ) ) ), 'numéro de compte invalide refusé' );
+check( 'compte_active' === notice_of( $kc->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_account', '_arv_nonce' => $an, 'account' => '5550001' ) ) ), 'numéro saisi : licence activée' );
+$calls = $n8n_calls();
+check( 1 === count( $calls ) && '5550001' === $calls[0]['body']['compte'] && 'mensuel' === $calls[0]['body']['plan'], 'envoi à n8n avec le bon compte et la formule mensuelle' );
+$ls = $kc->get( '/espace-membre/?section=licence' );
+check( str_contains( $ls['body'], 'Rien à copier' ) && str_contains( $ls['body'], '5550001' ) && ! str_contains( $ls['body'], 'arvator_account' ), 'licence affichée sans clé à copier ; le numéro n\'est plus modifiable seul' );
+check( 'compte_verrouille' === notice_of( $kc->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_account', '_arv_nonce' => $an, 'account' => '5550002' ) ) ) && '5550001' === Arvator_License::account_for( $k2id ), 'changement de compte après activation : refusé (passe par Hamid)' );
+$anon_acc = $anon->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_account', '_arv_nonce' => $an, 'account' => '5550003' ) );
+check( ! str_contains( $anon_acc['location'], 'compte_' ), 'sans être connecté : refusé' );
+
+// -- Remboursement : licence coupée une seule fois (même si Stripe envoie ensuite la résiliation)
+@unlink( $n8n_log );
+$set_fix( array( "DELETE subscriptions/sub_$k2" => array( 'id' => "sub_$k2", 'status' => 'canceled' ) ) );
+$e = $event( "evt_{$tag}_k9", 'charge.refunded', array( 'id' => "ch_k2_$tag", 'customer' => "cus_$k2", 'invoice' => "in_$k2", 'amount_refunded' => 150000 ) );
+$post_raw( $e, $sign( $e ) );
+$e = $event( "evt_{$tag}_k10", 'customer.subscription.deleted', array( 'id' => "sub_$k2", 'status' => 'canceled' ) );
+$post_raw( $e, $sign( $e ) );
+$calls = $n8n_calls();
+check( 1 === count( $calls ) && 'resilier' === $calls[0]['body']['action'], 'remboursement : « resilier » envoyé une seule fois' );
+
+// -- Remboursement avant activation : rien à couper, l'attente est annulée
+@unlink( $n8n_log );
+$k3 = "cs_k3_$tag";
+$buy_hook( $k3, $ksess( $k3, "k3_$tag@example.org", '' ), "evt_{$tag}_k11" );
+$k3id = (int) get_user_by( 'email', "k3_$tag@example.org" )->ID;
+$set_fix( array( "DELETE subscriptions/sub_$k3" => array( 'id' => "sub_$k3", 'status' => 'canceled' ) ) );
+$e = $event( "evt_{$tag}_k12", 'charge.refunded', array( 'id' => "ch_k3_$tag", 'customer' => "cus_$k3", 'invoice' => "in_$k3", 'amount_refunded' => 150000 ) );
+$post_raw( $e, $sign( $e ) );
+check( 0 === count( $n8n_calls() ) && 'canceled' === ( $sync( $k3id )[0]['status'] ?? '' ), 'remboursé avant activation : aucun envoi, attente annulée' );
+check( false === Arvator_License::set_account( $k3id, '5550009' ) || 0 === count( $n8n_calls() ), 'numéro saisi après remboursement : aucune licence créée' );
+
+// -- Essai gratuit activé automatiquement
+clear_transients();
+$te = "essai_k_$tag@example.org";
+$ta = (string) ( 200000 + (int) hexdec( substr( $tag, 0, 4 ) ) );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE 'essai_k%$tag@example.org'" );
+@unlink( $n8n_log );
+@unlink( $log );
+$tb = new Browser( $url );
+$tp = $tb->get( '/essai-gratuit/' );
+$tq = array( 'action' => 'arvator_trial', '_arv_nonce' => field_in_form( $tp['body'], 'arvator_trial', '_arv_nonce' ), 'email' => $te, 'account' => $ta, 'waiver' => '1', 'consent' => '1' );
+check( 'essai_actif' === notice_of( $tb->post( '/wp-admin/admin-post.php', $tq ) ), 'essai : activé automatiquement' );
+$calls = $n8n_calls();
+check( 1 === count( $calls ) && 'licence-essai' === $calls[0]['endpoint'] && $ta === $calls[0]['body']['compte'] && $te === $calls[0]['body']['email'], 'essai : demande envoyée au workflow « licence-essai »' );
+check( 'active' === $wpdb->get_var( "SELECT status FROM " . Arvator_Repo::table( 'trials' ) . " WHERE email = '$te'" ), 'essai noté « actif »' );
+$m = mails();
+check( 2 === count( $m ) && str_contains( $m[0]->subject, 'robot à envoyer' ) && $te === $m[1]->to && str_contains( $m[1]->message, 'est activé' ) && str_contains( $m[1]->message, 'droit de rétractation' ), 'emails : Hamid (robot à envoyer) + client (essai activé, rappel de renonciation)' );
+$n8n_set( array( 'licence-essai' => array( 'ok' => false, 'raison' => 'essai déjà utilisé' ) ) );
+$tq2 = array( 'email' => "essai_k2_$tag@example.org", 'account' => (string) ( (int) $ta + 1 ) ) + $tq;
+check( 'essai_refuse' === notice_of( $tb->post( '/wp-admin/admin-post.php', $tq2 ) ), 'essai refusé par le serveur : message clair au visiteur' );
+
+// -- Nettoyage du bloc K
+foreach ( array( "k1_$tag@example.org", "k2_$tag@example.org", "k3_$tag@example.org" ) as $em ) {
+	$u = get_user_by( 'email', $em );
+	if ( $u ) {
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) . ' WHERE user_id = %d', $u->ID ) );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'licenses' ) . ' WHERE user_id = %d', $u->ID ) );
+		Arvator_Repo::delete_test_rows_for_user( (int) $u->ID );
+		wp_delete_user( (int) $u->ID );
+	}
+}
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id LIKE '%$tag%'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id LIKE '%$tag%'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE 'essai_k%$tag@example.org'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'events' ) . " WHERE external_id LIKE 'stripe:evt\\_{$tag}%'" );
+$set_fix( array() );
+@unlink( $n8n_fix );
+@unlink( $n8n_log );
 @unlink( $stripe_log );
 
 /* ======================================================================== Nettoyage */

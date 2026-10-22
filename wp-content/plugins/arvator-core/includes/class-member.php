@@ -120,6 +120,9 @@ final class Arvator_Member {
 		$subs   = Arvator_Repo::subscriptions_for_user( $user_id );
 		$lics   = Arvator_Repo::licenses_for_user( $user_id );
 		$paid   = array_values( array_filter( $orders, static fn( array $o ): bool => 'paid' === $o['status'] ) );
+		if ( Arvator_License::waiting( $user_id ) ) {
+			echo '<p class="arv-notice arv-notice--err">Votre licence attend le numéro de votre compte cTrader. <a href="' . esc_url( self::url( 'licence' ) ) . '">L’indiquer maintenant</a></p>';
+		}
 		?>
 		<div class="arv-cards">
 			<section class="arv-card">
@@ -148,7 +151,7 @@ final class Arvator_Member {
 				<?php if ( $lics ) : ?>
 					<p><strong><?php echo esc_html( self::status_label( 'license', (string) $lics[0]['status'] ) ); ?></strong></p>
 					<p class="muted">Valable jusqu’au <?php echo esc_html( self::date( (string) $lics[0]['expires_at'] ) ); ?></p>
-					<p><a href="<?php echo esc_url( self::url( 'licence' ) ); ?>">Voir ma clé</a></p>
+					<p><a href="<?php echo esc_url( self::url( 'licence' ) ); ?>">Voir le détail</a></p>
 				<?php else : ?>
 					<p>Aucune licence pour le moment.</p>
 				<?php endif; ?>
@@ -208,8 +211,11 @@ final class Arvator_Member {
 
 	private static function section_license( int $user_id ): void {
 		$lics = Arvator_Repo::licenses_for_user( $user_id );
+		if ( Arvator_Repo::has_paid_order( $user_id ) ) {
+			Arvator_License::render_account_form( $user_id );
+		}
 		if ( ! $lics ) {
-			echo '<p>Aucune licence pour le moment. Elle apparaît ici après votre achat.</p>';
+			echo '<p>Aucune licence pour le moment. Elle apparaît ici après votre achat, dès que votre numéro de compte cTrader est connu.</p>';
 			return;
 		}
 		foreach ( $lics as $i => $l ) {
@@ -223,9 +229,13 @@ final class Arvator_Member {
 				</h3>
 				<p class="muted">Valable jusqu’au <?php echo esc_html( self::date( (string) $l['expires_at'] ) ); ?>
 					<?php echo ! empty( $l['account_number'] ) ? ' · Compte cTrader n° ' . esc_html( (string) $l['account_number'] ) : ''; ?></p>
-				<label for="<?php echo esc_attr( $field ); ?>">Votre clé de licence</label>
-				<textarea id="<?php echo esc_attr( $field ); ?>" class="arv-key" readonly rows="4"><?php echo esc_textarea( (string) $l['license_key'] ); ?></textarea>
-				<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#<?php echo esc_attr( $field ); ?>">Copier la clé</button></p>
+				<?php if ( '' === (string) $l['license_key'] ) : ?>
+					<p>Rien à copier : le robot récupère sa licence tout seul à son démarrage, puis la vérifie régulièrement. Elle est renouvelée automatiquement à chaque paiement de votre abonnement.</p>
+				<?php else : ?>
+					<label for="<?php echo esc_attr( $field ); ?>">Votre clé de licence</label>
+					<textarea id="<?php echo esc_attr( $field ); ?>" class="arv-key" readonly rows="4"><?php echo esc_textarea( (string) $l['license_key'] ); ?></textarea>
+					<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#<?php echo esc_attr( $field ); ?>">Copier la clé</button></p>
+				<?php endif; ?>
 			</section>
 			<?php
 		}
@@ -534,7 +544,8 @@ final class Arvator_Member {
 			'license'      => array(
 				'active'  => 'Active',
 				'expired' => 'Expirée',
-				'revoked' => 'Révoquée',
+				'revoked'  => 'Révoquée',
+				'canceled' => 'Résiliée',
 			),
 		);
 		return $labels[ $kind ][ $status ] ?? ucfirst( $status );

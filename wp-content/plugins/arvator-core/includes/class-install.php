@@ -184,6 +184,28 @@ final class Arvator_Install {
 ) $charset;"
 		);
 
+		// Envois au workflow n8n de licence (paiement, résiliation). source_id unique = jamais deux prolongations pour un paiement.
+		dbDelta(
+			"CREATE TABLE {$p}license_sync (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  action VARCHAR(20) NOT NULL,
+  plan VARCHAR(10) NOT NULL,
+  account VARCHAR(40) NULL,
+  source_id VARCHAR(190) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  attempts INT UNSIGNED NOT NULL DEFAULT 0,
+  last_error VARCHAR(255) NULL,
+  response TEXT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY source_id (source_id),
+  KEY user_id (user_id),
+  KEY status (status)
+) $charset;"
+		);
+
 		// Journal des événements (téléchargements, webhooks, etc.). external_id unique = traitement idempotent.
 		dbDelta(
 			"CREATE TABLE {$p}events (
