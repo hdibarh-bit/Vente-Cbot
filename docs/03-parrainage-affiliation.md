@@ -30,3 +30,4 @@ Un parrain qui n'est pas client touche ses commissions comme les autres.
 - Anti-fraude : même compte, même email, même client Stripe ou même carte (empreinte Stripe) → récompenses bloquées + email d'alerte ; l'administrateur débloque ou annule.
 - Administration (Arvator > Parrainage) : virements (lot → CSV nom/IBAN/montant → « virements effectués » → email au parrain), récompenses, parrains (suspendre), réglages.
 - Le parrain ne voit aucune donnée personnelle de ses filleuls.
+- **22/10/2026 (Hamid)** : un seul lien de recommandation, vers la page d'achat : `/acheter/?ref=CODE` (code prérempli même sans cookie).

@@ -166,12 +166,11 @@ final class Arvator_Referral {
 		throw new RuntimeException( 'Code de parrainage impossible à générer.' );
 	}
 
+	/**
+	 * Lien de recommandation (un seul, décision de Hamid du 22/10/2026) : directement vers la page d'achat,
+	 * où le code est prérempli même si le visiteur refuse les cookies.
+	 */
 	public static function link( string $code ): string {
-		return add_query_arg( 'ref', $code, home_url( '/' ) );
-	}
-
-	/** Lien direct vers la page d'achat : le code y est prérempli même si le visiteur refuse les cookies. */
-	public static function buy_link( string $code ): string {
 		return add_query_arg( 'ref', $code, Arvator_Checkout::url() );
 	}
 
@@ -709,8 +708,7 @@ final class Arvator_Referral {
 			'',
 			'Bienvenue dans le programme de parrainage Arvator.',
 			'',
-			'Votre lien de recommandation : ' . self::link( $code ),
-			'Pour une personne prête à acheter, envoyez plutôt ce lien vers la page d\'achat (votre code y est déjà rempli) : ' . self::buy_link( $code ),
+			'Votre lien de recommandation (il mène à la page d\'achat, où votre code est déjà rempli) : ' . self::link( $code ),
 			'',
 		);
 		if ( is_string( $key ) && $user instanceof WP_User ) {

@@ -287,14 +287,11 @@ final class Arvator_Member {
 			<?php if ( 'active' !== $ref['status'] ) : ?>
 				<p class="arv-notice arv-notice--err">Votre lien est suspendu. Écrivez-nous depuis la page <a href="<?php echo esc_url( Arvator_Support::page_url( 'contact' ) ); ?>">Contact</a>.</p>
 			<?php endif; ?>
-			<label for="arv-ref-link">Lien vers le site (pour faire découvrir Arvator)</label>
+			<label for="arv-ref-link">Partagez ce lien</label>
 			<input id="arv-ref-link" class="arv-key" type="text" readonly value="<?php echo esc_attr( $link ); ?>">
-			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-link">Copier le lien</button></p>
-			<label for="arv-ref-buy">Lien direct vers la page d’achat (pour une personne prête à acheter)</label>
-			<input id="arv-ref-buy" class="arv-key" type="text" readonly value="<?php echo esc_attr( Arvator_Referral::buy_link( (string) $ref['code'] ) ); ?>">
-			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-buy">Copier le lien</button>
+			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-link">Copier le lien</button>
 				<span class="muted">Votre code : <strong><?php echo esc_html( (string) $ref['code'] ); ?></strong></span></p>
-			<p class="muted">Conseil : le lien vers la page d’achat est le plus sûr. Votre code y est toujours prérempli, même si la personne refuse les cookies. Avec le lien vers le site, il n’est retenu que si elle accepte le cookie de recommandation ; sinon, elle doit saisir votre code au moment de l’achat.</p>
+			<p class="muted">Ce lien mène à la page d’achat, où votre code est déjà rempli.</p>
 			<p class="muted">Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des performances simulées et le trading comporte un risque élevé de perte en capital.</p>
 		</section>
 

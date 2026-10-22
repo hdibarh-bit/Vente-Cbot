@@ -45,6 +45,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.6.2 — 22/10/2026
+- Espace parrain : **un seul lien** de recommandation, qui mène directement à la page d'achat (code prérempli même si le visiteur refuse les cookies). Même lien dans l'email d'inscription.
+
 ### 0.6.1 — 22/10/2026
 - Espace parrain : deuxième lien à copier, **direct vers la page d'achat** (`/acheter/?ref=CODE`). Le code du parrain y est toujours prérempli, même si le visiteur refuse les cookies. Conseil affiché au parrain ; les deux liens figurent aussi dans l'email d'inscription.
 - 363 tests automatiques réussis.
