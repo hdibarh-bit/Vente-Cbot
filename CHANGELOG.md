@@ -45,6 +45,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.6.1 — 22/10/2026
+- Espace parrain : deuxième lien à copier, **direct vers la page d'achat** (`/acheter/?ref=CODE`). Le code du parrain y est toujours prérempli, même si le visiteur refuse les cookies. Conseil affiché au parrain ; les deux liens figurent aussi dans l'email d'inscription.
+- 363 tests automatiques réussis.
+
 ### 0.6.0 — 22/10/2026 — Licence automatique (n8n)
 - **Le site prévient le workflow n8n « Licences cBot – Paiements »** : achat et chaque renouvellement payé → licence prolongée ; résiliation ou remboursement → licence coupée. Jamais deux prolongations pour le même paiement, même si Stripe renvoie un message.
 - **Numéro de compte cTrader** : champ facultatif sur la page d'achat, et rubrique « Ma licence » de l'espace membre (« Activer ma licence »). Verrouillé après activation ; un changement passe par Hamid.
