@@ -121,8 +121,9 @@ final class Arvator_Pages {
 		$text  = strtr(
 			$text,
 			array(
-				'{{email}}'  => Arvator_Site::EMAIL,
-				'{{domain}}' => Arvator_Site::DOMAIN,
+				'{{email}}'   => Arvator_Site::EMAIL,
+				'{{domain}}'  => Arvator_Site::DOMAIN,
+				'{{adresse}}' => Arvator_Site::POSTAL,
 			)
 		);
 		$lines = preg_split( '/\R/', trim( $text ) );

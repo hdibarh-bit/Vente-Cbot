@@ -1362,6 +1362,37 @@ foreach ( array( 'mentions-legales', 'cgv' ) as $pg ) {
 	check( str_contains( $pb, 'arvator.com' ) && ! str_contains( $pb, 'bot.cosmartis.com' ), "page « $pg » : domaine arvator.com, plus bot.cosmartis.com" );
 }
 
+/* ======================================================================== N. Éditeur : photo, réseaux sociaux, adresse */
+title( 'N. Éditeur : photo, réseaux sociaux, adresse postale' );
+delete_option( 'arvator_social_facebook' );
+delete_option( 'arvator_social_x' );
+delete_option( 'arvator_social_linkedin' );
+foreach ( array( 'a-propos', 'mentions-legales' ) as $pg ) {
+	$pb = $anon->get( '/' . $pg . '/' )['body'];
+	check( str_contains( $pb, 'class="author-card"' ) && str_contains( $pb, 'hamid-dibarh.jpg' ) && str_contains( $pb, 'Hamid DIBARH' ), "page « $pg » : photo et nom de l'éditeur" );
+	check( str_contains( $pb, 'href="https://www.linkedin.com/in/hamid-dibarh-1936b7200"' ), "page « $pg » : lien LinkedIn" );
+	check( ! str_contains( $pb, 'social-links__item--facebook' ) && ! str_contains( $pb, 'social-links__item--x' ), "page « $pg » : Facebook et X masqués tant qu'ils n'ont pas de lien" );
+}
+$hp = $anon->get( '/' )['body'];
+check( 1 === preg_match( '#<footer.*social-links--footer.*linkedin\.com/in/hamid-dibarh-1936b7200#s', $hp ), 'pied de page : lien LinkedIn' );
+check( 0 === substr_count( $hp, 'author-card' ), "pied de page : pas de photo" );
+$photo = $anon->get( '/wp-content/plugins/arvator-core/assets/hamid-dibarh.jpg' );
+check( 200 === $photo['code'] && strlen( $photo['body'] ) > 20000, 'photo livrée avec le plugin accessible' );
+update_option( 'arvator_social_facebook', 'https://www.facebook.com/arvator' );
+update_option( 'arvator_social_x', 'https://x.com/arvator' );
+$hp = $anon->get( '/a-propos/' )['body'];
+check( str_contains( $hp, 'href="https://www.facebook.com/arvator"' ) && str_contains( $hp, 'href="https://x.com/arvator"' ), 'liens Facebook et X affichés une fois renseignés' );
+check( '' === Arvator_Author::clean_url( 'https://pirate.example/facebook.com', array( 'facebook.com' ) ) && '' === Arvator_Author::clean_url( 'http://www.facebook.com/a', array( 'facebook.com' ) ) && '' === Arvator_Author::clean_url( 'javascript:alert(1)', array( 'x.com' ) ), 'lien refusé : mauvais site, http ou javascript' );
+check( 'https://www.facebook.com/arvator' === Arvator_Author::clean_url( 'https://www.facebook.com/arvator?fbclid=abc#x', array( 'facebook.com' ) ), 'paramètres de suivi retirés du lien' );
+update_option( 'arvator_social_linkedin', '' );
+check( ! str_contains( $anon->get( '/a-propos/' )['body'], 'linkedin.com' ), 'lien LinkedIn vidé : réseau masqué' );
+delete_option( 'arvator_social_facebook' );
+delete_option( 'arvator_social_x' );
+delete_option( 'arvator_social_linkedin' );
+foreach ( array( 'mentions-legales', 'cgv', 'confidentialite' ) as $pg ) {
+	check( str_contains( $anon->get( '/' . $pg . '/' )['body'], '21 rue Taffin, 59970 Fresnes-sur-Escaut' ), "page « $pg » : adresse postale complète" );
+}
+
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {
 	Arvator_Repo::delete_test_rows_for_user( $uid );

@@ -33,6 +33,7 @@ Tout se fait dans **Apparence > Personnaliser** :
 - **Logo et icône du site (favicon)** : « Identité du site ». Logo : de préférence PNG ou SVG à fond transparent, environ 400 × 100 px. Icône : image carrée d'au moins **512 × 512 px**.
 - **Menus** : « Menus » > créer un menu, ajouter vos pages, choisir son emplacement (Menu principal, Menu du pied de page, Liens légaux). Tant qu'aucun menu n'est créé, le thème affiche automatiquement les pages existantes.
 - **Textes de l'accueil** : « Arvator — textes de l'accueil » (petit texte, titre, introduction, texte du pied de page). Ne décrivez jamais la stratégie et ne promettez aucun gain.
+- **Photo et réseaux sociaux** : « Arvator : éditeur et réseaux sociaux ». Photo (facultatif : celle livrée avec le plugin est utilisée par défaut), liens LinkedIn, Facebook et X (adresse complète en https). Un réseau sans lien n'est pas affiché. Ils apparaissent dans « À propos », « Mentions légales » et le pied de page.
 - **Pages** : Pages > Ajouter. Une page n'apparaît dans le menu et sur les boutons qu'une fois **publiée**. Adresses attendues par le thème : `tarifs`, `resultats`, `essai-gratuit`, `rapport-gratuit`, `parrainage`, `faq`, `a-propos`, `contact`, `risques`, `mentions-legales`, `cgv`, `confidentialite`, `cookies`, `conditions-parrainage`, `espace-membre`.
 
 Volontairement **non modifiable** dans le thème : l'avertissement sur les risques, les chiffres des résultats et les prix (ils doivent rester conformes à la loi et à ce qui est réellement facturé). Pour les changer, demander à Claude.

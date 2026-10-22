@@ -15,6 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="site-footer__brand">
 				<?php arvator_brand(); ?>
 				<p class="muted"><?php echo esc_html( arvator_text( 'footer_blurb' ) ); ?></p>
+				<?php
+				// Réseaux sociaux de l'éditeur (réglés dans Apparence > Personnaliser, fournis par le plugin Arvator Core).
+				if ( class_exists( 'Arvator_Author' ) ) {
+					echo Arvator_Author::social_links( 'social-links social-links--footer' ); // phpcs:ignore WordPress.Security.EscapeOutput -- échappé dans le plugin
+				}
+				?>
 				<p class="site-footer__cta">
 					<?php arvator_button( 'essai-gratuit', 'Essai gratuit', 'btn btn--primary btn--sm' ); ?>
 					<?php arvator_buy_button( 'Acheter', 'btn btn--ghost btn--sm' ); ?>

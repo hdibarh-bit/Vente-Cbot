@@ -4,6 +4,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.4 — 22/10/2026
+- Pied de page (sous le logo) : icônes des réseaux sociaux de Hamid (LinkedIn ; Facebook et X dès que leurs liens sont renseignés). Pas de photo.
+- Style de la carte « éditeur » (photo, nom, réseaux) des pages À propos et Mentions légales, ordinateur et mobile.
+
 ### 0.6.3 — 22/10/2026
 - Adresse du thème : https://arvator.com (domaine officiel, décision de Hamid du 22/10/2026). Aucun changement visible.
 
@@ -55,6 +59,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.7.3 — 22/10/2026
+- **Photo de Hamid** dans « À propos » et « Mentions légales », à l'endroit où son nom est cité, avec ses réseaux sociaux dessous (shortcode `[arvator_auteur]`). Photo livrée avec le plugin, remplaçable.
+- **Réseaux sociaux** : LinkedIn rempli ; Facebook et X à compléter dans **Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux »**. Un réseau sans lien n'est pas affiché. Seuls les liens https du vrai réseau sont acceptés, sans paramètres de suivi.
+- **Adresse postale complète** (21 rue Taffin, 59970 Fresnes-sur-Escaut) dans Mentions légales, CGV et Confidentialité, depuis une seule constante (`Arvator_Site::POSTAL`). Textes mis à jour (`rev` : à-propos 3, mentions légales 4, CGV 5, confidentialité 4).
 
 ### 0.7.2 — 22/10/2026
 - **Domaine officiel arvator.com** (décision de Hamid du 22/10/2026, remplace bot.cosmartis.com) et **adresse officielle support@arvator.com** : une seule source pour les deux, `includes/class-site.php` (`Arvator_Site::EMAIL` et `Arvator_Site::DOMAIN`). Plus aucune valeur écrite en dur ailleurs (un test le vérifie).

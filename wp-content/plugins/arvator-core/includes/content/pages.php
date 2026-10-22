@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 return array(
 
 	'a-propos' => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'À propos',
 		'text'  => <<<'TXT'
 ## Un robot de trading automatique, présenté en toute transparence
@@ -19,6 +19,8 @@ return array(
 Arvator est un robot de trading automatique. Il s'installe sur votre propre compte cTrader et fonctionne dans le cloud cTrader, même ordinateur éteint.
 
 Arvator est conçu et édité par Hamid DIBARH, entrepreneur individuel établi à Fresnes-sur-Escaut.
+
+[arvator_auteur]
 
 ## Notre façon de faire
 - **Transparence :** nous montrons des performances simulées (backtest), toujours accompagnées des baisses de chaque simulation. Nous ne vendons pas de promesse.
@@ -145,17 +147,19 @@ TXT,
 	),
 
 	'mentions-legales' => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'Mentions légales',
 		'text'  => <<<'TXT'
 [provisoire]
 ## Éditeur du site
 Le site {{domain}} (marque « Arvator ») est édité par :
 - Hamid DIBARH, entrepreneur individuel (micro-entrepreneur)
-- Établi à Fresnes-sur-Escaut (France)
+- Adresse : {{adresse}}
 - SIRET : 802 301 317 00029
 - Email : {{email}}
 - Directeur de la publication : Hamid DIBARH
+
+[arvator_auteur]
 
 ## Hébergeur
 Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Chypre.
@@ -172,12 +176,12 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 4,
+		'rev'   => 5,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 [provisoire]
 ## 1. Éditeur et objet
-Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid DIBARH, entrepreneur individuel établi à Fresnes-sur-Escaut, SIRET 802 301 317 00029 (« l'éditeur »), au client qui passe commande sur {{domain}}. Contact : {{email}}.
+Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid DIBARH, entrepreneur individuel établi au {{adresse}}, SIRET 802 301 317 00029 (« l'éditeur »), au client qui passe commande sur {{domain}}. Contact : {{email}}.
 
 ## 2. Produit
 Arvator est un logiciel (un robot cTrader) livré sous forme de fichier numérique. L'achat donne au client une licence d'utilisation personnelle, non exclusive et non transférable, liée à un numéro de compte cTrader. Le client reste propriétaire de son argent et de son compte : l'éditeur n'y a jamais accès.
@@ -218,12 +222,12 @@ TXT,
 	),
 
 	'confidentialite' => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'Politique de confidentialité',
 		'text'  => <<<'TXT'
 [provisoire]
 ## Qui est responsable de vos données
-Hamid DIBARH, entrepreneur individuel établi à Fresnes-sur-Escaut (SIRET 802 301 317 00029), est responsable du traitement. Contact : {{email}}.
+Hamid DIBARH, entrepreneur individuel établi au {{adresse}} (SIRET 802 301 317 00029), est responsable du traitement. Contact : {{email}}.
 
 ## Les données que nous traitons
 - Votre compte : nom, adresse email, mot de passe (jamais en clair).
