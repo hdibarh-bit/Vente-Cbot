@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.3 — 22/10/2026
+- Adresse du thème : https://arvator.com (domaine officiel, décision de Hamid du 22/10/2026). Aucun changement visible.
+
 ### 0.6.2 — 22/10/2026
 - **Résultats en euros ET en pourcentage** (demande de Hamid : « ça parle beaucoup plus aux gens »). Chaque case du tableau affiche le solde simulé du compte (ex. « 9 013 € ») et, dessous, l'évolution (« +80 % »). Même chose dans la carte du haut de l'accueil.
 - Nouvelle colonne **« 2024 → 2026 enchaînés »** : le solde si le robot avait tourné sur toute la période sans retrait (ex. 5 000 € → 23 186 € au risque 1 %), toujours à côté de la pire baisse et du solde le plus bas.
@@ -52,6 +55,12 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.7.2 — 22/10/2026
+- **Domaine officiel arvator.com** (décision de Hamid du 22/10/2026, remplace bot.cosmartis.com) et **adresse officielle support@arvator.com** : une seule source pour les deux, `includes/class-site.php` (`Arvator_Site::EMAIL` et `Arvator_Site::DOMAIN`). Plus aucune valeur écrite en dur ailleurs (un test le vérifie).
+- Pages **Mentions légales** et **CGV** : le domaine arvator.com remplace bot.cosmartis.com (textes mis à jour automatiquement si la page n'a jamais été modifiée à la main ; sinon elle est signalée dans le tableau de bord).
+- **Tous les emails du site** (confirmation d'achat, essai, parrainage, virement, contact, alertes) se terminent par la même signature : « Arvator · https://arvator.com · support@arvator.com ».
+- Les messages du formulaire Contact arrivent à support@arvator.com.
 
 ### 0.7.1 — 22/10/2026
 - **Nouvelle adresse de contact : support@arvator.com** (définitive). Le formulaire de contact, les alertes (essais, contestations, licences, parrainage) et les emails du site l'utilisent ; elle s'affiche dans toutes les pages (mentions légales, CGV, confidentialité, FAQ, À propos, Contact, conditions du parrainage).

@@ -283,9 +283,9 @@ final class Arvator_License {
 	private static function alert( array $job, string $reason ): void {
 		$user = get_user_by( 'id', (int) $job['user_id'] );
 		wp_mail(
-			Arvator_Pages::EMAIL,
+			Arvator_Site::EMAIL,
 			'Arvator : licence non mise à jour (action nécessaire)',
-			"La licence d'un client n'a pas pu être mise à jour automatiquement.\n\nClient : " . ( $user instanceof WP_User ? $user->user_email : '#' . $job['user_id'] ) . "\nCompte cTrader : " . $job['account'] . "\nAction : " . $job['action'] . ' (' . $job['plan'] . ")\nRaison : $reason\n\nÀ vérifier dans Arvator > Licences (bouton « Renvoyer »), ou dans n8n.\n"
+			"La licence d'un client n'a pas pu être mise à jour automatiquement.\n\nClient : " . ( $user instanceof WP_User ? $user->user_email : '#' . $job['user_id'] ) . "\nCompte cTrader : " . $job['account'] . "\nAction : " . $job['action'] . ' (' . $job['plan'] . ")\nRaison : $reason\n\nÀ vérifier dans Arvator > Licences (bouton « Renvoyer »), ou dans n8n.\n" . "\n" . Arvator_Site::signature()
 		);
 	}
 

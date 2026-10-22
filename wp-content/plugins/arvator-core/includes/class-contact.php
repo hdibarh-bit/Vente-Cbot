@@ -139,9 +139,9 @@ final class Arvator_Contact {
 		set_transient( $email_key, 1, 5 * MINUTE_IN_SECONDS );
 
 		// 6. Envoi. Les en-têtes ne contiennent que des valeurs déjà nettoyées (une seule ligne, email validé).
-		$to      = defined( 'ARVATOR_CONTACT_TO' ) && is_email( (string) ARVATOR_CONTACT_TO ) ? (string) ARVATOR_CONTACT_TO : Arvator_Pages::EMAIL;
+		$to      = defined( 'ARVATOR_CONTACT_TO' ) && is_email( (string) ARVATOR_CONTACT_TO ) ? (string) ARVATOR_CONTACT_TO : Arvator_Site::EMAIL;
 		$title   = '[Arvator] ' . self::SUBJECTS[ $subject ];
-		$body    = "Nom : {$name}\nEmail : {$email}\nSujet : " . self::SUBJECTS[ $subject ] . "\n\n" . $message . "\n";
+		$body    = "Nom : {$name}\nEmail : {$email}\nSujet : " . self::SUBJECTS[ $subject ] . "\n\n" . $message . "\n\n" . Arvator_Site::signature();
 		$headers = array(
 			'Content-Type: text/plain; charset=UTF-8',
 			'Reply-To: ' . $name . ' <' . $email . '>',

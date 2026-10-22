@@ -6,7 +6,7 @@
 Construis le site de vente complet d'un robot de trading vendu sous forme de cBot cTrader. Le site est en français, avec un thème doré haut de gamme. Il gère la vente, les abonnements, les licences, un espace client, un programme de parrainage à un seul niveau et une administration. La propriétaire, Hamid, n'est pas développeuse : explique-lui chaque étape en français simple et demande-lui les comptes et clés nécessaires au bon moment.
 
 Nom du produit : Arvator
-Domaine : bot.cosmartis.com
+Domaine : arvator.com (décision de Hamid du 22/10/2026 ; remplaçait bot.cosmartis.com)
 Hébergement : Hostinger, offre « Hébergement Premium » (mutualisé)
 
 # Le produit

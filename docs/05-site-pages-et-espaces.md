@@ -1,6 +1,6 @@
 # Site : pages, espaces, base de données, tunnel
 
-Site en **français**, thème doré (voir `07-theme-dore.md`). Nom du produit : **Arvator** (décidé le 21/10/2026). Domaine : **bot.cosmartis.com** (confirmé le 21/10/2026).
+Site en **français**, thème doré (voir `07-theme-dore.md`). Nom du produit : **Arvator** (décidé le 21/10/2026). Domaine : **arvator.com** (décidé par Hamid le 22/10/2026 ; remplace bot.cosmartis.com). Adresse : **support@arvator.com**. Les deux valeurs sont dans `includes/class-site.php` du plugin (source unique).
 
 ## Pages publiques
 > **Règle du 21/10/2026 (Hamid)** : aucune page ni aucun texte ne décrit la stratégie ni ses détails techniques (pas d'ICT/SMC, pas d'unités de temps, pas de noms d'indices ou d'actifs, pas d'objectifs ni de garde-fous). Le public visé n'est pas fait de traders : il veut comprendre ce que fait le robot et voir ses performances simulées en euros et en pourcentage (montants ajoutés le 22/10/2026 à la demande de Hamid). Page « La stratégie » supprimée.

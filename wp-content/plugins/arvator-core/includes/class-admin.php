@@ -46,8 +46,10 @@ final class Arvator_Admin {
 		}
 		$dismiss = wp_nonce_url( admin_url( 'admin-post.php?action=arvator_dismiss_review' ), 'arvator_dismiss_review' );
 		printf(
-			'<div class="notice notice-warning"><p><strong>Arvator :</strong> le texte de %s a été mis à jour dans la dernière version du plugin (par exemple la nouvelle adresse de contact support@arvator.com), mais vous aviez modifié cette page : elle n\'a donc pas été remplacée. Relisez-la et mettez-la à jour à la main, ou demandez le nouveau texte à Claude. <a href="%s">Ne plus afficher ce message</a></p></div>',
+			'<div class="notice notice-warning"><p><strong>Arvator :</strong> le texte de %s a été mis à jour dans la dernière version du plugin (par exemple l\'adresse de contact %s et le domaine %s), mais vous aviez modifié cette page : elle n\'a donc pas été remplacée. Relisez-la et mettez-la à jour à la main, ou demandez le nouveau texte à Claude. <a href="%s">Ne plus afficher ce message</a></p></div>',
 			wp_kses( implode( ', ', $links ), array( 'a' => array( 'href' => array() ) ) ),
+			esc_html( Arvator_Site::EMAIL ),
+			esc_html( Arvator_Site::DOMAIN ),
 			esc_url( $dismiss )
 		);
 	}

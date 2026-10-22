@@ -53,7 +53,7 @@ define( 'ARVATOR_STRIPE_PRICE_MONTHLY', 'price_1UT3qVGi3zUNJ20grHHXX4zU' );
 
 ### 6.2 Le webhook (Stripe prévient le site après chaque paiement)
 1. Stripe (en bac à sable) → Développeurs → Webhooks → **Ajouter un point de terminaison**.
-2. Adresse : `https://bot.cosmartis.com/wp-json/arvator/v1/stripe`
+2. Adresse : `https://arvator.com/wp-json/arvator/v1/stripe`
 3. Événements à cocher : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`, `charge.refunded`, `charge.dispute.created`.
    - **Depuis le plugin 0.5.0 (parrainage)** : si le webhook existe déjà, ajoutez-lui `invoice.paid` (récompense de 10 % sur chaque renouvellement d'abonnement) et `charge.dispute.created` (contestation bancaire : la récompense est retirée). Stripe → Développeurs → Webhooks → votre point de terminaison → « Modifier les événements ».
 4. Après l'enregistrement, copier le **secret de signature** (`whsec_…`) dans la ligne `ARVATOR_STRIPE_WEBHOOK_SECRET`.

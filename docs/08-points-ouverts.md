@@ -4,7 +4,7 @@
 - [x] Risque par défaut : 1 % (décidé le 21/10). Le fichier cBot actuel est encore à 3 %/3 % : à modifier.
 - [x] TVA : auto-entrepreneur, pas de TTC/HT au départ (décidé le 21/10).
 - [x] Parrain non client : touche ses commissions (décidé le 21/10).
-- [x] Domaine : bot.cosmartis.com (décidé le 21/10).
+- [x] Domaine : arvator.com (définitif, décidé par Hamid le 22/10/2026 ; remplace bot.cosmartis.com).
 - [x] Résultats : backtest du bot sur 2024-2026, jamais « 7 ans » (décidé le 21/10). Nouveau PDF à 1 %, 2 % et 3 % **à recevoir de Hamid** ; bot livré à 1 %, client libre jusqu'à 3 % (décidé le 21/10).
 - [x] Le site ne décrit pas la stratégie ni les détails techniques (décidé le 21/10). Page « La stratégie » supprimée.
 - [x] Nom du produit : **Arvator** (décidé le 21/10). Le logo existant porte « BOT.COSMARTIS.COM » : à refaire ou adapter au nom Arvator.

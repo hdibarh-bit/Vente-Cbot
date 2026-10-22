@@ -14,8 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Arvator_Pages {
 
-	public const EMAIL = 'support@arvator.com';
-
 	private const OPT_CREATED = 'arvator_pages_created';
 	private const OPT_REV     = 'arvator_pages_rev';
 	private const OPT_REVIEW  = 'arvator_pages_review';
@@ -120,7 +118,13 @@ final class Arvator_Pages {
 	 * « [provisoire] », « [arvator_contact] », **gras**, [texte](/page/).
 	 */
 	public static function to_blocks( string $text ): string {
-		$text  = strtr( $text, array( '{{email}}' => self::EMAIL ) );
+		$text  = strtr(
+			$text,
+			array(
+				'{{email}}'  => Arvator_Site::EMAIL,
+				'{{domain}}' => Arvator_Site::DOMAIN,
+			)
+		);
 		$lines = preg_split( '/\R/', trim( $text ) );
 		$lines = is_array( $lines ) ? $lines : array();
 		$out   = '';

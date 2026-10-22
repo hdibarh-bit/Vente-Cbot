@@ -112,19 +112,19 @@ final class Arvator_Trial {
 		$res    = Arvator_License::request_trial( $email, $account );
 		$status = is_wp_error( $res ) ? 'requested' : ( true === ( $res['ok'] ?? null ) ? 'active' : 'refused' );
 		$wpdb->update( Arvator_Repo::table( 'trials' ), array( 'status' => $status ), array( 'email' => $email ) );
-		$reminder = "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai.\n\nLes résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.\n\nArvator · " . Arvator_Pages::EMAIL;
+		$reminder = "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai.\n\nLes résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.\n\n" . Arvator_Site::signature();
 
 		if ( 'refused' === $status ) {
 			$reason = (string) ( $res['raison'] ?? '' );
-			wp_mail( Arvator_Pages::EMAIL, 'Arvator : essai gratuit refusé par le serveur de licences', "Demande d'essai refusée automatiquement.\n\nEmail : $email\nCompte démo cTrader : $account\nRaison : $reason\n" );
+			wp_mail( Arvator_Site::EMAIL, 'Arvator : essai gratuit refusé par le serveur de licences', "Demande d'essai refusée automatiquement.\n\nEmail : $email\nCompte démo cTrader : $account\nRaison : $reason\n" . "\n" . Arvator_Site::signature() );
 			Arvator_Support::redirect( $back, 'essai_refuse' );
 		}
 		if ( 'active' === $status ) {
 			$until = (string) ( $res['expiration'] ?? '' );
 			wp_mail(
-				Arvator_Pages::EMAIL,
+				Arvator_Site::EMAIL,
 				'Arvator : essai gratuit activé (robot à envoyer)',
-				"Une licence d'essai a été activée automatiquement.\n\nEmail : $email\nCompte démo cTrader : $account\nFin de l'essai : $until\nRenonciation au droit de rétractation cochée : oui\n\nÀ faire : envoyer le fichier du robot et le guide d'installation à cette adresse.\n"
+				"Une licence d'essai a été activée automatiquement.\n\nEmail : $email\nCompte démo cTrader : $account\nFin de l'essai : $until\nRenonciation au droit de rétractation cochée : oui\n\nÀ faire : envoyer le fichier du robot et le guide d'installation à cette adresse.\n" . "\n" . Arvator_Site::signature()
 			);
 			wp_mail(
 				$email,
@@ -136,9 +136,9 @@ final class Arvator_Trial {
 
 		// n8n injoignable : demande enregistrée, activée à la main par Hamid.
 		wp_mail(
-			Arvator_Pages::EMAIL,
+			Arvator_Site::EMAIL,
 			'Arvator : nouvelle demande d’essai gratuit (à activer à la main)',
-			"Nouvelle demande d'essai (14 jours, compte démo). L'activation automatique n'a pas fonctionné : à activer dans n8n.\n\nEmail : $email\nCompte démo cTrader : $account\nRenonciation au droit de rétractation cochée : oui\n"
+			"Nouvelle demande d'essai (14 jours, compte démo). L'activation automatique n'a pas fonctionné : à activer dans n8n.\n\nEmail : $email\nCompte démo cTrader : $account\nRenonciation au droit de rétractation cochée : oui\n" . "\n" . Arvator_Site::signature()
 		);
 		wp_mail(
 			$email,

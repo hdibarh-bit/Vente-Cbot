@@ -21,7 +21,7 @@ final class Arvator_Support {
 			'contact_ok'       => array( 'ok', 'Merci, votre message a bien été envoyé. Nous vous répondons par email.' ),
 			'contact_invalid'  => array( 'err', 'Votre message n’a pas pu être envoyé : vérifiez les champs (nom, email valide, message d’au moins 20 caractères) et la case de consentement, puis réessayez.' ),
 			'contact_rate'     => array( 'err', 'Vous avez envoyé plusieurs messages à la suite. Merci de patienter un moment avant de réessayer.' ),
-			'contact_fail'     => array( 'err', 'Le message n’a pas pu être envoyé. Vous pouvez nous écrire directement à ' . Arvator_Pages::EMAIL . '.' ),
+			'contact_fail'     => array( 'err', 'Le message n’a pas pu être envoyé. Vous pouvez nous écrire directement à ' . Arvator_Site::EMAIL . '.' ),
 			'contact_expired'  => array( 'err', 'Le formulaire a expiré. Merci de le renvoyer.' ),
 			'login_failed'     => array( 'err', 'Identifiant ou mot de passe incorrect.' ),
 			'login_locked'     => array( 'err', 'Trop de tentatives. Réessayez dans 15 minutes.' ),

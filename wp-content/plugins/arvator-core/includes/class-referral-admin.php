@@ -309,7 +309,7 @@ final class Arvator_Referral_Admin {
 		foreach ( $totals as $t ) {
 			$u = get_user_by( 'id', $t['user_id'] );
 			if ( $u instanceof WP_User ) {
-				wp_mail( $u->user_email, 'Arvator : votre récompense de recommandation a été virée', "Bonjour,\n\nNous venons de vous virer " . Arvator_Referral::money( $t['total'] ) . " au titre de vos récompenses de recommandation (référence $batch).\nLe détail est dans votre espace membre, rubrique « Parrainage » :\n" . Arvator_Member::url( 'parrainage' ) . "\n\nMerci de recommander Arvator.\n\nArvator · " . Arvator_Pages::EMAIL );
+				wp_mail( $u->user_email, 'Arvator : votre récompense de recommandation a été virée', "Bonjour,\n\nNous venons de vous virer " . Arvator_Referral::money( $t['total'] ) . " au titre de vos récompenses de recommandation (référence $batch).\nLe détail est dans votre espace membre, rubrique « Parrainage » :\n" . Arvator_Member::url( 'parrainage' ) . "\n\nMerci de recommander Arvator.\n\n" . Arvator_Site::signature() );
 			}
 		}
 		Arvator_Repo::log_event( 'payout_batch_paid', get_current_user_id(), array( 'batch' => $batch, 'referrers' => count( $totals ) ) );

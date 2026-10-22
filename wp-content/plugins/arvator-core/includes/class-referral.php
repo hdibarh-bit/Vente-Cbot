@@ -426,9 +426,9 @@ final class Arvator_Referral {
 		$a = get_user_by( 'id', $referrer_id );
 		$b = get_user_by( 'id', $referee_id );
 		wp_mail(
-			Arvator_Pages::EMAIL,
+			Arvator_Site::EMAIL,
 			'Arvator : récompense de recommandation bloquée (auto-parrainage possible)',
-			"Une récompense de recommandation a été bloquée automatiquement.\n\nRaison : $reason\nParrain : " . ( $a instanceof WP_User ? $a->user_email : '#' . $referrer_id ) . "\nAcheteur : " . ( $b instanceof WP_User ? $b->user_email : '#' . $referee_id ) . "\n\nÀ vérifier dans Arvator > Parrainage (débloquer ou annuler).\n"
+			"Une récompense de recommandation a été bloquée automatiquement.\n\nRaison : $reason\nParrain : " . ( $a instanceof WP_User ? $a->user_email : '#' . $referrer_id ) . "\nAcheteur : " . ( $b instanceof WP_User ? $b->user_email : '#' . $referee_id ) . "\n\nÀ vérifier dans Arvator > Parrainage (débloquer ou annuler).\n" . "\n" . Arvator_Site::signature()
 		);
 	}
 
@@ -684,7 +684,7 @@ final class Arvator_Referral {
 			wp_mail(
 				$user->user_email,
 				'Arvator : activer votre lien de recommandation',
-				"Bonjour,\n\nVous avez demandé à devenir parrain Arvator. Vous avez déjà un compte : connectez-vous à votre espace membre, rubrique « Parrainage », pour obtenir votre lien :\n" . Arvator_Member::url( 'parrainage' ) . "\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message.\n\nArvator · " . Arvator_Pages::EMAIL
+				"Bonjour,\n\nVous avez demandé à devenir parrain Arvator. Vous avez déjà un compte : connectez-vous à votre espace membre, rubrique « Parrainage », pour obtenir votre lien :\n" . Arvator_Member::url( 'parrainage' ) . "\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message.\n\n" . Arvator_Site::signature()
 			);
 			Arvator_Support::redirect( $back, 'parrain_mail' );
 		}
@@ -720,7 +720,7 @@ final class Arvator_Referral {
 		$lines[] = '';
 		$lines[] = 'Rappel : recommandez Arvator de façon honnête. Les résultats présentés sur le site sont des performances simulées et le trading comporte un risque élevé de perte en capital.';
 		$lines[] = '';
-		$lines[] = 'Arvator · ' . Arvator_Pages::EMAIL;
+		$lines[] = Arvator_Site::signature();
 		wp_mail( $email, 'Arvator : votre lien de recommandation', implode( "\n", $lines ) );
 
 		Arvator_Support::redirect( $back, 'parrain_mail' );

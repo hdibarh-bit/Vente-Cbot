@@ -393,7 +393,7 @@ final class Arvator_Webhook {
 		}
 		Arvator_Referral::on_order_reversed( (int) $order['id'], 'dispute' );
 		Arvator_Repo::log_event( 'dispute', (int) $order['user_id'], array( 'charge' => $charge_id ) );
-		wp_mail( Arvator_Pages::EMAIL, 'Arvator : contestation bancaire reçue', "Un client a contesté un paiement auprès de sa banque (paiement $charge_id).\nLa récompense de parrainage liée a été retirée. Répondez à la contestation depuis votre tableau de bord Stripe.\n" );
+		wp_mail( Arvator_Site::EMAIL, 'Arvator : contestation bancaire reçue', "Un client a contesté un paiement auprès de sa banque (paiement $charge_id).\nLa récompense de parrainage liée a été retirée. Répondez à la contestation depuis votre tableau de bord Stripe.\n" . "\n" . Arvator_Site::signature() );
 	}
 
 	/* --------------------------------------------------------------------- Email */
@@ -418,7 +418,7 @@ final class Arvator_Webhook {
 		$lines[] = '';
 		$lines[] = 'Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.';
 		$lines[] = '';
-		$lines[] = 'Arvator · ' . Arvator_Pages::EMAIL;
+		$lines[] = Arvator_Site::signature();
 
 		wp_mail( $user->user_email, 'Arvator : votre commande est confirmée', implode( "\n", $lines ) );
 	}

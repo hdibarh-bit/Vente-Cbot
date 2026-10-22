@@ -145,12 +145,12 @@ TXT,
 	),
 
 	'mentions-legales' => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Mentions légales',
 		'text'  => <<<'TXT'
 [provisoire]
 ## Éditeur du site
-Le site bot.cosmartis.com (marque « Arvator ») est édité par :
+Le site {{domain}} (marque « Arvator ») est édité par :
 - Hamid DIBARH, entrepreneur individuel (micro-entrepreneur)
 - Établi à Fresnes-sur-Escaut (France)
 - SIRET : 802 301 317 00029
@@ -172,12 +172,12 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 [provisoire]
 ## 1. Éditeur et objet
-Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid DIBARH, entrepreneur individuel établi à Fresnes-sur-Escaut, SIRET 802 301 317 00029 (« l'éditeur »), au client qui passe commande sur bot.cosmartis.com. Contact : {{email}}.
+Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid DIBARH, entrepreneur individuel établi à Fresnes-sur-Escaut, SIRET 802 301 317 00029 (« l'éditeur »), au client qui passe commande sur {{domain}}. Contact : {{email}}.
 
 ## 2. Produit
 Arvator est un logiciel (un robot cTrader) livré sous forme de fichier numérique. L'achat donne au client une licence d'utilisation personnelle, non exclusive et non transférable, liée à un numéro de compte cTrader. Le client reste propriétaire de son argent et de son compte : l'éditeur n'y a jamais accès.

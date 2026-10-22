@@ -1330,8 +1330,21 @@ $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_
 
 
 /* ======================================================================== M. Adresse de contact */
-title( 'M. Adresse de contact support@arvator.com' );
-check( 'support@arvator.com' === Arvator_Pages::EMAIL, 'adresse de contact : support@arvator.com' );
+title( 'M. Adresse support@arvator.com et domaine arvator.com' );
+check( 'support@arvator.com' === Arvator_Site::EMAIL && 'arvator.com' === Arvator_Site::DOMAIN, 'constantes : support@arvator.com et arvator.com' );
+check( 'Arvator · https://arvator.com · support@arvator.com' === Arvator_Site::signature(), 'signature des emails : domaine et adresse' );
+$src = '';
+foreach ( array_merge( glob( ARVATOR_CORE_DIR . '*.php' ), glob( ARVATOR_CORE_DIR . 'includes/*.php' ), glob( ARVATOR_CORE_DIR . 'includes/content/*.php' ), glob( get_theme_root() . '/arvator/*.php' ), glob( get_theme_root() . '/arvator/inc/*.php' ) ) as $f ) {
+	if ( ! str_ends_with( $f, 'class-site.php' ) ) {
+		foreach ( token_get_all( (string) file_get_contents( $f ) ) as $t ) { // code seulement : les commentaires (exemples wp-config) ne comptent pas
+			$src .= is_array( $t ) ? ( in_array( $t[0], array( T_COMMENT, T_DOC_COMMENT ), true ) ? '' : $t[1] ) : $t;
+		}
+	}
+}
+check( ! str_contains( $src, 'bot.cosmartis' ) && ! str_contains( $src, 'contact@cosmartis' ) && ! str_contains( $src, "'support@arvator.com'" ), 'aucune adresse ni domaine écrit en dur hors de la constante' );
+$sig  = Arvator_Site::signature();
+$ours = array_filter( mails(), static fn( $x ) => str_starts_with( (string) $x->subject, 'Arvator' ) || str_starts_with( (string) $x->subject, '[Arvator]' ) );
+check( count( $ours ) >= 1 && array() === array_filter( $ours, static fn( $x ) => ! str_ends_with( rtrim( (string) $x->message ), $sig ) ), 'tous les emails du site (' . count( $ours ) . ') se terminent par la signature' );
 // Page déjà en ligne avec l'ancienne adresse, jamais modifiée par Hamid : le texte est mis à jour à l'installation.
 $mlp = get_page_by_path( 'mentions-legales', OBJECT, 'page' );
 $wpdb->update( $wpdb->posts, array( 'post_content' => 'Ancien texte : contact@cosmartis.com' ), array( 'ID' => $mlp->ID ) );
@@ -1343,6 +1356,10 @@ check( str_contains( $mlc, 'support@arvator.com' ) && ! str_contains( $mlc, 'con
 foreach ( array( 'contact', 'mentions-legales', 'confidentialite', 'cgv', 'faq', 'a-propos' ) as $pg ) {
 	$pb = $anon->get( '/' . $pg . '/' )['body'];
 	check( str_contains( $pb, 'support@arvator.com' ) && ! str_contains( $pb, 'contact@cosmartis.com' ), "page « $pg » : nouvelle adresse, plus l'ancienne" );
+}
+foreach ( array( 'mentions-legales', 'cgv' ) as $pg ) {
+	$pb = $anon->get( '/' . $pg . '/' )['body'];
+	check( str_contains( $pb, 'arvator.com' ) && ! str_contains( $pb, 'bot.cosmartis.com' ), "page « $pg » : domaine arvator.com, plus bot.cosmartis.com" );
 }
 
 /* ======================================================================== Nettoyage */
