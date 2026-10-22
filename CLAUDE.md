@@ -44,7 +44,7 @@ Les documents du projet (contexte, prompt, brief) viennent en partie de Cowork, 
 - Aucune clé secrète dans le code (constantes `wp-config.php`).
 
 ## Interdits absolus (résumé)
-**Le site ne décrit jamais la stratégie ni aucun détail technique** (ni ICT/SMC, ni unités de temps, ni noms d'indices/d'actifs, ni objectifs, ni garde-fous) : seulement le robot et ses performances en pourcentage, toujours « simulées / backtest 2024-2026 » (décision de Hamid, 21/10/2026). Aucune promesse de gain · toujours « performances simulées » + pire baisse à côté de chaque gain · aucun cumul spectaculaire en titre · aucune pub Forex/CFD · aucun lien d'affiliation broker · vocabulaire « récompense de recommandation », jamais « revenu » ou « opportunité ». Textes juridiques = provisoires, marqués « à faire valider par un avocat ».
+**Le site ne décrit jamais la stratégie ni aucun détail technique** (ni ICT/SMC, ni unités de temps, ni noms d'indices/d'actifs, ni objectifs, ni garde-fous) : seulement le robot et ses performances en euros et en pourcentage (solde simulé + %, décision de Hamid du 22/10/2026), toujours « simulées / backtest 2024-2026 » (décision de Hamid, 21/10/2026). Aucune promesse de gain · toujours « performances simulées » + pire baisse à côté de chaque gain · aucun cumul spectaculaire en titre · aucune pub Forex/CFD · aucun lien d'affiliation broker · vocabulaire « récompense de recommandation », jamais « revenu » ou « opportunité ». Textes juridiques = provisoires, marqués « à faire valider par un avocat ».
 
 ## Tests obligatoires à écrire
 Calcul des commissions · annulation après remboursement · génération/vérification des licences · webhooks Stripe (idempotence).

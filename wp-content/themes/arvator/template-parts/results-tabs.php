@@ -47,13 +47,14 @@ $max_risk = (int) ( $data['livraison']['risqueMaxPct'] ?? 3 );
 			</h3>
 			<div class="table-wrap" role="region" aria-label="<?php echo esc_attr( sprintf( 'Résultats simulés au risque %d %%', $pct ) ); ?>" tabindex="0">
 				<table class="results__table">
-					<caption class="screen-reader-text"><?php echo esc_html( sprintf( 'Évolution par année et baisses, risque %d %%', $pct ) ); ?></caption>
+					<caption class="screen-reader-text"><?php echo esc_html( sprintf( 'Solde du compte en fin de période (en euros et en pourcentage) et baisses, risque %d %%', $pct ) ); ?></caption>
 					<thead>
 						<tr>
 							<th scope="col"><?php esc_html_e( 'Capital de départ', 'arvator' ); ?></th>
 							<th scope="col">2024</th>
 							<th scope="col">2025</th>
 							<th scope="col"><?php esc_html_e( '2026 (au 7 oct.)', 'arvator' ); ?></th>
+							<th scope="col"><?php esc_html_e( '2024 → 2026 enchaînés', 'arvator' ); ?></th>
 							<th scope="col"><?php esc_html_e( 'Pire baisse', 'arvator' ); ?></th>
 							<th scope="col"><?php esc_html_e( 'Solde le plus bas', 'arvator' ); ?></th>
 						</tr>
@@ -68,9 +69,9 @@ $max_risk = (int) ( $data['livraison']['risqueMaxPct'] ?? 3 );
 									<?php endif; ?>
 								</th>
 								<?php foreach ( array( '2024', '2025', '2026_au_7_oct' ) as $year ) : ?>
-									<?php $g = (int) $row['parAnnee'][ $year ]['gainPct']; ?>
-									<td><?php echo esc_html( arvator_fmt_pct( $g ) ); ?></td>
+									<?php arvator_result_cell( $row['parAnnee'][ $year ] ); ?>
 								<?php endforeach; ?>
+								<?php arvator_result_cell( $row['troisAns'] ); ?>
 								<td class="is-neg"><?php echo esc_html( arvator_fmt_pct( $row['troisAns']['pireBaissePct'] ) ); ?></td>
 								<td><?php echo esc_html( arvator_fmt_eur( $row['troisAns']['plusBasDuCompte'] ) ); ?></td>
 							</tr>
@@ -82,7 +83,8 @@ $max_risk = (int) ( $data['livraison']['risqueMaxPct'] ?? 3 );
 	<?php endforeach; ?>
 
 	<p class="results__note muted">
-		Performances simulées (backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026), sans retrait. Chaque année est simulée seule, en repartant du capital de départ.
+		Performances simulées (backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026), sans retrait. Chaque case donne le solde simulé du compte en fin de période, en euros, et l’évolution en pourcentage par rapport au capital de départ.
+		Chaque année est simulée seule, en repartant du capital de départ ; la colonne « 2024 → 2026 enchaînés » montre le solde si l’on avait laissé tourner le robot sur toute la période, sans retrait.
 		« Pire baisse » et « solde le plus bas » portent sur toute la période 2024 → 2026 (soldes de fin de mois).
 		Le robot est livré réglé à 1 % de risque par trade ; vous pouvez le monter jusqu’à <?php echo esc_html( (string) $max_risk ); ?> %, jamais au-delà.
 		Ces chiffres sont des simulations : ils ne préjugent pas des résultats futurs, qui peuvent être très positifs, nuls ou négatifs.

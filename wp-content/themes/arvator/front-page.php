@@ -2,7 +2,7 @@
 /**
  * Page d'accueil Arvator.
  *
- * Règle de communication : on présente le robot et ses performances simulées en pourcentage.
+ * Règle de communication : on présente le robot et ses performances simulées en euros et en pourcentage.
  * On ne décrit jamais la stratégie ni aucun détail technique, et on ne promet aucun gain.
  */
 
@@ -68,7 +68,10 @@ get_header();
 						?>
 						<div class="stat-list__row">
 							<dt><?php echo esc_html( $label ); ?></dt>
-							<dd><?php echo esc_html( arvator_fmt_pct( $hero_row['parAnnee'][ $key ]['gainPct'] ) ); ?></dd>
+							<dd>
+								<?php echo esc_html( arvator_fmt_eur( $hero_row['parAnnee'][ $key ]['soldeFinal'] ) ); ?>
+								<span class="stat-list__pct"><?php echo esc_html( arvator_fmt_pct( $hero_row['parAnnee'][ $key ]['gainPct'] ) ); ?></span>
+							</dd>
 						</div>
 					<?php endforeach; ?>
 					<div class="stat-list__row stat-list__row--neg">
@@ -80,7 +83,7 @@ get_header();
 						<dd><?php echo esc_html( arvator_fmt_eur( $hero_row['troisAns']['plusBasDuCompte'] ) ); ?></dd>
 					</div>
 				</dl>
-				<p class="hero__card-note muted">Backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026. Ne préjuge pas des résultats futurs.</p>
+				<p class="hero__card-note muted">Solde simulé du compte en fin d’année, en repartant de <?php echo esc_html( arvator_fmt_capital( $hero_row['capital'] ) ); ?> chaque 1<sup>er</sup> janvier. Backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026. Ne préjuge pas des résultats futurs.</p>
 			</aside>
 		<?php endif; ?>
 	</div>

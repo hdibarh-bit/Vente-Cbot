@@ -117,6 +117,7 @@ p { margin: 0 0 1em; }
 .stat-list dt { color: var(--muted); font-size: .95rem; }
 .stat-list dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
 .stat-list__row--neg dd { color: var(--neg); }
+.stat-list__pct { display: inline-block; margin-left: .5rem; font-size: .82rem; font-weight: 500; color: var(--muted); }
 .hero__card-note { font-size: .82rem; margin: 1rem 0 0; }
 
 /* Étapes */
@@ -145,6 +146,9 @@ p { margin: 0 0 1em; }
 .results__table thead th:first-child { text-align: left; }
 .results__table tbody tr:last-child > * { border-bottom: 0; }
 .results__table .is-neg { color: var(--neg); }
+.results__amount { display: block; font-weight: 600; }
+.results__pct { display: block; font-size: .8rem; color: var(--muted); margin-top: .15rem; }
+.results__table .is-neg .results__pct { color: var(--neg); }
 .results__table .is-advised > * { background: rgba(201, 162, 39, .07); }
 .results__note { font-size: .88rem; margin: 1.1rem 0 0; max-width: 90ch; }
 .js .results__panel[hidden] { display: none; }

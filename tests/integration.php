@@ -727,7 +727,12 @@ check( str_contains( $anon->get( '/faq/' )['body'], 'Prêt à essayer' ) && str_
 foreach ( array( 'risques', 'cgv', 'mentions-legales', 'confidentialite', 'cookies', 'acheter', 'espace-membre', 'essai-gratuit', 'contact' ) as $s ) {
 	check( ! str_contains( $anon->get( '/' . $s . '/' )['body'], 'Prêt à essayer' ), "page « $s » : pas de bandeau d'appel à l'action" );
 }
-check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) || 1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
+// Résultats : solde en euros + pourcentage (5 000 € au risque 1 % : 9 013 € en 2024, +80 % ; 23 186 € sur 2024 → 2026).
+check( 1 === preg_match( '/results__amount">9\x{202F}013\x{00A0}€<\/span><span class="results__pct">\+80\x{00A0}%/u', $home['body'] ), 'résultats : solde en euros et pourcentage dans chaque case' );
+check( str_contains( $home['body'], '2024 → 2026 enchaînés' ) && str_contains( $home['body'], "23\u{202F}186\u{00A0}€" ), 'résultats : colonne 2024 → 2026 enchaînés' );
+check( 1 === preg_match( '/hero__card.*?9\x{202F}013\x{00A0}€.*?\+80\x{00A0}%/su', $home['body'] ), 'haut de page : solde en euros à côté du pourcentage' );
+check( 1 === preg_match( '/class="is-neg"><span class="results__amount">491\x{00A0}€/u', $home['body'] ), 'résultats : année négative en rouge (500 €, 2026)' );
+check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) ||1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
 
 /* ======================================================================== J. Parrainage */

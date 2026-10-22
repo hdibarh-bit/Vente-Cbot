@@ -4,6 +4,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.2 — 22/10/2026
+- **Résultats en euros ET en pourcentage** (demande de Hamid : « ça parle beaucoup plus aux gens »). Chaque case du tableau affiche le solde simulé du compte (ex. « 9 013 € ») et, dessous, l'évolution (« +80 % »). Même chose dans la carte du haut de l'accueil.
+- Nouvelle colonne **« 2024 → 2026 enchaînés »** : le solde si le robot avait tourné sur toute la période sans retrait (ex. 5 000 € → 23 186 € au risque 1 %), toujours à côté de la pire baisse et du solde le plus bas.
+- Les années négatives s'affichent en rouge. Note sous le tableau et carte du haut précisées (montants = solde simulé en fin de période).
+
 ### 0.6.1 — 22/10/2026
 - Style du bandeau défilant des courtiers (espace membre) : cadres or, noms argent, pause au survol, immobile si l'utilisateur limite les animations.
 

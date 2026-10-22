@@ -62,3 +62,19 @@ function arvator_fmt_price( int|float $n ): string {
 function arvator_fmt_capital( int|float $n ): string {
 	return arvator_fmt_eur( $n );
 }
+
+/**
+ * Case de résultat : solde simulé en euros (« 9 013 € ») et, dessous, l'évolution en pourcentage (« +80 % »).
+ *
+ * @param array<string, mixed> $cell  « soldeFinal » et « gainPct ».
+ */
+function arvator_result_cell( array $cell ): void {
+	$gain  = (int) ( $cell['gainPct'] ?? 0 );
+	$class = $gain < 0 ? ' class="is-neg"' : '';
+	printf(
+		'<td%1$s><span class="results__amount">%2$s</span><span class="results__pct">%3$s</span></td>',
+		$class, // Valeur fixe ci-dessus.
+		esc_html( arvator_fmt_eur( (int) ( $cell['soldeFinal'] ?? 0 ) ) ),
+		esc_html( arvator_fmt_pct( $gain ) )
+	);
+}

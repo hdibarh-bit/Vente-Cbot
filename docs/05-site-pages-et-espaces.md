@@ -3,7 +3,7 @@
 Site en **français**, thème doré (voir `07-theme-dore.md`). Nom du produit : **Arvator** (décidé le 21/10/2026). Domaine : **bot.cosmartis.com** (confirmé le 21/10/2026).
 
 ## Pages publiques
-> **Règle du 21/10/2026 (Hamid)** : aucune page ni aucun texte ne décrit la stratégie ni ses détails techniques (pas d'ICT/SMC, pas d'unités de temps, pas de noms d'indices ou d'actifs, pas d'objectifs ni de garde-fous). Le public visé n'est pas fait de traders : il veut comprendre ce que fait le robot et voir ses performances simulées en pourcentage. Page « La stratégie » supprimée.
+> **Règle du 21/10/2026 (Hamid)** : aucune page ni aucun texte ne décrit la stratégie ni ses détails techniques (pas d'ICT/SMC, pas d'unités de temps, pas de noms d'indices ou d'actifs, pas d'objectifs ni de garde-fous). Le public visé n'est pas fait de traders : il veut comprendre ce que fait le robot et voir ses performances simulées en euros et en pourcentage (montants ajoutés le 22/10/2026 à la demande de Hamid). Page « La stratégie » supprimée.
 | Page | Contenu |
 |---|---|
 | Accueil | « Un robot de trading automatique, transparent, testé sur 2024, 2025 et 2026 » (backtest, performances simulées), 3 étapes, résultats simulés (backtest 2024-2026) au risque livré de 1 % + solde le plus bas, **section Tarifs** (achat 1 500 € + abonnement mensuel 39,90 € ou annuel 29,90 €/mois, premier paiement et coût de la première année, ce qui est inclus, abonnement obligatoire, capital à part), appel à l'essai gratuit et au rapport gratuit |
