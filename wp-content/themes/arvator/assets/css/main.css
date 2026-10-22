@@ -355,3 +355,24 @@ p { margin: 0 0 1em; }
 	.consent__actions { flex-wrap: nowrap; }
 	.consent__actions .btn { flex: 0 0 auto; }
 }
+
+/* Espace membre > Courtiers : bandeau défilant (cadre or, noms argent). Pause au survol ; immobile si l'utilisateur limite les animations. */
+.brokers { --silver-grad: linear-gradient(180deg, #F4F4F6 0%, #C9CCD2 45%, #9EA3AB 100%); position: relative; overflow: hidden; margin: 1.5rem 0; padding: 1rem 0; border-block: 1px solid var(--line); background: linear-gradient(90deg, rgba(201, 162, 39, .10), rgba(230, 199, 102, .04) 50%, rgba(201, 162, 39, .10)), var(--surface); border-radius: var(--radius); }
+.brokers::before, .brokers::after { content: ""; position: absolute; top: 0; bottom: 0; width: 3rem; z-index: 1; pointer-events: none; }
+.brokers::before { left: 0; background: linear-gradient(90deg, var(--surface), transparent); }
+.brokers::after { right: 0; background: linear-gradient(270deg, var(--surface), transparent); }
+.brokers__track { display: flex; width: max-content; animation: brokers-scroll 28s linear infinite; }
+.brokers:hover .brokers__track, .brokers:focus-within .brokers__track { animation-play-state: paused; }
+.brokers__list { display: flex; gap: 1rem; margin: 0; padding: 0 .5rem; list-style: none; }
+.brokers__item { display: inline-block; padding: .6rem 1.4rem; border: 1px solid var(--gold); border-radius: 999px; background: linear-gradient(180deg, rgba(230, 199, 102, .14), rgba(168, 132, 27, .10)); font-family: var(--serif); font-size: 1.15rem; font-weight: 600; letter-spacing: .02em; text-decoration: none; white-space: nowrap; background-clip: padding-box; }
+.brokers__item { color: #D9DCE1; }
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+	.brokers__item { color: transparent; background-image: var(--silver-grad), linear-gradient(180deg, rgba(230, 199, 102, .14), rgba(168, 132, 27, .10)); -webkit-background-clip: text, padding-box; background-clip: text, padding-box; }
+}
+.brokers__item:hover, .brokers__item:focus-visible { border-color: var(--gold-light); box-shadow: 0 0 18px rgba(201, 162, 39, .35); }
+@keyframes brokers-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+	.brokers__track { animation: none; width: auto; flex-wrap: wrap; }
+	.brokers__list { flex-wrap: wrap; }
+	.brokers__list[aria-hidden="true"] { display: none; }
+}

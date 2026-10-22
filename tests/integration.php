@@ -1281,6 +1281,48 @@ $set_fix( array() );
 @unlink( $n8n_log );
 @unlink( $stripe_log );
 
+
+/* ======================================================================== L. Courtiers compatibles (espace membre) */
+title( 'L. Courtiers compatibles : espace membre seulement, liens sans affiliation' );
+clear_transients();
+check( 'https://www.icmarkets.eu/fr/' === Arvator_Brokers::clean_url( 'https://www.icmarkets.eu/fr/?camp=123&ref=abc#top' ), 'adresse nettoyée : paramètres d\'affiliation retirés automatiquement' );
+check( '' === Arvator_Brokers::clean_url( 'http://exemple.com' ) && '' === Arvator_Brokers::clean_url( 'javascript:alert(1)' ) && '' === Arvator_Brokers::clean_url( 'pas une adresse' ), 'adresse non https ou invalide : refusée' );
+[ $pl, $pbad ] = Arvator_Brokers::parse( "Pepperstone | https://pepperstone.com/?aff=9\n\n<b>Pirate</b> | javascript:alert(1)\n | https://vide.com" );
+check( 1 === count( $pl ) && 'Pepperstone' === $pl[0]['name'] && 'https://pepperstone.com/' === $pl[0]['url'] && 2 === count( $pbad ), 'saisie admin : lignes valides gardées, lignes douteuses ignorées' );
+check( 4 === count( Arvator_Brokers::all() ), 'liste de départ : 4 courtiers' );
+foreach ( array( '/', '/faq/', '/acheter/', '/parrainage/' ) as $pg ) {
+	$b = $anon->get( $pg )['body'];
+	check( ! str_contains( $b, 'brokers__item' ) && ! str_contains( $b, 'icmarkets' ), "aucun courtier sur la page publique « $pg »" );
+}
+// Alice a un achat payé le temps de ce bloc (les blocs précédents ont nettoyé ses données de test).
+$wpdb->insert( Arvator_Repo::table( 'orders' ), array( 'user_id' => $uA, 'stripe_session_id' => "cs_brokers_$tag", 'product' => 'cbot', 'amount_cents' => 150000, 'status' => 'paid', 'is_test' => 1, 'created_at' => $now ) );
+$al = new Browser( $url );
+member_login( $al, "ta$tag", $newA );
+$cs = $al->get( '/espace-membre/?section=courtiers' );
+check( 200 === $cs['code'] && str_contains( $cs['body'], 'class="brokers"' ) && str_contains( $cs['body'], '>Pepperstone</a>' ), 'client ayant acheté : bandeau des courtiers affiché' );
+check( 8 === substr_count( $cs['body'], 'target="_blank" rel="noopener noreferrer nofollow"' ) && ! preg_match( '/brokers__item" href="[^"]*\?/', $cs['body'] ), 'liens : site officiel, nouvel onglet, sans paramètre' );
+check( str_contains( $cs['body'], 'aucune commission' ) && str_contains( $cs['body'], 'REGAFI' ) && str_contains( $cs['body'], 'risque élevé de perte en capital' ), 'avertissements : pas de commission, vérifier REGAFI, risque' );
+$nb = new Browser( $url );
+member_login( $nb, "tc$tag", $pwC );
+$cc = $nb->get( '/espace-membre/?section=courtiers' );
+check( ! str_contains( $cc['body'], 'brokers__item' ) && str_contains( $cc['body'], 'après votre achat' ), 'client sans achat : pas de liste' );
+$ca = $adm->get( '/wp-admin/admin.php?page=arvator-courtiers' );
+check( 200 === $ca['code'] && str_contains( $ca['body'], 'Pepperstone | https://pepperstone.com/' ), 'administration : liste modifiable (Arvator > Courtiers)' );
+$adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_brokers_save', '_arv_nonce' => field_in_form( $ca['body'], 'arvator_brokers_save', '_arv_nonce' ), 'brokers' => "FxPro | https://www.fxpro.com/?ib=77\nIC Markets | https://www.icmarkets.eu/" ) );
+$fresh = static function (): void {
+	// Le serveur de test a écrit l'option : on vide le cache de ce processus avant de la relire.
+	wp_cache_delete( 'arvator_brokers', 'options' );
+	wp_cache_delete( 'notoptions', 'options' );
+	wp_cache_delete( 'alloptions', 'options' );
+};
+$fresh();
+check( 2 === count( Arvator_Brokers::all() ) && 'https://www.fxpro.com/' === Arvator_Brokers::all()[0]['url'], 'administration : liste enregistrée, paramètre d\'affiliation retiré' );
+$r = $al->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_brokers_save', '_arv_nonce' => field_in_form( $ca['body'], 'arvator_brokers_save', '_arv_nonce' ), 'brokers' => 'Pirate | https://pirate.example/' ) );
+$fresh();
+check( 2 === count( Arvator_Brokers::all() ), 'un client ne peut pas modifier la liste' );
+delete_option( 'arvator_brokers' );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'cs_brokers_$tag'" );
+
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {
 	Arvator_Repo::delete_test_rows_for_user( $uid );

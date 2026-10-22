@@ -22,6 +22,7 @@ final class Arvator_Member {
 		'achats'    => 'Mes achats et abonnement',
 		'licence'   => 'Ma licence',
 		'fichiers'  => 'Téléchargements',
+		'courtiers' => 'Courtiers',
 		'parrainage' => 'Parrainage',
 		'profil'    => 'Mes informations',
 	);
@@ -105,6 +106,7 @@ final class Arvator_Member {
 					'achats'   => self::section_purchases( $user_id ),
 					'licence'  => self::section_license( $user_id ),
 					'fichiers' => self::section_files( $user_id ),
+					'courtiers' => self::section_brokers( $user_id ),
 					'parrainage' => self::section_referral( $user_id ),
 					'profil'   => self::section_profile( $user ),
 					default    => self::section_dashboard( $user_id ),
@@ -261,6 +263,15 @@ final class Arvator_Member {
 			);
 		}
 		echo '</ul>';
+	}
+
+	/** Courtiers compatibles : réservé aux clients ayant acheté (jamais public, décision de Hamid). */
+	private static function section_brokers( int $user_id ): void {
+		if ( ! Arvator_Repo::is_entitled( $user_id ) && ! current_user_can( 'manage_options' ) ) {
+			echo '<p>La liste des courtiers compatibles est disponible après votre achat.</p>';
+			return;
+		}
+		Arvator_Brokers::render_member();
 	}
 
 	private static function section_referral( int $user_id ): void {

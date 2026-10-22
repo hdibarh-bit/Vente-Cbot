@@ -54,3 +54,8 @@ Stripe (clés test puis prod, webhook secret) · accès WordPress/Hostinger · n
 - [ ] Changement de compte cTrader après activation : aujourd'hui manuel (le client écrit, Hamid change dans n8n). À automatiser si le serveur de licences reçoit une action « changer de compte ».
 - [ ] Essai gratuit : la licence est automatique ; **l'envoi automatique du robot aux personnes en essai est pris en charge par Cowork** (décision de Hamid, 22/10). Rien à faire côté site pour l'instant.
 - [ ] Sécurité anti-doublon côté serveur de licences : ignorer un même identifiant de paiement reçu deux fois.
+
+## Courtiers (22/10/2026)
+- [x] Liste indicative de courtiers cTrader dans l'espace membre (clients ayant acheté), jamais sur les pages publiques. Décision de Hamid après alerte sur le risque Sapin 2.
+- [ ] Hamid : vérifier chaque courtier sur REGAFI (autorisation en France) et sur la liste noire de l'AMF ; ajuster la liste dans Arvator > Courtiers.
+- [ ] Avocat : confirmer que cette liste réservée aux clients n'est pas une publicité au sens de la loi Sapin 2.

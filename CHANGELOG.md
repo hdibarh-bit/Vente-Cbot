@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.1 — 22/10/2026
+- Style du bandeau défilant des courtiers (espace membre) : cadres or, noms argent, pause au survol, immobile si l'utilisateur limite les animations.
+
 ### 0.6.0 — 22/10/2026
 - **Bandeau de consentement aux cookies** (RGPD, recommandations de la CNIL), en bas de page : « Tout refuser » aussi visible que « Tout accepter », « Personnaliser » (case « Recommandation » jamais précochée), lien « En savoir plus » vers la page Cookies. Le choix est retenu 6 mois, puis redemandé. Il ne bloque pas la lecture du site.
 - Pied de page : lien « Gérer les cookies » (changer d'avis à tout moment) et « Développé par cosmartis.com » (lien vers cosmartis.com).
@@ -44,6 +47,13 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.7.0 — 22/10/2026 — Courtiers compatibles
+- Nouvelle rubrique **« Courtiers »** dans l'espace membre, réservée aux clients ayant acheté : bandeau défilant des courtiers proposant cTrader (liste indicative), chaque nom ouvre le site officiel dans un nouvel onglet. Avertissements : pas de recommandation, aucune commission, vérifier REGAFI / liste noire AMF, essai en démo, risque de perte.
+- **Jamais sur les pages publiques** (décision de Hamid, risque de « publicité indirecte » Sapin 2).
+- Liste modifiable dans **Arvator > Courtiers** (une ligne « Nom | https://adresse »). Tout paramètre d'adresse (`?ref=`, `?affid=`…) est retiré automatiquement : aucun lien d'affiliation possible.
+- Liste de départ : Pepperstone, IC Markets, FxPro, FP Markets.
+- 378 tests automatiques réussis.
 
 ### 0.6.2 — 22/10/2026
 - Espace parrain : **un seul lien** de recommandation, qui mène directement à la page d'achat (code prérempli même si le visiteur refuse les cookies). Même lien dans l'email d'inscription.
