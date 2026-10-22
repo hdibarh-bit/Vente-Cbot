@@ -53,6 +53,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.7.1 — 22/10/2026
+- **Nouvelle adresse de contact : support@arvator.com** (définitive). Le formulaire de contact, les alertes (essais, contestations, licences, parrainage) et les emails du site l'utilisent ; elle s'affiche dans toutes les pages (mentions légales, CGV, confidentialité, FAQ, À propos, Contact, conditions du parrainage).
+- Les pages jamais modifiées dans l'éditeur reçoivent la nouvelle adresse automatiquement à l'installation ; une page que vous avez modifiée est conservée et signalée en haut du tableau de bord (à corriger à la main).
+- 390 tests automatiques réussis.
+
 ### 0.7.0 — 22/10/2026 — Courtiers compatibles
 - Nouvelle rubrique **« Courtiers »** dans l'espace membre, réservée aux clients ayant acheté : bandeau défilant des courtiers proposant cTrader (liste indicative), chaque nom ouvre le site officiel dans un nouvel onglet. Avertissements : pas de recommandation, aucune commission, vérifier REGAFI / liste noire AMF, essai en démo, risque de perte.
 - **Jamais sur les pages publiques** (décision de Hamid, risque de « publicité indirecte » Sapin 2).

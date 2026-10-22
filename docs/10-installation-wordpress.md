@@ -19,8 +19,8 @@ Deux fichiers à installer, dans le dossier `releases/` du dépôt (ou envoyés 
 8. **Textes légaux** : un bandeau « Version provisoire » s'affiche sur les pages légales. Faites-les valider par un avocat, complétez l'adresse dans « Mentions légales », puis supprimez le bandeau (dans l'éditeur de la page).
 
 ## Réglages de l'espace membre et du contact
-- **Envoi des emails** (messages du formulaire de contact, emails du site) : pour qu'ils arrivent bien (et pas en spam), créez la boîte `contact@cosmartis.com` dans hPanel (Emails), puis ajoutez dans `wp-config.php` (jamais ailleurs) :
-  `define( 'ARVATOR_SMTP_HOST', 'smtp.hostinger.com' );` `define( 'ARVATOR_SMTP_PORT', 465 );` `define( 'ARVATOR_SMTP_SECURE', 'ssl' );` `define( 'ARVATOR_SMTP_USER', 'contact@cosmartis.com' );` `define( 'ARVATOR_SMTP_PASS', 'le-mot-de-passe-de-la-boîte' );` `define( 'ARVATOR_MAIL_FROM', 'contact@cosmartis.com' );`
+- **Envoi des emails** (messages du formulaire de contact, emails du site) : pour qu'ils arrivent bien (et pas en spam), créez la boîte `support@arvator.com` dans hPanel (Emails ; le domaine arvator.com doit y être ajouté, sinon l'adresse du serveur `smtp.hostinger.com` ci-dessous est à remplacer par celle de votre hébergeur d'emails), puis ajoutez dans `wp-config.php` (jamais ailleurs) :
+  `define( 'ARVATOR_SMTP_HOST', 'smtp.hostinger.com' );` `define( 'ARVATOR_SMTP_PORT', 465 );` `define( 'ARVATOR_SMTP_SECURE', 'ssl' );` `define( 'ARVATOR_SMTP_USER', 'support@arvator.com' );` `define( 'ARVATOR_SMTP_PASS', 'le-mot-de-passe-de-la-boîte' );` `define( 'ARVATOR_MAIL_FROM', 'support@arvator.com' );`
   (valeurs exactes indiquées dans hPanel > Emails > Configuration). Testez ensuite le formulaire de contact.
 - **Mettre le robot en ligne** : tableau de bord > Arvator > Fichiers privés : choisissez le fichier (.algo, .zip ou .pdf) et un nom. Il n'est visible de personne d'autre que des clients ayant acheté.
 - **Voir l'espace membre comme un client** : Arvator > Clients de démonstration > Créer. Le mot de passe s'affiche une seule fois ; ouvrez une fenêtre de navigation privée pour vous connecter. Supprimez-les ensuite d'un clic.

@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 return array(
 
 	'a-propos' => array(
+		'rev'   => 2,
 		'title' => 'À propos',
 		'text'  => <<<'TXT'
 ## Un robot de trading automatique, présenté en toute transparence
@@ -34,7 +35,7 @@ TXT,
 	),
 
 	'faq'      => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Questions fréquentes',
 		'text'  => <<<'TXT'
 ## Le robot
@@ -100,6 +101,7 @@ TXT,
 	),
 
 	'contact'  => array(
+		'rev'   => 2,
 		'title' => 'Contact',
 		'text'  => <<<'TXT'
 Une question avant d'acheter, un souci avec votre licence ou votre compte ? Écrivez-nous : nous répondons par email.
@@ -143,6 +145,7 @@ TXT,
 	),
 
 	'mentions-legales' => array(
+		'rev'   => 2,
 		'title' => 'Mentions légales',
 		'text'  => <<<'TXT'
 [provisoire]
@@ -169,7 +172,7 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 [provisoire]
@@ -215,7 +218,7 @@ TXT,
 	),
 
 	'confidentialite' => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Politique de confidentialité',
 		'text'  => <<<'TXT'
 [provisoire]
@@ -300,7 +303,7 @@ TXT,
 	),
 
 	'conditions-parrainage' => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Conditions du programme de parrainage',
 		'text'  => <<<'TXT'
 [provisoire]

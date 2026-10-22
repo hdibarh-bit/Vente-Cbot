@@ -142,7 +142,7 @@ check( str_contains( $faq['body'], 'wp-block-details' ) && str_contains( $faq['b
 $cgv = $anon->get( '/cgv/' );
 check( str_contains( $cgv['body'], '14 jours' ) && str_contains( $cgv['body'], 'notice-provisional' ), 'CGV : règle des 14 jours et bandeau « provisoire »' );
 $ml = $anon->get( '/mentions-legales/' );
-check( str_contains( $ml['body'], '802 301 317 00029' ) && str_contains( $ml['body'], 'contact@cosmartis.com' ), 'Mentions légales : SIRET et email' );
+check( str_contains( $ml['body'], '802 301 317 00029' ) && str_contains( $ml['body'], 'support@arvator.com' ), 'Mentions légales : SIRET et email' );
 foreach ( $slugs as $s ) {
 	$page = get_page_by_path( $s );
 	foreach ( array( 'ICT', 'SMC', '15 minutes', 'Nasdaq', 'US 500', 'bientôt' ) as $banned ) {
@@ -219,7 +219,7 @@ $r = $anon->post( '/wp-admin/admin-post.php', $data );
 $m = mails();
 check( 'contact_ok' === notice_of( $r ) && count( $m ) === $n0 + 1, 'message valide envoyé' );
 $last = end( $m );
-check( $last && 'contact@cosmartis.com' === $last->to, 'destinataire : contact@cosmartis.com' );
+check( $last && 'support@arvator.com' === $last->to, 'destinataire : support@arvator.com' );
 check( $last && str_contains( implode( "\n", (array) $last->headers ), "Reply-To: Jean Test <jean$tag@example.com>" ), 'Reply-To correct' );
 check( 'contact_rate' === notice_of( $anon->post( '/wp-admin/admin-post.php', $data ) ), 'même email deux fois de suite : limité' );
 $injection = $data; $injection['arv_name'] = "Pirate\r\nBcc: victime@example.com"; $injection['arv_email'] = "inj$tag@example.com";
@@ -690,7 +690,7 @@ check( 'essai_ok' === notice_of( $anon->post( '/wp-admin/admin-post.php', $tgood
 @unlink( (string) getenv( 'ARV_N8N_FIXTURES' ) );
 check( Arvator_Trial::has_trial( $trial_email ) && Arvator_Trial::has_trial( strtoupper( $trial_email ) ), 'demande enregistrée (email insensible à la casse)' );
 $m = mails();
-check( 2 === count( $m ) && 'contact@cosmartis.com' === $m[0]->to && str_contains( $m[0]->message, $acct ) && $trial_email === $m[1]->to && str_contains( $m[1]->message, 'droit de rétractation' ), 'email à Hamid + confirmation au demandeur avec le rappel de renonciation' );
+check( 2 === count( $m ) && 'support@arvator.com' === $m[0]->to && str_contains( $m[0]->message, $acct ) && $trial_email === $m[1]->to && str_contains( $m[1]->message, 'droit de rétractation' ), 'email à Hamid + confirmation au demandeur avec le rappel de renonciation' );
 $anon2 = new Browser( $url );
 $tp2   = $anon2->get( '/essai-gratuit/' );
 $tg2   = array( '_arv_nonce' => field_in_form( $tp2['body'], 'arvator_trial', '_arv_nonce' ) ) + $tgood;
@@ -943,7 +943,7 @@ $r = $post_raw( $e, $sign( $e ) );
 $post_raw( $e, $sign( $e ) );
 $adj = $wpdb->get_results( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $f2u->ID . " AND kind = 'adjustment' ORDER BY id", ARRAY_A );
 check( 200 === $r['code'] && 2 === count( $adj ) && -22500 === (int) $adj[0]['amount_cents'] && -3588 === (int) $adj[1]['amount_cents'] && 'payable' === $adj[0]['status'], 'contestation après versement : prime et premier abonnement déduits (−225 €, −35,88 €), une seule fois', wp_json_encode( $adj ) );
-check( (bool) array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to && str_contains( $x->subject, 'contestation' ) ), 'Hamid est prévenu de la contestation' );
+check( (bool) array_filter( mails(), static fn( $x ) => 'support@arvator.com' === $x->to && str_contains( $x->subject, 'contestation' ) ), 'Hamid est prévenu de la contestation' );
 $bal = (int) $wpdb->get_var( 'SELECT SUM(amount_cents) FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referrer_user_id = $pid AND status = 'payable'" );
 check( 3 * 3588 - 22500 - 3588 === $bal, 'solde « à payer » du parrain négatif après déduction', (string) $bal );
 check( ! array_filter( Arvator_Referral::payouts_due(), static fn( $d ) => $d['user_id'] === $pid ), 'solde négatif : aucun virement proposé' );
@@ -955,7 +955,7 @@ $fraud = static function ( string $label, string $sid, string $email, string $cu
 	$u   = get_user_by( 'email', $email );
 	$rel = $u ? Arvator_Referral::referral_for( (int) $u->ID ) : null;
 	$st  = $u ? $wpdb->get_col( 'SELECT status FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $u->ID ) : array();
-	$al  = array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to && str_contains( $x->subject, 'bloquée' ) );
+	$al  = array_filter( mails(), static fn( $x ) => 'support@arvator.com' === $x->to && str_contains( $x->subject, 'bloquée' ) );
 	check( is_array( $rel ) && 'blocked' === $rel['status'] && $st && ! array_diff( $st, array( 'blocked' ) ) && $al, "auto-parrainage ($label) : récompenses bloquées + alerte à Hamid", wp_json_encode( $st ) );
 };
 // Le parrain achète lui-même avec son code (même compte, même email).
@@ -1164,7 +1164,7 @@ $e = $inv( "evt_{$tag}_k5", "sub_$k1", 35880 );
 $post_raw( $e, $sign( $e ) );
 $wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'license_sync' ) . " SET attempts = 9 WHERE source_id = 'pay:inv:in_evt_{$tag}_k5'" );
 Arvator_License::retry_pending();
-check( 'error' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE source_id = 'pay:inv:in_evt_{$tag}_k5'" ) && (bool) array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to && str_contains( $x->subject, 'licence non mise à jour' ) ), 'après 10 essais : envoi en erreur et Hamid prévenu' );
+check( 'error' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE source_id = 'pay:inv:in_evt_{$tag}_k5'" ) && (bool) array_filter( mails(), static fn( $x ) => 'support@arvator.com' === $x->to && str_contains( $x->subject, 'licence non mise à jour' ) ), 'après 10 essais : envoi en erreur et Hamid prévenu' );
 
 // -- Administration : suivi et « Renvoyer »
 @unlink( $n8n_fix );
@@ -1187,7 +1187,7 @@ $n8n_set( array( 'licence-paiement' => array( 'ok' => false, 'raison' => 'compte
 $e = $inv( "evt_{$tag}_k6", "sub_$k1", 35880 );
 $post_raw( $e, $sign( $e ) );
 $row = $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'license_sync' ) . " WHERE source_id = 'pay:inv:in_evt_{$tag}_k6'", ARRAY_A );
-check( 'error' === $row['status'] && 'compte bloqué' === $row['last_error'] && (bool) array_filter( mails(), static fn( $x ) => 'contact@cosmartis.com' === $x->to ), 'refus du serveur : noté et Hamid prévenu' );
+check( 'error' === $row['status'] && 'compte bloqué' === $row['last_error'] && (bool) array_filter( mails(), static fn( $x ) => 'support@arvator.com' === $x->to ), 'refus du serveur : noté et Hamid prévenu' );
 @unlink( $n8n_fix );
 
 // -- Résiliation de l'abonnement : licence coupée une seule fois
@@ -1327,6 +1327,23 @@ $fresh();
 check( 2 === count( Arvator_Brokers::all() ), 'un client ne peut pas modifier la liste' );
 delete_option( 'arvator_brokers' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'cs_brokers_$tag'" );
+
+
+/* ======================================================================== M. Adresse de contact */
+title( 'M. Adresse de contact support@arvator.com' );
+check( 'support@arvator.com' === Arvator_Pages::EMAIL, 'adresse de contact : support@arvator.com' );
+// Page déjà en ligne avec l'ancienne adresse, jamais modifiée par Hamid : le texte est mis à jour à l'installation.
+$mlp = get_page_by_path( 'mentions-legales', OBJECT, 'page' );
+$wpdb->update( $wpdb->posts, array( 'post_content' => 'Ancien texte : contact@cosmartis.com' ), array( 'ID' => $mlp->ID ) );
+clean_post_cache( $mlp->ID );
+update_option( 'arvator_pages_rev', array( 'mentions-legales' => 1 ) + (array) get_option( 'arvator_pages_rev', array() ) );
+Arvator_Pages::create_missing();
+$mlc = (string) get_post( $mlp->ID )->post_content;
+check( str_contains( $mlc, 'support@arvator.com' ) && ! str_contains( $mlc, 'contact@cosmartis.com' ), 'page jamais modifiée : nouvelle adresse mise en place automatiquement' );
+foreach ( array( 'contact', 'mentions-legales', 'confidentialite', 'cgv', 'faq', 'a-propos' ) as $pg ) {
+	$pb = $anon->get( '/' . $pg . '/' )['body'];
+	check( str_contains( $pb, 'support@arvator.com' ) && ! str_contains( $pb, 'contact@cosmartis.com' ), "page « $pg » : nouvelle adresse, plus l'ancienne" );
+}
 
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {

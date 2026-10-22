@@ -13,7 +13,7 @@
 - [x] Hébergement : Hostinger « Hébergement Premium » (mutualisé), précisé par Hamid le 21/10. **À clarifier** : existe-t-il aussi un serveur (VPS) pour le service de licence automatique (port 25345) ? Où tourne n8n.cosmartis.com ?
 
 ## Réponses de Hamid du 21/10/2026
-- [x] Contact : contact@cosmartis.com.
+- [x] Contact : support@arvator.com (définitif, décidé par Hamid le 22/10/2026 ; remplace contact@cosmartis.com).
 - [x] Mentions légales : Hamid DIBARH, Fresnes-sur-Escaut, SIRET 80230131700029. **Adresse postale complète à ajouter** (obligatoire) ; mention de TVA à confirmer avec le comptable.
 - [x] Remboursement (confirmé le 21/10) : 14 jours si achat sans essai, remboursement du **prix du robot** (pas de l'abonnement de la première période) ; pas de remboursement d'un achat fait après un essai. La renonciation au droit de rétractation est annoncée **avant la demande d'essai** (case obligatoire sur la page d'essai) et rappelée au paiement pour ceux qui ont fait l'essai.
 - [x] Courtiers : « tout courtier proposant cTrader avec le cloud ».

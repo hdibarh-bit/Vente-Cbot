@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Arvator_Pages {
 
-	public const EMAIL = 'contact@cosmartis.com';
+	public const EMAIL = 'support@arvator.com';
 
 	private const OPT_CREATED = 'arvator_pages_created';
 	private const OPT_REV     = 'arvator_pages_rev';

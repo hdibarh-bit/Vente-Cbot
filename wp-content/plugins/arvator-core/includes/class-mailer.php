@@ -7,9 +7,9 @@
  *   define( 'ARVATOR_SMTP_HOST', 'smtp.hostinger.com' );
  *   define( 'ARVATOR_SMTP_PORT', 465 );
  *   define( 'ARVATOR_SMTP_SECURE', 'ssl' );   // 'ssl' (465) ou 'tls' (587)
- *   define( 'ARVATOR_SMTP_USER', 'contact@cosmartis.com' );
+ *   define( 'ARVATOR_SMTP_USER', 'support@arvator.com' );
  *   define( 'ARVATOR_SMTP_PASS', '********' );
- *   define( 'ARVATOR_MAIL_FROM', 'contact@cosmartis.com' );
+ *   define( 'ARVATOR_MAIL_FROM', 'support@arvator.com' );
  * Le mot de passe ne va JAMAIS ailleurs que dans wp-config.php.
  */
 
