@@ -40,6 +40,8 @@ function title( string $t ): void {
 /** Petit client HTTP : pas de redirection suivie, cookies par session. */
 final class Browser {
 	public string $jar;
+	/** Cookies supplémentaires envoyés à chaque requête (ex. choix sur les cookies). */
+	public string $cookie = '';
 	public function __construct( private string $base ) {
 		$this->jar = tempnam( sys_get_temp_dir(), 'arvjar' );
 	}
@@ -58,7 +60,7 @@ final class Browser {
 				CURLOPT_HTTPHEADER     => $extra_headers,
 			)
 		);
-		curl_setopt( $ch, CURLOPT_COOKIE, 'wordpress_test_cookie=WP%20Cookie%20check' );
+		curl_setopt( $ch, CURLOPT_COOKIE, 'wordpress_test_cookie=WP%20Cookie%20check' . ( '' !== $this->cookie ? '; ' . $this->cookie : '' ) );
 		if ( 'POST' === $method ) {
 			curl_setopt( $ch, CURLOPT_POST, true );
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $post ) );
@@ -782,12 +784,29 @@ check( 'parrain_mail' === notice_of( $anon->post( '/wp-admin/admin-post.php', ar
 check( 1 === count( mails() ) && "a$tag@example.com" === mails()[0]->to && str_contains( mails()[0]->message, 'rubrique « Parrainage »' ), '… mais un email lui explique comment activer son lien' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'referrers' ) . ' WHERE user_id = ' . (int) $uA );
 
-// -- Lien de recommandation : cookie
-$vis = new Browser( $url );
-$r   = $vis->get( '/?ref=' . strtolower( $code ) );
-check( 302 === $r['code'] && ! str_contains( $r['location'], 'ref=' ) && preg_match( '/Set-Cookie: arv_ref=' . $code . ';.*HttpOnly/i', $r['headers'] ), 'lien ?ref= : code mémorisé (cookie HttpOnly), adresse nettoyée' );
+// -- Lien de recommandation : cookie, seulement avec l'accord du visiteur (bandeau cookies)
+$nc = new Browser( $url );
+$r  = $nc->get( '/?ref=' . $code );
+check( 200 === $r['code'] && ! str_contains( $r['headers'], 'arv_ref=' ) && str_contains( $r['body'], 'id="consent"' ), 'lien ?ref= sans choix sur les cookies : aucun cookie déposé, la page demande l\'accord' );
+check( str_contains( $r['headers'], 'no-store' ) || str_contains( $r['headers'], 'no-cache' ), 'lien ?ref= sans choix : page jamais mise en cache' );
+$nc->cookie = 'arv_consent=v1-r0';
+$r          = $nc->get( '/?ref=' . $code );
+check( 200 === $r['code'] && ! str_contains( $r['headers'], 'arv_ref=' ), 'cookie de recommandation refusé : rien n\'est déposé' );
+$ab = $nc->get( '/acheter/?ref=' . $code );
+check( str_contains( $ab['body'], 'name="ref"' ) && str_contains( $ab['body'], 'value="' . $code . '"' ), 'refus : le code de l\'adresse est quand même prérempli sur la page d\'achat (sans cookie)' );
+$nc->cookie = 'arv_consent=v1-r0; arv_ref=' . $code;
+$r          = $nc->get( '/faq/' );
+check( 1 === preg_match( '/Set-Cookie: arv_ref=(deleted)?;[^\r\n]*expires=Thu, 01[- ]Jan[- ]1970|Set-Cookie: arv_ref=;[^\r\n]*(expires|Max-Age=0)/i', $r['headers'] ), 'accord retiré : le cookie de recommandation existant est effacé', substr( $r['headers'], 0, 600 ) );
+$ab = $nc->get( '/acheter/' );
+check( ! str_contains( $ab['body'], 'value="' . $code . '"' ), 'accord retiré : le code n\'est plus prérempli' );
+$vis         = new Browser( $url );
+$vis->cookie = 'arv_consent=v1-r1';
+$r           = $vis->get( '/?ref=' . strtolower( $code ) );
+check( 302 === $r['code'] && ! str_contains( $r['location'], 'ref=' ) && preg_match( '/Set-Cookie: arv_ref=' . $code . ';.*HttpOnly/i', $r['headers'] ), 'cookie de recommandation accepté : code mémorisé (cookie HttpOnly), adresse nettoyée' );
 check( str_contains( $r['headers'], 'no-store' ) || str_contains( $r['headers'], 'no-cache' ), 'lien ?ref= : réponse jamais mise en cache' );
-$r2 = ( new Browser( $url ) )->get( '/?ref=ZZZZ9999' );
+$b2         = new Browser( $url );
+$b2->cookie = 'arv_consent=v1-r1';
+$r2         = $b2->get( '/?ref=ZZZZ9999' );
 check( 302 === $r2['code'] && ! str_contains( $r2['headers'], 'arv_ref=' ), 'code inconnu : aucun cookie' );
 $buy = $vis->get( '/acheter/' );
 check( str_contains( $buy['body'], 'name="ref"' ) && str_contains( $buy['body'], 'value="' . $code . '"' ), 'page d\'achat : code du parrain prérempli' );
@@ -1008,8 +1027,20 @@ foreach ( preg_split( '/<form\b/i', $tabc['body'] ) as $chunk ) {
 $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_ref_commission', 'id' => $blocked, 'op' => 'unblock', '_arv_nonce' => $cn ) );
 check( 'pending' === $wpdb->get_var( 'SELECT status FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE id = $blocked" ), 'administrateur : récompense bloquée débloquée' );
 
-// -- Cookies : la page mentionne le cookie de recommandation
-check( str_contains( $anon->get( '/cookies/' )['body'], 'arv_ref' ), 'page Cookies : le cookie de recommandation est expliqué' );
+// -- Cookies : la page explique les deux cookies et comment changer d'avis
+$ck = $anon->get( '/cookies/' )['body'];
+check( str_contains( $ck, 'arv_ref' ) && str_contains( $ck, 'arv_consent' ) && str_contains( $ck, 'Gérer les cookies' ), 'page Cookies : cookie de recommandation, cookie de choix, comment changer d\'avis' );
+
+// -- Bandeau de consentement et pied de page
+$hp = $anon->get( '/' )['body'];
+check( 1 === preg_match( '/<section id="consent"[^>]*\shidden>/', $hp ), 'bandeau cookies présent, masqué tant que le script ne l\'affiche pas' );
+check( 1 === preg_match( '/class="btn btn--primary btn--sm" data-consent="refuse">Tout refuser/', $hp ) && 1 === preg_match( '/class="btn btn--primary btn--sm" data-consent="accept">Tout accepter/', $hp ), 'bandeau : « Tout refuser » aussi visible que « Tout accepter »' );
+check( str_contains( $hp, 'id="consent-ref">' ) && ! preg_match( '/id="consent-ref"[^>]*checked/', $hp ), 'bandeau : case « Recommandation » non précochée' );
+check( str_contains( $hp, 'data-consent-open' ) && str_contains( $hp, 'Gérer les cookies' ), 'pied de page : lien « Gérer les cookies » pour changer d\'avis' );
+check( 1 === preg_match( '/Développé par <a href="https:\/\/cosmartis\.com" target="_blank" rel="noopener">cosmartis\.com<\/a>/', $hp ), 'pied de page : « Développé par cosmartis.com » cliquable' );
+foreach ( array( 'faq', 'acheter', 'espace-membre' ) as $pg ) {
+	check( str_contains( $anon->get( '/' . $pg . '/' )['body'], 'id="consent"' ), "bandeau cookies présent sur la page « $pg »" );
+}
 
 // -- Données personnelles : export et effacement du parrain
 $exp = Arvator_Privacy::export( $pemail );

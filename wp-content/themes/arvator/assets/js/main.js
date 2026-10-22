@@ -1,4 +1,4 @@
-/* Arvator : menu mobile et onglets de résultats. Pas de dépendance. */
+/* Arvator : menu mobile, onglets de résultats, bouton « Copier », bandeau cookies. Pas de dépendance. */
 ( function () {
 	'use strict';
 
@@ -40,6 +40,49 @@
 			}
 		} );
 	} );
+
+	// Bandeau de consentement aux cookies : choix retenu 6 mois dans « arv_consent » (v1-r1 accepté, v1-r0 refusé).
+	var consent = document.getElementById( 'consent' );
+	if ( consent ) {
+		var refBox = document.getElementById( 'consent-ref' );
+		var prefs = document.getElementById( 'consent-prefs' );
+		var btn = function ( name ) { return consent.querySelector( '[data-consent="' + name + '"]' ); };
+		var current = function () {
+			var m = document.cookie.match( /(?:^|;\s*)arv_consent=(v1-r[01])(?:;|$)/ );
+			return m ? m[1] : '';
+		};
+		var showPrefs = function ( on ) {
+			prefs.hidden = ! on;
+			btn( 'custom' ).hidden = on;
+			btn( 'save' ).hidden = ! on;
+			btn( 'custom' ).setAttribute( 'aria-expanded', on ? 'true' : 'false' );
+		};
+		var open = function ( withPrefs ) {
+			refBox.checked = 'v1-r1' === current();
+			showPrefs( !! withPrefs );
+			consent.hidden = false;
+			btn( withPrefs ? 'save' : 'accept' ).focus();
+		};
+		var save = function ( accepted ) {
+			var before = current();
+			document.cookie = 'arv_consent=v1-r' + ( accepted ? '1' : '0' ) + '; Max-Age=' + ( 182 * 86400 ) + '; Path=/; SameSite=Lax' + ( 'https:' === location.protocol ? '; Secure' : '' );
+			consent.hidden = true;
+			// Le site applique le choix côté serveur : mémoriser le code d'un lien de parrain, ou effacer le cookie retiré.
+			if ( ( accepted && /[?&]ref=/.test( location.search ) ) || ( ! accepted && 'v1-r1' === before ) ) {
+				location.reload();
+			}
+		};
+		btn( 'accept' ).addEventListener( 'click', function () { save( true ); } );
+		btn( 'refuse' ).addEventListener( 'click', function () { save( false ); } );
+		btn( 'custom' ).addEventListener( 'click', function () { showPrefs( true ); refBox.focus(); } );
+		btn( 'save' ).addEventListener( 'click', function () { save( refBox.checked ); } );
+		document.querySelectorAll( '[data-consent-open]' ).forEach( function ( link ) {
+			link.addEventListener( 'click', function () { open( true ); } );
+		} );
+		if ( '' === current() ) {
+			open( false );
+		}
+	}
 
 	document.querySelectorAll( '[data-tabs]' ).forEach( function ( root ) {
 		var tabs = Array.prototype.slice.call( root.querySelectorAll( '[role="tab"]' ) );

@@ -252,17 +252,23 @@ TXT,
 	),
 
 	'cookies'  => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Cookies',
 		'text'  => <<<'TXT'
 [provisoire]
 ## Les cookies de ce site
-Ce site n'utilise que des cookies liés à son fonctionnement :
-- **Connexion :** ils servent à vous connecter à votre espace membre et à protéger votre compte. Ils sont supprimés à la fermeture de votre navigateur, ou après quelques jours si vous avez coché « Se souvenir de moi ».
-- **Recommandation :** si vous arrivez sur le site par le lien d'un parrain, son code de recommandation est mémorisé 90 jours (cookie « arv_ref »), uniquement pour pouvoir lui attribuer sa récompense si vous achetez. Il ne contient aucune donnée sur vous et n'est lu que par ce site. Vous pouvez le supprimer depuis les réglages de votre navigateur ; vous pourrez toujours saisir le code à la main au moment de l'achat.
+Ce site n'utilise que deux sortes de cookies. Aucun cookie publicitaire, aucun outil de mesure d'audience, aucun partage avec des tiers.
 
-## Ce que nous n'utilisons pas
-Ce site n'utilise aucun cookie publicitaire et aucun outil de mesure d'audience. Si cela change, vous serez invité à donner votre accord avant tout dépôt de cookie.
+### Cookies nécessaires (toujours actifs)
+Ils sont indispensables au fonctionnement du site et ne demandent pas votre accord :
+- **Connexion :** ils vous connectent à votre espace membre et protègent votre compte. Ils sont supprimés à la fermeture du navigateur, ou après quelques jours si vous avez coché « Se souvenir de moi ».
+- **Vos choix sur les cookies (« arv_consent ») :** ils retiennent votre accord ou votre refus pendant 6 mois, pour ne pas vous redemander à chaque page. Au bout de 6 mois, la question vous est reposée.
+
+### Cookie de recommandation (seulement avec votre accord)
+Si vous arrivez sur le site par le lien d'un parrain, et **seulement si vous l'acceptez**, son code de recommandation est retenu 90 jours (cookie « arv_ref »), pour lui attribuer sa récompense si vous achetez. Il ne contient aucune donnée sur vous et n'est lu que par ce site. Si vous refusez, rien n'est déposé : vous pourrez toujours saisir le code du parrain à la main au moment de l'achat.
+
+## Changer d'avis
+Vous pouvez modifier ou retirer votre accord à tout moment avec le lien **« Gérer les cookies »** en bas de chaque page. Si vous retirez votre accord, le cookie de recommandation est supprimé. Refuser n'a aucune conséquence sur l'accès au site ni sur l'achat.
 
 ## Paiement
 Lorsque vous payez, vous êtes redirigé vers la page de paiement sécurisée de Stripe, qui dépose ses propres cookies nécessaires au paiement.
@@ -270,6 +276,7 @@ TXT,
 	),
 
 	'parrainage' => array(
+		'rev'   => 2,
 		'title' => 'Parrainage',
 		'text'  => <<<'TXT'
 ## Recommandez Arvator à vos proches
@@ -279,7 +286,7 @@ Vous connaissez quelqu'un que le trading automatique intéresse ? Partagez votre
 
 ## Comment ça marche
 - **Inscription gratuite**, sans obligation d'acheter le robot.
-- Vous recevez un **lien personnel** à partager. Il est mémorisé 90 jours sur l'appareil de la personne qui clique ; elle peut aussi saisir votre code au moment de l'achat.
+- Vous recevez un **lien personnel** à partager. Il est mémorisé 90 jours sur l'appareil de la personne qui clique, si elle accepte le cookie de recommandation ; sinon, elle peut saisir votre code au moment de l'achat.
 - La récompense d'achat est disponible **30 jours après l'achat** (après le délai de remboursement), puis versée par **virement bancaire**.
 - La récompense sur les abonnements est versée une fois par mois, dès que le cumul atteint 50 €.
 - Seule la personne qui a recommandé est récompensée : il n'y a qu'un seul niveau.
@@ -293,6 +300,7 @@ TXT,
 	),
 
 	'conditions-parrainage' => array(
+		'rev'   => 2,
 		'title' => 'Conditions du programme de parrainage',
 		'text'  => <<<'TXT'
 [provisoire]
@@ -303,7 +311,7 @@ Le programme de parrainage Arvator permet à toute personne inscrite (le « parr
 L'inscription est gratuite et n'oblige à aucun achat. Elle est réservée aux personnes majeures. Chaque parrain reçoit un code et un lien personnels. Il est interdit de se parrainer soi-même.
 
 ## 3. Rattachement d'un filleul
-Le filleul est rattaché au parrain dont le lien a été utilisé (le code est mémorisé 90 jours sur son appareil) ou dont il saisit le code au moment de l'achat. Le parrain est fixé définitivement lors du premier achat du robot par le filleul.
+Le filleul est rattaché au parrain dont le lien a été utilisé (le code est mémorisé 90 jours sur son appareil s'il accepte le cookie de recommandation) ou dont il saisit le code au moment de l'achat. Le parrain est fixé définitivement lors du premier achat du robot par le filleul.
 
 ## 4. Récompenses
 - **Prime d'achat :** 225 € pour chaque achat du robot payé par un filleul.

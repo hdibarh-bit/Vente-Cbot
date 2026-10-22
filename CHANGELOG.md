@@ -4,6 +4,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.0 — 22/10/2026
+- **Bandeau de consentement aux cookies** (RGPD, recommandations de la CNIL), en bas de page : « Tout refuser » aussi visible que « Tout accepter », « Personnaliser » (case « Recommandation » jamais précochée), lien « En savoir plus » vers la page Cookies. Le choix est retenu 6 mois, puis redemandé. Il ne bloque pas la lecture du site.
+- Pied de page : lien « Gérer les cookies » (changer d'avis à tout moment) et « Développé par cosmartis.com » (lien vers cosmartis.com).
+
 ### 0.5.1 — 21/10/2026
 - Pied de page : lien « Conditions du parrainage ».
 - Page « Parrainage » : mise en forme des deux récompenses (225 € et 10 %).
@@ -40,6 +44,12 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.5.1 — 22/10/2026
+- Le cookie de recommandation (`arv_ref`) n'est plus déposé **qu'avec l'accord** du visiteur (bandeau cookies du thème 0.6.0). S'il retire son accord, le cookie est effacé à la visite suivante.
+- Sans accord, le code du parrain reste utilisable : prérempli sur la page d'achat s'il est dans l'adresse (`/acheter/?ref=CODE`), sinon saisi à la main.
+- Textes mis à jour (seulement si vous ne les avez pas modifiés) : Cookies, Parrainage, Conditions du programme de parrainage.
+- 323 tests automatiques réussis.
 
 ### 0.5.0 — 21/10/2026 — Parrainage
 - **Pages créées automatiquement** : « Parrainage » (montants, inscription gratuite) et « Conditions du programme de parrainage » (provisoire, à faire valider par un avocat). Le bandeau « Recommandez Arvator » de l'accueil s'affiche dès que la page Parrainage existe.

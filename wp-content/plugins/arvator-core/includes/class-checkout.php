@@ -97,7 +97,7 @@ final class Arvator_Checkout {
 
 			<p>
 				<label for="arv-buy-ref">Code de recommandation <span class="muted">(facultatif)</span></label>
-				<input id="arv-buy-ref" name="ref" type="text" maxlength="12" autocomplete="off" value="<?php echo esc_attr( Arvator_Referral::cookie_code() ); ?>">
+				<input id="arv-buy-ref" name="ref" type="text" maxlength="12" autocomplete="off" value="<?php echo esc_attr( self::prefill_code() ); ?>">
 				<span class="muted">Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé.</span>
 			</p>
 
@@ -111,6 +111,16 @@ final class Arvator_Checkout {
 		</form>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	/** Code prérempli : celui mémorisé (avec accord), sinon celui de l'adresse (/acheter/?ref=CODE), sans rien déposer. */
+	private static function prefill_code(): string {
+		$code = Arvator_Referral::cookie_code();
+		if ( '' === $code && isset( $_GET['ref'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- simple préremplissage
+			$code = Arvator_Referral::normalize_code( sanitize_text_field( wp_unslash( (string) $_GET['ref'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$code = ( '' !== $code && Arvator_Referral::referrer_by_code( $code ) ) ? $code : '';
+		}
+		return $code;
 	}
 
 	/* --------------------------------------------------------------------- Actions */

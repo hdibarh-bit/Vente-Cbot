@@ -4,7 +4,7 @@
  *
  * Règles (docs/03-parrainage-affiliation.md, décisions de Hamid du 21/10/2026) :
  * - inscription gratuite, sans obligation d'acheter ; un parrain non client est payé comme les autres ;
- * - lien ?ref=CODE mémorisé 90 jours ; le parrain est fixé au premier achat du filleul et ne change plus ;
+ * - lien ?ref=CODE mémorisé 90 jours, seulement si le visiteur l'accepte (bandeau cookies) ; le parrain est fixé au premier achat du filleul et ne change plus ;
  * - prime fixe par achat du robot (225 €), « à payer » 30 jours après le paiement ;
  * - 10 % de chaque abonnement payé par le filleul, tant qu'il reste abonné ; seul le parrain direct est payé ;
  * - remboursement ou contestation bancaire : la récompense est annulée, ou déduite des suivantes si elle a déjà été versée ;
@@ -25,12 +25,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Arvator_Referral {
 
 	public const COOKIE = 'arv_ref';
+
+	/**
+	 * Choix du visiteur sur les cookies, enregistré par le bandeau du thème (6 mois) : « v1-r1 » = cookie de
+	 * recommandation accepté, « v1-r0 » = refusé. Sans accord, le cookie de recommandation n'est jamais déposé.
+	 */
+	public const CONSENT = 'arv_consent';
 	private const OPT   = 'arvator_referral_settings';
 	private const CRON  = 'arvator_referral_daily';
 	private const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans 0/O ni 1/I : codes faciles à recopier.
 
 	public static function init(): void {
 		add_action( 'template_redirect', array( self::class, 'capture_link' ), 1 );
+		add_action( 'init', array( self::class, 'enforce_consent' ) );
 		add_action( 'init', array( self::class, 'schedule' ) );
 		add_action( self::CRON, array( self::class, 'promote_due' ) );
 		add_filter( 'arvator_settings', array( self::class, 'public_settings' ) );
@@ -165,7 +172,38 @@ final class Arvator_Referral {
 
 	/* --------------------------------------------------------------------- Lien de recommandation */
 
-	/** ?ref=CODE : mémorise le code (cookie), puis renvoie vers la même page sans le code (adresse propre, pas de cache). */
+	/** Le visiteur a-t-il accepté le cookie de recommandation ? */
+	public static function has_consent(): bool {
+		return isset( $_COOKIE[ self::CONSENT ] ) && 'v1-r1' === $_COOKIE[ self::CONSENT ];
+	}
+
+	private static function cookie_args( int $expires ): array {
+		return array(
+			'expires'  => $expires,
+			'path'     => COOKIEPATH ? COOKIEPATH : '/',
+			'domain'   => (string) COOKIE_DOMAIN,
+			'secure'   => is_ssl(),
+			'httponly' => true,
+			'samesite' => 'Lax',
+		);
+	}
+
+	/** Accord retiré : le cookie de recommandation déjà déposé est supprimé à la visite suivante. */
+	public static function enforce_consent(): void {
+		if ( isset( $_COOKIE[ self::COOKIE ] ) && ! self::has_consent() && ! headers_sent() ) {
+			setcookie( self::COOKIE, '', self::cookie_args( time() - YEAR_IN_SECONDS ) );
+			unset( $_COOKIE[ self::COOKIE ] );
+		}
+	}
+
+	/**
+	 * ?ref=CODE :
+	 * - accord donné : le code est mémorisé (cookie), puis la page se recharge sans le code (adresse propre) ;
+	 * - choix pas encore fait : rien n'est déposé ; la page s'affiche avec le code dans l'adresse et le bandeau
+	 *   demande l'accord (si le visiteur accepte, la page se recharge et on repasse ici) ;
+	 * - refus : rien n'est déposé ; le code reste seulement dans l'adresse (prérempli si c'est la page d'achat,
+	 *   sinon le visiteur peut le saisir à la main).
+	 */
 	public static function capture_link(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- lien public, aucune action sensible
 		if ( ! isset( $_GET['ref'] ) || is_admin() ) {
@@ -174,19 +212,11 @@ final class Arvator_Referral {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$code = self::normalize_code( sanitize_text_field( wp_unslash( (string) $_GET['ref'] ) ) );
 		nocache_headers();
+		if ( ! self::has_consent() ) {
+			return;
+		}
 		if ( '' !== $code && self::referrer_by_code( $code ) ) {
-			setcookie(
-				self::COOKIE,
-				$code,
-				array(
-					'expires'  => time() + self::settings()['cookie_days'] * DAY_IN_SECONDS,
-					'path'     => COOKIEPATH ? COOKIEPATH : '/',
-					'domain'   => (string) COOKIE_DOMAIN,
-					'secure'   => is_ssl(),
-					'httponly' => true,
-					'samesite' => 'Lax',
-				)
-			);
+			setcookie( self::COOKIE, $code, self::cookie_args( time() + self::settings()['cookie_days'] * DAY_IN_SECONDS ) );
 		}
 		wp_safe_redirect( remove_query_arg( 'ref' ), 302 );
 		exit;
@@ -194,6 +224,9 @@ final class Arvator_Referral {
 
 	/** Code mémorisé dans le navigateur du visiteur (valide et actif), sinon ''. */
 	public static function cookie_code(): string {
+		if ( ! self::has_consent() ) {
+			return '';
+		}
 		$raw  = isset( $_COOKIE[ self::COOKIE ] ) ? sanitize_text_field( wp_unslash( (string) $_COOKIE[ self::COOKIE ] ) ) : '';
 		$code = self::normalize_code( $raw );
 		return ( '' !== $code && self::referrer_by_code( $code ) ) ? $code : '';
