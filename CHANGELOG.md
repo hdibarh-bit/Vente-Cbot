@@ -64,6 +64,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.7.4 — 23/10/2026
+- **Nouvelle photo de Hamid** (pages À propos et Mentions légales). Si une photo a été choisie dans Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux », c'est elle qui reste affichée : retirez-la pour voir la nouvelle.
+- **Telegram ajouté** aux réseaux (https://t.me/Bot_Arvator), sur la carte de l'éditeur et dans le pied de page. Lien modifiable ou masquable au même endroit.
+
 ### 0.7.3 — 22/10/2026
 - **Photo de Hamid** dans « À propos » et « Mentions légales », à l'endroit où son nom est cité, avec ses réseaux sociaux dessous (shortcode `[arvator_auteur]`). Photo livrée avec le plugin, remplaçable.
 - **Réseaux sociaux** : LinkedIn rempli ; Facebook et X à compléter dans **Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux »**. Un réseau sans lien n'est pas affiché. Seuls les liens https du vrai réseau sont acceptés, sans paramètres de suivi.
