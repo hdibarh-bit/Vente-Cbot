@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.6 — 23/10/2026
+- Photo de Hamid (À propos, Mentions légales) affichée **sans cadre** : plus de bordure, d'angles arrondis ni d'ombre.
+
 ### 0.6.5 — 23/10/2026
 - Accueil : le bandeau « Recommandez Arvator ! » passe **tout en haut de la page, juste sous l'en-tête**.
 - **Toute la carte est cliquable** (pastille « Recommandez Arvator ! », texte et image) et mène à la page Parrainage. Avant, seuls l'image et « voir conditions » réagissaient. Léger effet doré au survol.
@@ -63,6 +66,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.7.5 — 23/10/2026
+- Photo de Hamid : fond noir accordé à celui du site, pour qu'elle se fonde dans la page sans cadre visible (à installer avec le thème 0.6.6).
 
 ### 0.7.4 — 23/10/2026
 - **Nouvelle photo de Hamid** (pages À propos et Mentions légales). Si une photo a été choisie dans Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux », c'est elle qui reste affichée : retirez-la pour voir la nouvelle.

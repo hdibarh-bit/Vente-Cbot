@@ -195,7 +195,7 @@ p { margin: 0 0 1em; }
 .footer-list a:hover { opacity: 1; color: var(--gold-light); }
 /* Éditeur (photo) et réseaux sociaux */
 .author-card { margin: 1.6rem 0 2rem; display: grid; grid-template-columns: minmax(0, 260px) 1fr; gap: 1.4rem; align-items: center; }
-.author-card__photo { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 20%; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
+.author-card__photo { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 20%; }
 .author-card__caption { display: flex; flex-direction: column; gap: .2rem; }
 .author-card__name { font-family: var(--serif); font-size: 1.35rem; color: var(--gold-light); }
 .author-card__role { color: var(--muted); font-size: .95rem; }
