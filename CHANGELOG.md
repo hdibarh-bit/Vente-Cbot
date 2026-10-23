@@ -4,6 +4,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.6.5 — 23/10/2026
+- Accueil : le bandeau « Recommandez Arvator ! » passe **tout en haut de la page, juste sous l'en-tête**.
+- **Toute la carte est cliquable** (pastille « Recommandez Arvator ! », texte et image) et mène à la page Parrainage. Avant, seuls l'image et « voir conditions » réagissaient. Léger effet doré au survol.
+
 ### 0.6.4 — 22/10/2026
 - Pied de page (sous le logo) : icônes des réseaux sociaux de Hamid (LinkedIn ; Facebook et X dès que leurs liens sont renseignés). Pas de photo.
 - Style de la carte « éditeur » (photo, nom, réseaux) des pages À propos et Mentions légales, ordinateur et mobile.

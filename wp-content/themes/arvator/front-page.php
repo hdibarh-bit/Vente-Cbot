@@ -32,6 +32,13 @@ foreach ( $data['risques'] ?? array() as $risk ) {
 get_header();
 ?>
 
+<?php // Bandeau « Recommandez Arvator ! » tout en haut, juste sous l'en-tête (demande de Hamid, 23/10/2026). ?>
+<?php if ( '' !== arvator_page_url( 'parrainage' ) ) : ?>
+	<section class="section section--tight section--top" aria-label="Recommandation">
+		<div class="container"><?php arvator_referral_banner(); ?></div>
+	</section>
+<?php endif; ?>
+
 <section class="hero">
 	<div class="container hero__inner">
 		<div class="hero__copy">
@@ -203,12 +210,6 @@ get_header();
 		</div>
 	</div>
 </section>
-
-<?php if ( '' !== arvator_page_url( 'parrainage' ) ) : ?>
-	<section class="section section--tight" aria-label="Recommandation">
-		<div class="container"><?php arvator_referral_banner(); ?></div>
-	</section>
-<?php endif; ?>
 
 <section class="section section--surface" aria-labelledby="titre-essai">
 	<div class="container">

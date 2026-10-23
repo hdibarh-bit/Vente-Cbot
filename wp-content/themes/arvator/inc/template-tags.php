@@ -101,6 +101,7 @@ function arvator_cta_band( string $title, string $text ): void {
 /**
  * Bandeau « Recommandez Arvator ! » : montant de la récompense de recommandation, image à droite.
  * Affiché seulement si la page « parrainage » (conditions et inscription) est publiée.
+ * Toute la carte est un seul lien vers cette page (pastille, texte et image cliquables).
  * Vocabulaire imposé : « récompense de recommandation », jamais « gagner », « revenu » ni « opportunité ».
  */
 function arvator_referral_banner(): void {
@@ -114,7 +115,7 @@ function arvator_referral_banner(): void {
 	$delai  = (int) ( $ref['delaiPaiementJours'] ?? 30 );
 	$img_id = (int) get_theme_mod( 'arvator_referral_image' );
 	?>
-	<aside class="referral" aria-labelledby="titre-recommandation">
+	<a class="referral" href="<?php echo esc_url( $url ); ?>" aria-labelledby="titre-recommandation">
 		<div class="referral__body">
 			<p class="referral__pill">Recommandez Arvator&nbsp;!</p>
 			<h2 id="titre-recommandation" class="referral__title">
@@ -124,10 +125,10 @@ function arvator_referral_banner(): void {
 			<p class="referral__sub">Pour chaque proche qui achète le robot grâce à votre lien.</p>
 			<p class="referral__note">
 				*Récompense de recommandation versée <?php echo esc_html( (string) $delai ); ?>&nbsp;jours après l’achat, s’il n’est pas remboursé.
-				Inscription gratuite, <a href="<?php echo esc_url( $url ); ?>">voir conditions</a>.
+				Inscription gratuite, <span class="referral__link">voir conditions</span>.
 			</p>
 		</div>
-		<a class="referral__media" href="<?php echo esc_url( $url ); ?>" tabindex="-1" aria-hidden="true">
+		<div class="referral__media" aria-hidden="true">
 			<?php
 			if ( $img_id > 0 && wp_attachment_is_image( $img_id ) ) {
 				echo wp_get_attachment_image( $img_id, 'large', false, array( 'alt' => '', 'loading' => 'lazy', 'decoding' => 'async' ) );
@@ -138,8 +139,8 @@ function arvator_referral_banner(): void {
 				);
 			}
 			?>
-		</a>
-	</aside>
+		</div>
+	</a>
 	<?php
 }
 
