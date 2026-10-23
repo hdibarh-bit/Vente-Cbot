@@ -135,26 +135,26 @@ final class Arvator_Downloads {
 	public static function serve(): void {
 		$id = isset( $_GET['f'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['f'] ) ) : '';
 		if ( 1 !== preg_match( '/^[a-f0-9]{16}$/', $id ) ) {
-			wp_die( 'Fichier introuvable.', 'Erreur', array( 'response' => 404 ) );
+			wp_die( esc_html__( 'Fichier introuvable.', 'arvator-core' ), esc_html__( 'Erreur', 'arvator-core' ), array( 'response' => 404 ) );
 		}
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'arvator_dl_' . $id ) ) {
-			wp_die( 'Lien expiré. Retournez dans votre espace membre et cliquez de nouveau.', 'Lien expiré', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'Lien expiré. Retournez dans votre espace membre et cliquez de nouveau.', 'arvator-core' ), esc_html__( 'Lien expiré', 'arvator-core' ), array( 'response' => 403 ) );
 		}
 
 		$user_id = get_current_user_id();
 		if ( ! Arvator_Repo::is_entitled( $user_id ) && ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Le téléchargement n’est pas disponible pour votre compte.', 'Accès refusé', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'Le téléchargement n’est pas disponible pour votre compte.', 'arvator-core' ), esc_html__( 'Accès refusé', 'arvator-core' ), array( 'response' => 403 ) );
 		}
 
 		$files = self::files();
 		if ( ! isset( $files[ $id ] ) ) {
-			wp_die( 'Fichier introuvable.', 'Erreur', array( 'response' => 404 ) );
+			wp_die( esc_html__( 'Fichier introuvable.', 'arvator-core' ), esc_html__( 'Erreur', 'arvator-core' ), array( 'response' => 404 ) );
 		}
 		$dir  = realpath( self::private_dir() );
 		$path = realpath( self::private_dir() . '/' . $files[ $id ]['stored'] );
 		if ( false === $dir || false === $path || ! str_starts_with( $path, $dir . DIRECTORY_SEPARATOR ) || ! is_file( $path ) ) {
-			wp_die( 'Fichier introuvable.', 'Erreur', array( 'response' => 404 ) );
+			wp_die( esc_html__( 'Fichier introuvable.', 'arvator-core' ), esc_html__( 'Erreur', 'arvator-core' ), array( 'response' => 404 ) );
 		}
 
 		Arvator_Repo::log_event( 'download', $user_id, array( 'file' => $id ) );

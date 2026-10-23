@@ -36,6 +36,19 @@ final class Arvator_Member {
 		Arvator_Support::no_cache_for( array( 'arvator_membre' ) );
 	}
 
+	/** Libellé traduit d'une rubrique (SECTIONS garde la liste des rubriques autorisées). */
+	private static function section_label( string $key ): string {
+		return array(
+			'tableau'    => __( 'Tableau de bord', 'arvator-core' ),
+			'achats'     => __( 'Mes achats et abonnement', 'arvator-core' ),
+			'licence'    => __( 'Ma licence', 'arvator-core' ),
+			'fichiers'   => __( 'Téléchargements', 'arvator-core' ),
+			'courtiers'  => __( 'Courtiers', 'arvator-core' ),
+			'parrainage' => __( 'Parrainage', 'arvator-core' ),
+			'profil'     => __( 'Mes informations', 'arvator-core' ),
+		)[ $key ] ?? (string) ( self::SECTIONS[ $key ] ?? '' );
+	}
+
 	public static function url( string $section = '' ): string {
 		$url = Arvator_Support::page_url( 'espace-membre' );
 		return ( '' !== $section && isset( self::SECTIONS[ $section ] ) && 'tableau' !== $section ) ? add_query_arg( 'section', $section, $url ) : $url;
@@ -57,23 +70,23 @@ final class Arvator_Member {
 	private static function render_login(): void {
 		?>
 		<div class="arv-login">
-			<h2>Connexion</h2>
+			<h2><?php esc_html_e( 'Connexion', 'arvator-core' ); ?></h2>
 			<form class="arv-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="arvator_login">
 				<?php wp_nonce_field( 'arvator_login', '_arv_nonce' ); ?>
 				<p>
-					<label for="arv-log">Adresse email</label>
+					<label for="arv-log"><?php esc_html_e( 'Adresse email', 'arvator-core' ); ?></label>
 					<input id="arv-log" name="log" type="text" required autocomplete="username" maxlength="190">
 				</p>
 				<p>
-					<label for="arv-pwd">Mot de passe</label>
+					<label for="arv-pwd"><?php esc_html_e( 'Mot de passe', 'arvator-core' ); ?></label>
 					<input id="arv-pwd" name="pwd" type="password" required autocomplete="current-password" maxlength="200">
 				</p>
-				<p class="arv-check"><label><input type="checkbox" name="rememberme" value="1"> Se souvenir de moi</label></p>
-				<p><button class="btn btn--primary" type="submit">Se connecter</button></p>
-				<p class="muted"><a href="<?php echo esc_url( wp_lostpassword_url( self::url() ) ); ?>">Mot de passe oublié ?</a></p>
+				<p class="arv-check"><label><input type="checkbox" name="rememberme" value="1"> <?php esc_html_e( 'Se souvenir de moi', 'arvator-core' ); ?></label></p>
+				<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Se connecter', 'arvator-core' ); ?></button></p>
+				<p class="muted"><a href="<?php echo esc_url( wp_lostpassword_url( self::url() ) ); ?>"><?php esc_html_e( 'Mot de passe oublié ?', 'arvator-core' ); ?></a></p>
 			</form>
-			<p class="muted">Votre compte est créé automatiquement lors de votre achat : vous recevez un email pour choisir votre mot de passe.</p>
+			<p class="muted"><?php esc_html_e( 'Votre compte est créé automatiquement lors de votre achat : vous recevez un email pour choisir votre mot de passe.', 'arvator-core' ); ?></p>
 		</div>
 		<?php
 	}
@@ -89,18 +102,18 @@ final class Arvator_Member {
 		?>
 		<div class="member">
 			<aside class="member__side">
-				<p class="member__hello">Bonjour <strong><?php echo esc_html( $user->display_name ); ?></strong></p>
-				<nav class="member__nav" aria-label="Espace membre">
+				<p class="member__hello"><?php /* translators: %s: nom du client. */ echo wp_kses_post( sprintf( __( 'Bonjour <strong>%s</strong>', 'arvator-core' ), esc_html( $user->display_name ) ) ); ?></p>
+				<nav class="member__nav" aria-label="<?php esc_attr_e( 'Espace membre', 'arvator-core' ); ?>">
 					<ul>
-						<?php foreach ( self::SECTIONS as $key => $label ) : ?>
-							<li><a href="<?php echo esc_url( self::url( $key ) ); ?>"<?php echo $key === $section ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a></li>
+						<?php foreach ( array_keys( self::SECTIONS ) as $key ) : ?>
+							<li><a href="<?php echo esc_url( self::url( $key ) ); ?>"<?php echo $key === $section ? ' aria-current="page"' : ''; ?>><?php echo esc_html( self::section_label( $key ) ); ?></a></li>
 						<?php endforeach; ?>
-						<li><a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>">Se déconnecter</a></li>
+						<li><a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Se déconnecter', 'arvator-core' ); ?></a></li>
 					</ul>
 				</nav>
 			</aside>
 			<div class="member__main">
-				<h2><?php echo esc_html( self::SECTIONS[ $section ] ); ?></h2>
+				<h2><?php echo esc_html( self::section_label( $section ) ); ?></h2>
 				<?php
 				match ( $section ) {
 					'achats'   => self::section_purchases( $user_id ),
@@ -123,39 +136,40 @@ final class Arvator_Member {
 		$lics   = Arvator_Repo::licenses_for_user( $user_id );
 		$paid   = array_values( array_filter( $orders, static fn( array $o ): bool => 'paid' === $o['status'] ) );
 		if ( Arvator_License::waiting( $user_id ) ) {
-			echo '<p class="arv-notice arv-notice--err">Votre licence attend le numéro de votre compte cTrader. <a href="' . esc_url( self::url( 'licence' ) ) . '">L’indiquer maintenant</a></p>';
+			/* translators: %s: adresse de la rubrique Licence. */
+			echo '<p class="arv-notice arv-notice--err">' . wp_kses_post( sprintf( __( 'Votre licence attend le numéro de votre compte cTrader. <a href="%s">L’indiquer maintenant</a>', 'arvator-core' ), esc_url( self::url( 'licence' ) ) ) ) . '</p>';
 		}
 		?>
 		<div class="arv-cards">
 			<section class="arv-card">
-				<h3>Mon robot</h3>
+				<h3><?php esc_html_e( 'Mon robot', 'arvator-core' ); ?></h3>
 				<?php if ( $paid ) : ?>
-					<p><strong>Acheté</strong> le <?php echo esc_html( self::date( (string) $paid[0]['created_at'] ) ); ?></p>
-					<p><a href="<?php echo esc_url( self::url( 'fichiers' ) ); ?>">Télécharger le robot</a></p>
+					<p><?php /* translators: %s: date d'achat. */ echo wp_kses_post( sprintf( __( '<strong>Acheté</strong> le %s', 'arvator-core' ), esc_html( self::date( (string) $paid[0]['created_at'] ) ) ) ); ?></p>
+					<p><a href="<?php echo esc_url( self::url( 'fichiers' ) ); ?>"><?php esc_html_e( 'Télécharger le robot', 'arvator-core' ); ?></a></p>
 				<?php else : ?>
-					<p>Aucun achat pour le moment.</p>
+					<p><?php esc_html_e( 'Aucun achat pour le moment.', 'arvator-core' ); ?></p>
 				<?php endif; ?>
 			</section>
 			<section class="arv-card">
-				<h3>Mon abonnement</h3>
+				<h3><?php esc_html_e( 'Mon abonnement', 'arvator-core' ); ?></h3>
 				<?php if ( $subs ) : ?>
 					<p><strong><?php echo esc_html( self::plan_label( (string) $subs[0]['plan'] ) ); ?></strong> · <?php echo esc_html( self::status_label( 'subscription', (string) $subs[0]['status'] ) ); ?></p>
 					<?php if ( ! empty( $subs[0]['current_period_end'] ) ) : ?>
-						<p class="muted"><?php echo esc_html( $subs[0]['cancel_at_period_end'] ? 'Fin le ' : 'Prochaine échéance le ' ); ?><?php echo esc_html( self::date( (string) $subs[0]['current_period_end'] ) ); ?></p>
+						<p class="muted"><?php /* translators: %s: date. */ echo esc_html( sprintf( $subs[0]['cancel_at_period_end'] ? __( 'Fin le %s', 'arvator-core' ) : __( 'Prochaine échéance le %s', 'arvator-core' ), self::date( (string) $subs[0]['current_period_end'] ) ) ); ?></p>
 					<?php endif; ?>
-					<p><a href="<?php echo esc_url( self::url( 'achats' ) ); ?>">Voir le détail</a></p>
+					<p><a href="<?php echo esc_url( self::url( 'achats' ) ); ?>"><?php esc_html_e( 'Voir le détail', 'arvator-core' ); ?></a></p>
 				<?php else : ?>
-					<p>Aucun abonnement actif.</p>
+					<p><?php esc_html_e( 'Aucun abonnement actif.', 'arvator-core' ); ?></p>
 				<?php endif; ?>
 			</section>
 			<section class="arv-card">
-				<h3>Ma licence</h3>
+				<h3><?php esc_html_e( 'Ma licence', 'arvator-core' ); ?></h3>
 				<?php if ( $lics ) : ?>
 					<p><strong><?php echo esc_html( self::status_label( 'license', (string) $lics[0]['status'] ) ); ?></strong></p>
-					<p class="muted">Valable jusqu’au <?php echo esc_html( self::date( (string) $lics[0]['expires_at'] ) ); ?></p>
-					<p><a href="<?php echo esc_url( self::url( 'licence' ) ); ?>">Voir le détail</a></p>
+					<p class="muted"><?php /* translators: %s: date de fin. */ echo esc_html( sprintf( __( 'Valable jusqu’au %s', 'arvator-core' ), self::date( (string) $lics[0]['expires_at'] ) ) ); ?></p>
+					<p><a href="<?php echo esc_url( self::url( 'licence' ) ); ?>"><?php esc_html_e( 'Voir le détail', 'arvator-core' ); ?></a></p>
 				<?php else : ?>
-					<p>Aucune licence pour le moment.</p>
+					<p><?php esc_html_e( 'Aucune licence pour le moment.', 'arvator-core' ); ?></p>
 				<?php endif; ?>
 			</section>
 		</div>
@@ -166,18 +180,18 @@ final class Arvator_Member {
 		$orders = Arvator_Repo::orders_for_user( $user_id );
 		$subs   = Arvator_Repo::subscriptions_for_user( $user_id );
 
-		echo '<h3>Abonnement</h3>';
+		echo '<h3>' . esc_html__( 'Abonnement', 'arvator-core' ) . '</h3>';
 		if ( ! $subs ) {
-			echo '<p>Aucun abonnement.</p>';
+			echo '<p>' . esc_html__( 'Aucun abonnement.', 'arvator-core' ) . '</p>';
 		} else {
-			echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">Formule</th><th scope="col">État</th><th scope="col">Échéance</th><th scope="col">Résiliation</th></tr></thead><tbody>';
+			echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">' . esc_html__( 'Formule', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'État', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Échéance', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Résiliation', 'arvator-core' ) . '</th></tr></thead><tbody>';
 			foreach ( $subs as $s ) {
 				printf(
 					'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
 					esc_html( self::plan_label( (string) $s['plan'] ) ),
 					esc_html( self::status_label( 'subscription', (string) $s['status'] ) ),
 					esc_html( ! empty( $s['current_period_end'] ) ? self::date( (string) $s['current_period_end'] ) : '—' ),
-					esc_html( $s['cancel_at_period_end'] ? 'Prévue à l’échéance' : '—' )
+					esc_html( $s['cancel_at_period_end'] ? __( 'Prévue à l’échéance', 'arvator-core' ) : '—' )
 				);
 			}
 			echo '</tbody></table></div>';
@@ -186,19 +200,19 @@ final class Arvator_Member {
 				<form class="arv-form arv-form--inline" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="arvator_portal">
 					<?php wp_nonce_field( 'arvator_portal', '_arv_nonce' ); ?>
-					<button class="btn btn--primary btn--sm" type="submit">Gérer mon abonnement, mes factures et ma carte</button>
+					<button class="btn btn--primary btn--sm" type="submit"><?php esc_html_e( 'Gérer mon abonnement, mes factures et ma carte', 'arvator-core' ); ?></button>
 				</form>
-				<p class="muted">Vous pouvez résilier à tout moment : la résiliation prend effet à la fin de la période déjà payée, qui n’est pas remboursée.</p>
+				<p class="muted"><?php esc_html_e( 'Vous pouvez résilier à tout moment : la résiliation prend effet à la fin de la période déjà payée, qui n’est pas remboursée.', 'arvator-core' ); ?></p>
 				<?php
 			}
 		}
 
-		echo '<h3>Achats</h3>';
+		echo '<h3>' . esc_html__( 'Achats', 'arvator-core' ) . '</h3>';
 		if ( ! $orders ) {
-			echo '<p>Aucun achat pour le moment. <a href="' . esc_url( Arvator_Checkout::url() ) . '">Acheter Arvator</a></p>';
+			echo '<p>' . esc_html__( 'Aucun achat pour le moment.', 'arvator-core' ) . ' <a href="' . esc_url( Arvator_Checkout::url() ) . '">' . esc_html__( 'Acheter Arvator', 'arvator-core' ) . '</a></p>';
 			return;
 		}
-		echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">Date</th><th scope="col">Produit</th><th scope="col">Montant</th><th scope="col">État</th></tr></thead><tbody>';
+		echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">' . esc_html__( 'Date', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Produit', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Montant', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'État', 'arvator-core' ) . '</th></tr></thead><tbody>';
 		foreach ( $orders as $o ) {
 			printf(
 				'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
@@ -217,7 +231,7 @@ final class Arvator_Member {
 			Arvator_License::render_account_form( $user_id );
 		}
 		if ( ! $lics ) {
-			echo '<p>Aucune licence pour le moment. Elle apparaît ici après votre achat, dès que votre numéro de compte cTrader est connu.</p>';
+			echo '<p>' . esc_html__( 'Aucune licence pour le moment. Elle apparaît ici après votre achat, dès que votre numéro de compte cTrader est connu.', 'arvator-core' ) . '</p>';
 			return;
 		}
 		foreach ( $lics as $i => $l ) {
@@ -227,16 +241,16 @@ final class Arvator_Member {
 				<h3>
 					<?php echo esc_html( self::plan_label( (string) $l['plan'] ) ); ?>
 					<span class="arv-badge"><?php echo esc_html( self::status_label( 'license', (string) $l['status'] ) ); ?></span>
-					<?php if ( ! empty( $l['demo_only'] ) ) : ?><span class="arv-badge arv-badge--soft">Compte démo uniquement</span><?php endif; ?>
+					<?php if ( ! empty( $l['demo_only'] ) ) : ?><span class="arv-badge arv-badge--soft"><?php esc_html_e( 'Compte démo uniquement', 'arvator-core' ); ?></span><?php endif; ?>
 				</h3>
-				<p class="muted">Valable jusqu’au <?php echo esc_html( self::date( (string) $l['expires_at'] ) ); ?>
-					<?php echo ! empty( $l['account_number'] ) ? ' · Compte cTrader n° ' . esc_html( (string) $l['account_number'] ) : ''; ?></p>
+				<p class="muted"><?php /* translators: %s: date de fin. */ echo esc_html( sprintf( __( 'Valable jusqu’au %s', 'arvator-core' ), self::date( (string) $l['expires_at'] ) ) ); ?>
+					<?php /* translators: %s: numéro de compte cTrader. */ echo ! empty( $l['account_number'] ) ? ' · ' . esc_html( sprintf( __( 'Compte cTrader n° %s', 'arvator-core' ), (string) $l['account_number'] ) ) : ''; ?></p>
 				<?php if ( '' === (string) $l['license_key'] ) : ?>
-					<p>Rien à copier : le robot récupère sa licence tout seul à son démarrage, puis la vérifie régulièrement. Elle est renouvelée automatiquement à chaque paiement de votre abonnement.</p>
+					<p><?php esc_html_e( 'Rien à copier : le robot récupère sa licence tout seul à son démarrage, puis la vérifie régulièrement. Elle est renouvelée automatiquement à chaque paiement de votre abonnement.', 'arvator-core' ); ?></p>
 				<?php else : ?>
-					<label for="<?php echo esc_attr( $field ); ?>">Votre clé de licence</label>
+					<label for="<?php echo esc_attr( $field ); ?>"><?php esc_html_e( 'Votre clé de licence', 'arvator-core' ); ?></label>
 					<textarea id="<?php echo esc_attr( $field ); ?>" class="arv-key" readonly rows="4"><?php echo esc_textarea( (string) $l['license_key'] ); ?></textarea>
-					<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#<?php echo esc_attr( $field ); ?>">Copier la clé</button></p>
+					<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#<?php echo esc_attr( $field ); ?>" data-copied="<?php esc_attr_e( 'Copié ✓', 'arvator-core' ); ?>"><?php esc_html_e( 'Copier la clé', 'arvator-core' ); ?></button></p>
 				<?php endif; ?>
 			</section>
 			<?php
@@ -245,18 +259,18 @@ final class Arvator_Member {
 
 	private static function section_files( int $user_id ): void {
 		if ( ! Arvator_Repo::is_entitled( $user_id ) && ! current_user_can( 'manage_options' ) ) {
-			echo '<p>Le téléchargement du robot est disponible après votre achat.</p>';
+			echo '<p>' . esc_html__( 'Le téléchargement du robot est disponible après votre achat.', 'arvator-core' ) . '</p>';
 			return;
 		}
 		$files = Arvator_Downloads::files();
 		if ( ! $files ) {
-			echo '<p>Aucun fichier à télécharger pour le moment.</p>';
+			echo '<p>' . esc_html__( 'Aucun fichier à télécharger pour le moment.', 'arvator-core' ) . '</p>';
 			return;
 		}
 		echo '<ul class="arv-files">';
 		foreach ( $files as $id => $f ) {
 			printf(
-				'<li><span><strong>%s</strong> <span class="muted">(%s)</span></span> <a class="btn btn--primary btn--sm" href="%s">Télécharger</a></li>',
+				'<li><span><strong>%s</strong> <span class="muted">(%s)</span></span> <a class="btn btn--primary btn--sm" href="%s">' . esc_html__( 'Télécharger', 'arvator-core' ) . '</a></li>',
 				esc_html( (string) $f['label'] ),
 				esc_html( size_format( (int) $f['size'] ) ),
 				esc_url( Arvator_Downloads::link( (string) $id ) )
@@ -268,7 +282,7 @@ final class Arvator_Member {
 	/** Courtiers compatibles : réservé aux clients ayant acheté (jamais public, décision de Hamid). */
 	private static function section_brokers( int $user_id ): void {
 		if ( ! Arvator_Repo::is_entitled( $user_id ) && ! current_user_can( 'manage_options' ) ) {
-			echo '<p>La liste des courtiers compatibles est disponible après votre achat.</p>';
+			echo '<p>' . esc_html__( 'La liste des courtiers compatibles est disponible après votre achat.', 'arvator-core' ) . '</p>';
 			return;
 		}
 		Arvator_Brokers::render_member();
@@ -278,7 +292,8 @@ final class Arvator_Member {
 		$ref = Arvator_Referral::referrer( $user_id );
 		if ( ! $ref ) {
 			$s = Arvator_Referral::settings();
-			echo '<p>Recommandez Arvator à vos proches : vous recevez une <strong>récompense de recommandation de ' . esc_html( Arvator_Referral::money( $s['prime_cents'] ) ) . '</strong> pour chaque achat du robot fait avec votre lien, puis ' . esc_html( Arvator_Referral::pct( $s['rate'] ) ) . ' de chaque abonnement qu’ils paient. Gratuit, sans engagement.</p>';
+			/* translators: 1: montant de la récompense, 2: pourcentage sur les abonnements. */
+			echo '<p>' . wp_kses_post( sprintf( __( 'Recommandez Arvator à vos proches : vous recevez une <strong>récompense de recommandation de %1$s</strong> pour chaque achat du robot fait avec votre lien, puis %2$s de chaque abonnement qu’ils paient. Gratuit, sans engagement.', 'arvator-core' ), esc_html( Arvator_Referral::money( $s['prime_cents'] ) ), esc_html( Arvator_Referral::pct( $s['rate'] ) ) ) ) . '</p>';
 			Arvator_Referral::join_form();
 			return;
 		}
@@ -294,30 +309,30 @@ final class Arvator_Member {
 		}
 		?>
 		<section class="arv-card">
-			<h3>Mon lien de recommandation</h3>
+			<h3><?php esc_html_e( 'Mon lien de recommandation', 'arvator-core' ); ?></h3>
 			<?php if ( 'active' !== $ref['status'] ) : ?>
-				<p class="arv-notice arv-notice--err">Votre lien est suspendu. Écrivez-nous depuis la page <a href="<?php echo esc_url( Arvator_Support::page_url( 'contact' ) ); ?>">Contact</a>.</p>
+				<p class="arv-notice arv-notice--err"><?php /* translators: %s: adresse de la page Contact. */ echo wp_kses_post( sprintf( __( 'Votre lien est suspendu. Écrivez-nous depuis la page <a href="%s">Contact</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'contact' ) ) ) ); ?></p>
 			<?php endif; ?>
-			<label for="arv-ref-link">Partagez ce lien</label>
+			<label for="arv-ref-link"><?php esc_html_e( 'Partagez ce lien', 'arvator-core' ); ?></label>
 			<input id="arv-ref-link" class="arv-key" type="text" readonly value="<?php echo esc_attr( $link ); ?>">
-			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-link">Copier le lien</button>
-				<span class="muted">Votre code : <strong><?php echo esc_html( (string) $ref['code'] ); ?></strong></span></p>
-			<p class="muted">Ce lien mène à la page d’achat, où votre code est déjà rempli.</p>
-			<p class="muted">Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des performances simulées et le trading comporte un risque élevé de perte en capital.</p>
+			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-link" data-copied="<?php esc_attr_e( 'Copié ✓', 'arvator-core' ); ?>"><?php esc_html_e( 'Copier le lien', 'arvator-core' ); ?></button>
+				<span class="muted"><?php /* translators: %s: code de recommandation. */ echo wp_kses_post( sprintf( __( 'Votre code : <strong>%s</strong>', 'arvator-core' ), esc_html( (string) $ref['code'] ) ) ); ?></span></p>
+			<p class="muted"><?php esc_html_e( 'Ce lien mène à la page d’achat, où votre code est déjà rempli.', 'arvator-core' ); ?></p>
+			<p class="muted"><?php esc_html_e( 'Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des performances simulées et le trading comporte un risque élevé de perte en capital.', 'arvator-core' ); ?></p>
 		</section>
 
 		<div class="arv-cards">
-			<section class="arv-card"><h3>En attente</h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['pending'] ) ); ?></strong></p><p class="muted">Disponible <?php echo esc_html( (string) Arvator_Referral::settings()['delay_days'] ); ?> jours après chaque paiement.</p></section>
-			<section class="arv-card"><h3>À payer</h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['payable'] ) ); ?></strong></p><p class="muted">Virement de la prime dès qu’elle est disponible ; abonnements à partir de <?php echo esc_html( Arvator_Referral::money( Arvator_Referral::settings()['payout_min_cents'] ) ); ?> cumulés.</p></section>
-			<section class="arv-card"><h3>Déjà versé</h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['paid'] ) ); ?></strong></p><p class="muted"><?php echo esc_html( (string) count( $refs ) ); ?> personne(s) recommandée(s) ayant acheté.</p></section>
+			<section class="arv-card"><h3><?php esc_html_e( 'En attente', 'arvator-core' ); ?></h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['pending'] ) ); ?></strong></p><p class="muted"><?php /* translators: %d: délai en jours. */ echo esc_html( sprintf( __( 'Disponible %d jours après chaque paiement.', 'arvator-core' ), (int) Arvator_Referral::settings()['delay_days'] ) ); ?></p></section>
+			<section class="arv-card"><h3><?php esc_html_e( 'À payer', 'arvator-core' ); ?></h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['payable'] ) ); ?></strong></p><p class="muted"><?php /* translators: %s: montant minimum de virement. */ echo esc_html( sprintf( __( 'Virement de la prime dès qu’elle est disponible ; abonnements à partir de %s cumulés.', 'arvator-core' ), Arvator_Referral::money( Arvator_Referral::settings()['payout_min_cents'] ) ) ); ?></p></section>
+			<section class="arv-card"><h3><?php esc_html_e( 'Déjà versé', 'arvator-core' ); ?></h3><p><strong><?php echo esc_html( Arvator_Referral::money( $sum['paid'] ) ); ?></strong></p><p class="muted"><?php /* translators: %d: nombre de personnes recommandées ayant acheté. */ echo esc_html( sprintf( __( '%d personne(s) recommandée(s) ayant acheté.', 'arvator-core' ), count( $refs ) ) ); ?></p></section>
 		</div>
 
-		<h3>Mes récompenses de recommandation</h3>
+		<h3><?php esc_html_e( 'Mes récompenses de recommandation', 'arvator-core' ); ?></h3>
 		<?php
 		if ( ! $comms ) {
-			echo '<p>Aucune récompense pour le moment.</p>';
+			echo '<p>' . esc_html__( 'Aucune récompense pour le moment.', 'arvator-core' ) . '</p>';
 		} else {
-			echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">Date</th><th scope="col">Type</th><th scope="col">Montant</th><th scope="col">État</th><th scope="col">Disponible le</th></tr></thead><tbody>';
+			echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">' . esc_html__( 'Date', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Type', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Montant', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'État', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Disponible le', 'arvator-core' ) . '</th></tr></thead><tbody>';
 			foreach ( $comms as $c ) {
 				printf(
 					'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
@@ -325,7 +340,7 @@ final class Arvator_Member {
 					esc_html( Arvator_Referral::kind_label( (string) $c['kind'] ) ),
 					esc_html( Arvator_Referral::money( (int) $c['amount_cents'] ) ),
 					esc_html( Arvator_Referral::status_label( (string) $c['status'] ) ),
-					esc_html( 'paid' === $c['status'] && ! empty( $c['paid_at'] ) ? 'Versée le ' . self::date( (string) $c['paid_at'] ) : self::date( (string) $c['available_at'] ) )
+					esc_html( /* translators: %s: date du virement. */ 'paid' === $c['status'] && ! empty( $c['paid_at'] ) ? sprintf( __( 'Versée le %s', 'arvator-core' ), self::date( (string) $c['paid_at'] ) ) : self::date( (string) $c['available_at'] ) )
 				);
 			}
 			echo '</tbody></table></div>';
@@ -333,60 +348,60 @@ final class Arvator_Member {
 		$has_bank = '' !== (string) ( $ref['iban_last4'] ?? '' );
 		?>
 		<section class="arv-card">
-			<h3>Coordonnées pour le virement</h3>
+			<h3><?php esc_html_e( 'Coordonnées pour le virement', 'arvator-core' ); ?></h3>
 			<?php if ( $has_bank ) : ?>
-				<p>Virement à <strong><?php echo esc_html( (string) $ref['holder_name'] ); ?></strong> · IBAN <?php echo esc_html( substr( (string) $ref['iban_last4'], 0, 4 ) . ' •••• •••• ' . substr( (string) $ref['iban_last4'], -4 ) ); ?> · <?php echo esc_html( 'entreprise' === $ref['entity_type'] ? 'Entreprise' : 'Particulier' ); ?></p>
-				<p class="muted">Pour changer de compte, saisissez les nouvelles coordonnées ci-dessous.</p>
+				<p><?php /* translators: %s: titulaire du compte. */ echo wp_kses_post( sprintf( __( 'Virement à <strong>%s</strong>', 'arvator-core' ), esc_html( (string) $ref['holder_name'] ) ) ); ?> · IBAN <?php echo esc_html( substr( (string) $ref['iban_last4'], 0, 4 ) . ' •••• •••• ' . substr( (string) $ref['iban_last4'], -4 ) ); ?> · <?php echo esc_html( 'entreprise' === $ref['entity_type'] ? __( 'Entreprise', 'arvator-core' ) : __( 'Particulier', 'arvator-core' ) ); ?></p>
+				<p class="muted"><?php esc_html_e( 'Pour changer de compte, saisissez les nouvelles coordonnées ci-dessous.', 'arvator-core' ); ?></p>
 			<?php else : ?>
-				<p>Indiquez où verser vos récompenses. Sans IBAN, elles restent en attente de virement.</p>
+				<p><?php esc_html_e( 'Indiquez où verser vos récompenses. Sans IBAN, elles restent en attente de virement.', 'arvator-core' ); ?></p>
 			<?php endif; ?>
 			<form class="arv-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" autocomplete="off">
 				<input type="hidden" name="action" value="arvator_referral_bank">
 				<?php wp_nonce_field( 'arvator_referral_bank', '_arv_nonce' ); ?>
-				<p><label for="arv-holder">Nom du titulaire du compte</label><input id="arv-holder" name="holder" type="text" required maxlength="120"></p>
+				<p><label for="arv-holder"><?php esc_html_e( 'Nom du titulaire du compte', 'arvator-core' ); ?></label><input id="arv-holder" name="holder" type="text" required maxlength="120"></p>
 				<p><label for="arv-iban">IBAN</label><input id="arv-iban" name="iban" type="text" required maxlength="42" inputmode="text" spellcheck="false"></p>
 				<fieldset class="arv-plans">
-					<legend>Vous êtes</legend>
-					<label class="arv-plan"><input type="radio" name="entity" value="particulier" checked> <span>Un particulier</span></label>
-					<label class="arv-plan"><input type="radio" name="entity" value="entreprise"> <span>Une entreprise (SIRET obligatoire)</span></label>
+					<legend><?php esc_html_e( 'Vous êtes', 'arvator-core' ); ?></legend>
+					<label class="arv-plan"><input type="radio" name="entity" value="particulier" checked> <span><?php esc_html_e( 'Un particulier', 'arvator-core' ); ?></span></label>
+					<label class="arv-plan"><input type="radio" name="entity" value="entreprise"> <span><?php esc_html_e( 'Une entreprise (SIRET obligatoire)', 'arvator-core' ); ?></span></label>
 				</fieldset>
-				<p><label for="arv-siret">SIRET <span class="muted">(entreprise uniquement)</span></label><input id="arv-siret" name="siret" type="text" inputmode="numeric" maxlength="17"></p>
-				<p><button class="btn btn--primary" type="submit">Enregistrer</button></p>
-				<p class="muted">Votre IBAN est enregistré chiffré et ne sert qu’au virement de vos récompenses. Selon votre situation, ces récompenses peuvent être à déclarer aux impôts.</p>
+				<p><label for="arv-siret">SIRET <span class="muted"><?php esc_html_e( '(entreprise uniquement)', 'arvator-core' ); ?></span></label><input id="arv-siret" name="siret" type="text" inputmode="numeric" maxlength="17"></p>
+				<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Enregistrer', 'arvator-core' ); ?></button></p>
+				<p class="muted"><?php esc_html_e( 'Votre IBAN est enregistré chiffré et ne sert qu’au virement de vos récompenses. Selon votre situation, ces récompenses peuvent être à déclarer aux impôts.', 'arvator-core' ); ?></p>
 			</form>
 		</section>
-		<p class="muted"><a href="<?php echo esc_url( Arvator_Support::page_url( 'conditions-parrainage' ) ); ?>">Conditions du programme de parrainage</a></p>
+		<p class="muted"><a href="<?php echo esc_url( Arvator_Support::page_url( 'conditions-parrainage' ) ); ?>"><?php esc_html_e( 'Conditions du programme de parrainage', 'arvator-core' ); ?></a></p>
 		<?php
 	}
 
 	private static function section_profile( WP_User $user ): void {
 		?>
 		<section class="arv-card">
-			<h3>Mon compte</h3>
-			<p>Adresse email : <strong><?php echo esc_html( $user->user_email ); ?></strong></p>
-			<p class="muted">Pour changer votre adresse email, écrivez-nous depuis la page <a href="<?php echo esc_url( Arvator_Support::page_url( 'contact' ) ); ?>">Contact</a>.</p>
+			<h3><?php esc_html_e( 'Mon compte', 'arvator-core' ); ?></h3>
+			<p><?php /* translators: %s: adresse email du client. */ echo wp_kses_post( sprintf( __( 'Adresse email : <strong>%s</strong>', 'arvator-core' ), esc_html( $user->user_email ) ) ); ?></p>
+			<p class="muted"><?php /* translators: %s: adresse de la page Contact. */ echo wp_kses_post( sprintf( __( 'Pour changer votre adresse email, écrivez-nous depuis la page <a href="%s">Contact</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'contact' ) ) ) ); ?></p>
 		</section>
 
 		<section class="arv-card">
-			<h3>Changer mon mot de passe</h3>
+			<h3><?php esc_html_e( 'Changer mon mot de passe', 'arvator-core' ); ?></h3>
 			<form class="arv-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="arvator_password">
 				<?php wp_nonce_field( 'arvator_password', '_arv_nonce' ); ?>
-				<p><label for="arv-cur">Mot de passe actuel</label><input id="arv-cur" name="current" type="password" required autocomplete="current-password" maxlength="200"></p>
-				<p><label for="arv-new">Nouveau mot de passe (12 caractères minimum)</label><input id="arv-new" name="new" type="password" required minlength="12" autocomplete="new-password" maxlength="200"></p>
-				<p><label for="arv-new2">Répéter le nouveau mot de passe</label><input id="arv-new2" name="new2" type="password" required minlength="12" autocomplete="new-password" maxlength="200"></p>
-				<p><button class="btn btn--primary" type="submit">Enregistrer</button></p>
+				<p><label for="arv-cur"><?php esc_html_e( 'Mot de passe actuel', 'arvator-core' ); ?></label><input id="arv-cur" name="current" type="password" required autocomplete="current-password" maxlength="200"></p>
+				<p><label for="arv-new"><?php esc_html_e( 'Nouveau mot de passe (12 caractères minimum)', 'arvator-core' ); ?></label><input id="arv-new" name="new" type="password" required minlength="12" autocomplete="new-password" maxlength="200"></p>
+				<p><label for="arv-new2"><?php esc_html_e( 'Répéter le nouveau mot de passe', 'arvator-core' ); ?></label><input id="arv-new2" name="new2" type="password" required minlength="12" autocomplete="new-password" maxlength="200"></p>
+				<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Enregistrer', 'arvator-core' ); ?></button></p>
 			</form>
 		</section>
 
 		<section class="arv-card">
-			<h3>Mes données</h3>
-			<p class="muted">Vous pouvez demander une copie de vos données ou leur effacement. Un email de confirmation vous est envoyé. Les pièces comptables sont conservées 10 ans, comme la loi l’exige.</p>
+			<h3><?php esc_html_e( 'Mes données', 'arvator-core' ); ?></h3>
+			<p class="muted"><?php esc_html_e( 'Vous pouvez demander une copie de vos données ou leur effacement. Un email de confirmation vous est envoyé. Les pièces comptables sont conservées 10 ans, comme la loi l’exige.', 'arvator-core' ); ?></p>
 			<form class="arv-form arv-form--inline" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="arvator_privacy">
 				<?php wp_nonce_field( 'arvator_privacy', '_arv_nonce' ); ?>
-				<button class="btn btn--ghost btn--sm" type="submit" name="kind" value="export">Recevoir une copie de mes données</button>
-				<button class="btn btn--ghost btn--sm" type="submit" name="kind" value="erase">Demander l’effacement de mes données</button>
+				<button class="btn btn--ghost btn--sm" type="submit" name="kind" value="export"><?php esc_html_e( 'Recevoir une copie de mes données', 'arvator-core' ); ?></button>
+				<button class="btn btn--ghost btn--sm" type="submit" name="kind" value="erase"><?php esc_html_e( 'Demander l’effacement de mes données', 'arvator-core' ); ?></button>
 			</form>
 		</section>
 		<?php
@@ -531,33 +546,33 @@ final class Arvator_Member {
 
 	private static function plan_label( string $plan ): string {
 		return array(
-			'monthly' => 'Abonnement mensuel',
-			'annual'  => 'Abonnement annuel',
-			'trial'   => 'Essai gratuit',
-		)[ $plan ] ?? 'Abonnement';
+			'monthly' => __( 'Abonnement mensuel', 'arvator-core' ),
+			'annual'  => __( 'Abonnement annuel', 'arvator-core' ),
+			'trial'   => __( 'Essai gratuit', 'arvator-core' ),
+		)[ $plan ] ?? __( 'Abonnement', 'arvator-core' );
 	}
 
 	private static function product_label( string $product ): string {
-		return 'cbot' === $product ? 'Robot Arvator (achat)' : 'Produit';
+		return 'cbot' === $product ? __( 'Robot Arvator (achat)', 'arvator-core' ) : __( 'Produit', 'arvator-core' );
 	}
 
 	private static function status_label( string $kind, string $status ): string {
 		$labels = array(
 			'order'        => array(
-				'paid'     => 'Payé',
-				'refunded' => 'Remboursé',
+				'paid'     => __( 'Payé', 'arvator-core' ),
+				'refunded' => __( 'Remboursé', 'arvator-core' ),
 			),
 			'subscription' => array(
-				'active'   => 'Actif',
-				'trialing' => 'Essai',
-				'past_due' => 'Paiement en retard',
-				'canceled' => 'Résilié',
+				'active'   => __( 'Actif', 'arvator-core' ),
+				'trialing' => __( 'Essai', 'arvator-core' ),
+				'past_due' => __( 'Paiement en retard', 'arvator-core' ),
+				'canceled' => __( 'Résilié', 'arvator-core' ),
 			),
 			'license'      => array(
-				'active'  => 'Active',
-				'expired' => 'Expirée',
-				'revoked'  => 'Révoquée',
-				'canceled' => 'Résiliée',
+				'active'  => __( 'Active', 'arvator-core' ),
+				'expired' => __( 'Expirée', 'arvator-core' ),
+				'revoked'  => __( 'Révoquée', 'arvator-core' ),
+				'canceled' => __( 'Résiliée', 'arvator-core' ),
 			),
 		);
 		return $labels[ $kind ][ $status ] ?? ucfirst( $status );

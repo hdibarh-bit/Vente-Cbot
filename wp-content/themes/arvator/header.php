@@ -34,8 +34,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( '' !== arvator_page_url( 'espace-membre' ) ) : ?>
 					<a class="link-quiet" href="<?php echo esc_url( arvator_page_url( 'espace-membre' ) ); ?>"><?php echo is_user_logged_in() ? esc_html__( 'Mon espace', 'arvator' ) : esc_html__( 'Connexion', 'arvator' ); ?></a>
 				<?php endif; ?>
-				<?php arvator_buy_button( 'Acheter', 'btn btn--ghost btn--sm' ); ?>
-				<?php arvator_button( 'essai-gratuit', 'Essai gratuit', 'btn btn--primary btn--sm' ); ?>
+				<?php arvator_buy_button( __( 'Acheter', 'arvator' ), 'btn btn--ghost btn--sm' ); ?>
+				<?php arvator_button( 'essai-gratuit', __( 'Essai gratuit', 'arvator' ), 'btn btn--primary btn--sm' ); ?>
 			</div>
 		</nav>
 	</div>

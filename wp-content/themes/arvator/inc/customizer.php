@@ -21,22 +21,38 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return array<string, string>
  */
-function arvator_text_defaults(): array {
-	return array(
+function arvator_text_defaults( bool $translate = true ): array {
+	$texts = array(
 		'hero_eyebrow' => 'Arvator · robot de trading automatique',
 		'hero_title'   => "Un robot de trading automatique, transparent, testé sur\u{00A0}2024, 2025 et\u{00A0}2026",
 		'hero_lead'    => 'Arvator s’installe sur votre propre compte cTrader et fonctionne dans le cloud, même ordinateur éteint. Vous gardez la main sur votre compte et sur votre niveau de risque.',
 		'footer_blurb' => 'Un robot de trading automatique qui s’installe sur votre propre compte cTrader. Nous ne touchons jamais à votre argent ni à votre compte.',
 	);
+	if ( ! $translate ) {
+		return $texts;
+	}
+	// Mêmes textes, traduisibles (le texte français sert de référence au fichier de traduction).
+	return array(
+		'hero_eyebrow' => __( 'Arvator · robot de trading automatique', 'arvator' ),
+		'hero_title'   => __( "Un robot de trading automatique, transparent, testé sur\u{00A0}2024, 2025 et\u{00A0}2026", 'arvator' ),
+		'hero_lead'    => __( 'Arvator s’installe sur votre propre compte cTrader et fonctionne dans le cloud, même ordinateur éteint. Vous gardez la main sur votre compte et sur votre niveau de risque.', 'arvator' ),
+		'footer_blurb' => __( 'Un robot de trading automatique qui s’installe sur votre propre compte cTrader. Nous ne touchons jamais à votre argent ni à votre compte.', 'arvator' ),
+	);
 }
 
-/** Texte modifiable (valeur du tableau de bord, sinon valeur par défaut). */
+/**
+ * Texte modifiable (valeur du tableau de bord, sinon valeur par défaut).
+ * Un texte resté identique au texte français d'origine est traduit comme le texte par défaut.
+ */
 function arvator_text( string $key ): string {
 	$defaults = arvator_text_defaults();
 	$default  = $defaults[ $key ] ?? '';
 	$value    = (string) get_theme_mod( 'arvator_' . $key, $default );
 
-	return '' !== trim( $value ) ? $value : $default;
+	if ( '' === trim( $value ) || $value === ( arvator_text_defaults( false )[ $key ] ?? '' ) ) {
+		return $default;
+	}
+	return $value;
 }
 
 add_action(
@@ -57,13 +73,11 @@ add_action(
 			'hero_lead'    => array( 'Texte d’introduction', 'textarea' ),
 			'footer_blurb' => array( 'Texte du pied de page', 'textarea' ),
 		);
-		$defaults = arvator_text_defaults();
-
 		foreach ( $fields as $key => $field ) {
 			$wp_customize->add_setting(
 				'arvator_' . $key,
 				array(
-					'default'           => $defaults[ $key ],
+					'default'           => arvator_text_defaults( false )[ $key ],
 					'sanitize_callback' => 'sanitize_textarea_field',
 					'transport'         => 'refresh',
 				)

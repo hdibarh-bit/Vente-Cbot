@@ -27,5 +27,11 @@ Ce dépôt contient le **code** du site, pas WordPress lui-même.
 3. Lancer `php -S 127.0.0.1:8088 -t <wordpress>`, installer WordPress, activer le thème « Arvator ».
 4. Contrôles faits le 21/10/2026 : syntaxe PHP (`php -l`), page d'accueil sans erreur ni avertissement, aucune requête externe, aucun débordement horizontal à 1366 px et 390 px, onglets de risque et menu mobile fonctionnels.
 
+## Textes traduisibles (version anglaise préparée, voir `13-version-anglaise.md`)
+- Tout texte affiché aux visiteurs ou aux clients passe par les fonctions de traduction : domaine `arvator` (thème), `arvator-core` (plugin). Le français est le texte d'origine.
+- Après un changement de textes, régénérer les modèles avec WP-CLI :
+  `wp i18n make-pot wp-content/themes/arvator wp-content/themes/arvator/languages/arvator.pot --domain=arvator --exclude=data`
+  `wp i18n make-pot wp-content/plugins/arvator-core wp-content/plugins/arvator-core/languages/arvator-core.pot --domain=arvator-core`
+
 ## Site réglé en français
 Le site réel doit avoir la langue « Français » (Réglages > Général) pour que la page porte `lang="fr-FR"`.

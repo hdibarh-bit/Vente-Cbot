@@ -297,9 +297,9 @@ final class Arvator_License {
 		if ( self::activated( $user_id ) ) {
 			?>
 			<section class="arv-card">
-				<h3>Mon compte cTrader</h3>
-				<p>Licence liée au compte cTrader n° <strong><?php echo esc_html( $account ); ?></strong>.</p>
-				<p class="muted">Pour utiliser le robot sur un autre compte, écrivez-nous depuis la page <a href="<?php echo esc_url( Arvator_Support::page_url( 'contact' ) ); ?>">Contact</a> en indiquant le nouveau numéro : le changement est limité à deux fois par an.</p>
+				<h3><?php esc_html_e( 'Mon compte cTrader', 'arvator-core' ); ?></h3>
+				<p><?php /* translators: %s: numéro de compte cTrader. */ echo wp_kses_post( sprintf( __( 'Licence liée au compte cTrader n° <strong>%s</strong>.', 'arvator-core' ), esc_html( $account ) ) ); ?></p>
+				<p class="muted"><?php /* translators: %s: adresse de la page Contact. */ echo wp_kses_post( sprintf( __( 'Pour utiliser le robot sur un autre compte, écrivez-nous depuis la page <a href="%s">Contact</a> en indiquant le nouveau numéro : le changement est limité à deux fois par an.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'contact' ) ) ) ); ?></p>
 			</section>
 			<?php
 			return;
@@ -307,17 +307,17 @@ final class Arvator_License {
 		$waiting = self::waiting( $user_id );
 		?>
 		<section class="arv-card">
-			<h3>Mon compte cTrader</h3>
+			<h3><?php esc_html_e( 'Mon compte cTrader', 'arvator-core' ); ?></h3>
 			<?php if ( $waiting ) : ?>
-				<p class="arv-notice arv-notice--err">Votre licence attend votre numéro de compte cTrader : indiquez-le ci-dessous pour l’activer.</p>
+				<p class="arv-notice arv-notice--err"><?php esc_html_e( 'Votre licence attend votre numéro de compte cTrader : indiquez-le ci-dessous pour l’activer.', 'arvator-core' ); ?></p>
 			<?php endif; ?>
-			<p>La licence est liée au numéro du compte cTrader sur lequel le robot va tourner. Vous le trouvez dans cTrader, en haut de la liste de vos comptes. Vérifiez-le bien : il ne se change plus seul une fois la licence activée.</p>
+			<p><?php esc_html_e( 'La licence est liée au numéro du compte cTrader sur lequel le robot va tourner. Vous le trouvez dans cTrader, en haut de la liste de vos comptes. Vérifiez-le bien : il ne se change plus seul une fois la licence activée.', 'arvator-core' ); ?></p>
 			<form class="arv-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="arvator_account">
 				<?php wp_nonce_field( 'arvator_account', '_arv_nonce' ); ?>
-				<p><label for="arv-account">Numéro de compte cTrader</label>
+				<p><label for="arv-account"><?php esc_html_e( 'Numéro de compte cTrader', 'arvator-core' ); ?></label>
 					<input id="arv-account" name="account" type="text" inputmode="numeric" pattern="[0-9]{4,12}" maxlength="12" required value="<?php echo esc_attr( $account ); ?>"></p>
-				<p><button class="btn btn--primary" type="submit"><?php echo esc_html( $waiting ? 'Activer ma licence' : 'Enregistrer' ); ?></button></p>
+				<p><button class="btn btn--primary" type="submit"><?php echo esc_html( $waiting ? __( 'Activer ma licence', 'arvator-core' ) : __( 'Enregistrer', 'arvator-core' ) ); ?></button></p>
 			</form>
 		</section>
 		<?php

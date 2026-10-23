@@ -56,51 +56,51 @@ final class Arvator_Privacy {
 		$data = array();
 
 		foreach ( Arvator_Repo::orders_for_user( $uid ) as $o ) {
-			$data[] = self::item( 'arvator-achats', 'Achats Arvator', 'order-' . $o['id'], array(
-				'Date'    => (string) $o['created_at'],
-				'Produit' => (string) $o['product'],
-				'Montant' => number_format( (int) $o['amount_cents'] / 100, 2, ',', ' ' ) . ' ' . strtoupper( (string) $o['currency'] ),
-				'État'    => (string) $o['status'],
+			$data[] = self::item( 'arvator-achats', __( 'Achats Arvator', 'arvator-core' ), 'order-' . $o['id'], array(
+				__( 'Date', 'arvator-core' )    => (string) $o['created_at'],
+				__( 'Produit', 'arvator-core' ) => (string) $o['product'],
+				__( 'Montant', 'arvator-core' ) => number_format( (int) $o['amount_cents'] / 100, 2, ',', ' ' ) . ' ' . strtoupper( (string) $o['currency'] ),
+				__( 'État', 'arvator-core' )    => (string) $o['status'],
 			) );
 		}
 		foreach ( Arvator_Repo::subscriptions_for_user( $uid ) as $s ) {
-			$data[] = self::item( 'arvator-abonnements', 'Abonnements Arvator', 'sub-' . $s['id'], array(
-				'Formule'   => (string) $s['plan'],
-				'État'      => (string) $s['status'],
-				'Échéance'  => (string) $s['current_period_end'],
-				'Créé le'   => (string) $s['created_at'],
+			$data[] = self::item( 'arvator-abonnements', __( 'Abonnements Arvator', 'arvator-core' ), 'sub-' . $s['id'], array(
+				__( 'Formule', 'arvator-core' )   => (string) $s['plan'],
+				__( 'État', 'arvator-core' )      => (string) $s['status'],
+				__( 'Échéance', 'arvator-core' )  => (string) $s['current_period_end'],
+				__( 'Créé le', 'arvator-core' )   => (string) $s['created_at'],
 			) );
 		}
 		foreach ( Arvator_Repo::licenses_for_user( $uid ) as $l ) {
-			$data[] = self::item( 'arvator-licences', 'Licences Arvator', 'lic-' . $l['id'], array(
-				'Formule'           => (string) $l['plan'],
-				'Compte cTrader'    => (string) $l['account_number'],
-				'Valable jusqu’au'  => (string) $l['expires_at'],
-				'État'              => (string) $l['status'],
-				'Clé'               => (string) $l['license_key'],
+			$data[] = self::item( 'arvator-licences', __( 'Licences Arvator', 'arvator-core' ), 'lic-' . $l['id'], array(
+				__( 'Formule', 'arvator-core' )           => (string) $l['plan'],
+				__( 'Compte cTrader', 'arvator-core' )    => (string) $l['account_number'],
+				__( 'Valable jusqu’au', 'arvator-core' )  => (string) $l['expires_at'],
+				__( 'État', 'arvator-core' )              => (string) $l['status'],
+				__( 'Clé', 'arvator-core' )               => (string) $l['license_key'],
 			) );
 		}
 
 		if ( '' !== Arvator_License::account_for( $uid ) ) {
-			$data[] = self::item( 'arvator-licences', 'Licences Arvator', 'account-' . $uid, array( 'Compte cTrader' => Arvator_License::account_for( $uid ) ) );
+			$data[] = self::item( 'arvator-licences', __( 'Licences Arvator', 'arvator-core' ), 'account-' . $uid, array( __( 'Compte cTrader', 'arvator-core' ) => Arvator_License::account_for( $uid ) ) );
 		}
 
 		$ref = Arvator_Referral::referrer( $uid );
 		if ( $ref ) {
-			$data[] = self::item( 'arvator-parrainage', 'Parrainage Arvator', 'referrer-' . $uid, array(
-				'Code'                => (string) $ref['code'],
-				'Inscrit le'          => (string) $ref['created_at'],
-				'Titulaire du compte' => (string) $ref['holder_name'],
+			$data[] = self::item( 'arvator-parrainage', __( 'Parrainage Arvator', 'arvator-core' ), 'referrer-' . $uid, array(
+				__( 'Code', 'arvator-core' )                => (string) $ref['code'],
+				__( 'Inscrit le', 'arvator-core' )          => (string) $ref['created_at'],
+				__( 'Titulaire du compte', 'arvator-core' ) => (string) $ref['holder_name'],
 				'IBAN'                => Arvator_Referral::mask_iban( Arvator_Referral::decrypt( (string) $ref['iban_enc'] ) ),
-				'Statut'              => (string) $ref['entity_type'],
+				__( 'Statut', 'arvator-core' )              => (string) $ref['entity_type'],
 				'SIRET'               => (string) $ref['siret'],
 			) );
 			foreach ( Arvator_Referral::commissions_for( $uid ) as $c ) {
-				$data[] = self::item( 'arvator-recompenses', 'Récompenses de recommandation Arvator', 'com-' . $c['id'], array(
-					'Date'    => (string) $c['created_at'],
-					'Type'    => Arvator_Referral::kind_label( (string) $c['kind'] ),
-					'Montant' => number_format( (int) $c['amount_cents'] / 100, 2, ',', ' ' ) . ' EUR',
-					'État'    => Arvator_Referral::status_label( (string) $c['status'] ),
+				$data[] = self::item( 'arvator-recompenses', __( 'Récompenses de recommandation Arvator', 'arvator-core' ), 'com-' . $c['id'], array(
+					__( 'Date', 'arvator-core' )    => (string) $c['created_at'],
+					__( 'Type', 'arvator-core' )    => Arvator_Referral::kind_label( (string) $c['kind'] ),
+					__( 'Montant', 'arvator-core' ) => number_format( (int) $c['amount_cents'] / 100, 2, ',', ' ' ) . ' EUR',
+					__( 'État', 'arvator-core' )    => Arvator_Referral::status_label( (string) $c['status'] ),
 				) );
 			}
 		}
@@ -153,7 +153,7 @@ final class Arvator_Privacy {
 		return array(
 			'items_removed'  => true,
 			'items_retained' => $retained,
-			'messages'       => $retained ? array( 'Les pièces comptables (achats, abonnements, récompenses de recommandation) sont conservées 10 ans, sans lien avec votre identité.' ) : array(),
+			'messages'       => $retained ? array( __( 'Les pièces comptables (achats, abonnements, récompenses de recommandation) sont conservées 10 ans, sans lien avec votre identité.', 'arvator-core' ) ) : array(),
 			'done'           => true,
 		);
 	}

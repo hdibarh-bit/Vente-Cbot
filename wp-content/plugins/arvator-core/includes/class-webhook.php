@@ -170,6 +170,12 @@ final class Arvator_Webhook {
 		$plan = '' !== $plan ? $plan : (string) ( $full['metadata']['plan'] ?? 'monthly' );
 		Arvator_License::on_paid( $user_id, $plan, '' !== (string) ( $full['invoice'] ?? '' ) ? 'pay:inv:' . $full['invoice'] : 'pay:sess:' . $session_id );
 
+		// Langue de la page d'achat : retenue pour écrire au client dans sa langue (seulement si ce n'est pas celle du site).
+		$locale = (string) ( $full['metadata']['langue'] ?? '' );
+		if ( preg_match( '/^[a-z]{2,3}(_[A-Z]{2})?$/', $locale ) && get_locale() !== $locale ) {
+			update_user_meta( $user_id, 'locale', $locale );
+		}
+
 		Arvator_Repo::log_event( 'purchase', $user_id, array( 'session' => $session_id, 'amount_cents' => $amount ) );
 		self::send_confirmation( $user_id, $created );
 	}
@@ -403,23 +409,27 @@ final class Arvator_Webhook {
 		if ( ! $user instanceof WP_User ) {
 			return;
 		}
-		$lines = array( 'Bonjour,', '', 'Merci pour votre commande : votre paiement a bien été reçu.', '' );
+		$switched = switch_to_user_locale( $user_id ); // email dans la langue du client (celle du site par défaut)
+		$lines    = array( __( 'Bonjour,', 'arvator-core' ), '', __( 'Merci pour votre commande : votre paiement a bien été reçu.', 'arvator-core' ), '' );
 		if ( $created ) {
 			$key = get_password_reset_key( $user );
 			if ( is_string( $key ) ) {
 				$link    = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
-				$lines[] = 'Votre espace membre est créé. Choisissez votre mot de passe ici (lien valable 24 heures) :';
+				$lines[] = __( 'Votre espace membre est créé. Choisissez votre mot de passe ici (lien valable 24 heures) :', 'arvator-core' );
 				$lines[] = $link;
 				$lines[] = '';
 			}
 		}
-		$lines[] = 'Retrouvez votre achat, votre abonnement et le téléchargement du robot dans votre espace membre :';
+		$lines[] = __( 'Retrouvez votre achat, votre abonnement et le téléchargement du robot dans votre espace membre :', 'arvator-core' );
 		$lines[] = Arvator_Member::url();
 		$lines[] = '';
-		$lines[] = 'Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.';
+		$lines[] = __( 'Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
 		$lines[] = '';
 		$lines[] = Arvator_Site::signature();
 
-		wp_mail( $user->user_email, 'Arvator : votre commande est confirmée', implode( "\n", $lines ) );
+		wp_mail( $user->user_email, __( 'Arvator : votre commande est confirmée', 'arvator-core' ), implode( "\n", $lines ) );
+		if ( $switched ) {
+			restore_previous_locale();
+		}
 	}
 }

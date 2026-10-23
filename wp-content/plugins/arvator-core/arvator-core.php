@@ -3,12 +3,13 @@
  * Plugin Name:       Arvator Core
  * Plugin URI:        https://arvator.com
  * Description:       Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks. Parrainage (lien de recommandation, récompenses, virements). Licence : liaison avec le workflow n8n (paiement, résiliation, essai). Accueillera ensuite l'administration complète.
- * Version:           0.7.5
+ * Version:           0.8.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Hamid
  * License:           Proprietary
  * Text Domain:       arvator-core
+ * Domain Path:       /languages
  *
  * Règle : ce plugin porte la logique du site, le thème ne porte que l'affichage.
  * Aucun secret ici : les clés vont dans wp-config.php.
@@ -20,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARVATOR_CORE_VERSION', '0.7.5' );
+define( 'ARVATOR_CORE_VERSION', '0.8.0' );
 define( 'ARVATOR_CORE_DIR', plugin_dir_path( __FILE__ ) );
 
 foreach (
@@ -77,5 +78,14 @@ if ( is_admin() ) {
 	Arvator_Referral_Admin::init();
 	Arvator_License_Admin::init();
 }
+
+// Traductions (dossier languages/, ex. arvator-core-en_US.mo) : le français reste la langue d'origine du site.
+add_action(
+	'init',
+	static function (): void {
+		load_plugin_textdomain( 'arvator-core', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	},
+	1
+);
 
 register_activation_hook( __FILE__, array( 'Arvator_Install', 'activate' ) );

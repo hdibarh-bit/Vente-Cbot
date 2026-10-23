@@ -38,6 +38,11 @@ final class Arvator_Checkout {
 		);
 	}
 
+	/** Langue des pages Stripe : anglais si la page du site est en anglais, sinon français. */
+	private static function stripe_locale(): string {
+		return str_starts_with( determine_locale(), 'en' ) ? 'en' : 'fr';
+	}
+
 	private static function eur( float $v ): string {
 		$cents = (int) round( $v * 100 );
 		return number_format( $cents / 100, 0 === $cents % 100 ? 0 : 2, ',', "\u{202F}" ) . "\u{00A0}€";
@@ -51,11 +56,13 @@ final class Arvator_Checkout {
 
 		$user_id = get_current_user_id();
 		if ( $user_id && Arvator_Repo::has_paid_order( $user_id ) ) {
-			echo '<p>Vous avez déjà acheté Arvator. Retrouvez votre licence et le téléchargement dans votre <a href="' . esc_url( Arvator_Member::url() ) . '">espace membre</a>.</p>';
+			/* translators: %s: adresse de l'espace membre. */
+			echo '<p>' . wp_kses_post( sprintf( __( 'Vous avez déjà acheté Arvator. Retrouvez votre licence et le téléchargement dans votre <a href="%s">espace membre</a>.', 'arvator-core' ), esc_url( Arvator_Member::url() ) ) ) . '</p>';
 			return (string) ob_get_clean();
 		}
 		if ( ! Arvator_Stripe::configured() ) {
-			echo '<p>Le paiement en ligne est en cours de configuration. Vous pouvez nous écrire depuis la page <a href="' . esc_url( Arvator_Support::page_url( 'contact' ) ) . '">Contact</a>.</p>';
+			/* translators: %s: adresse de la page Contact. */
+			echo '<p>' . wp_kses_post( sprintf( __( 'Le paiement en ligne est en cours de configuration. Vous pouvez nous écrire depuis la page <a href="%s">Contact</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'contact' ) ) ) ) . '</p>';
 			return (string) ob_get_clean();
 		}
 
@@ -71,49 +78,49 @@ final class Arvator_Checkout {
 			<?php wp_nonce_field( 'arvator_checkout', '_arv_nonce' ); ?>
 
 			<fieldset class="arv-plans">
-				<legend>Choisissez votre abonnement</legend>
+				<legend><?php esc_html_e( 'Choisissez votre abonnement', 'arvator-core' ); ?></legend>
 				<label class="arv-plan">
 					<input type="radio" name="plan" value="annual"<?php checked( 'annual', $pref ); ?>>
-					<span><strong>Annuel</strong> · <?php echo esc_html( self::eur( $a['annuel_mois'] ) ); ?> par mois, payés d’avance (<?php echo esc_html( self::eur( $a['annuel'] ) ); ?> par an)<br>
-					<span class="muted">Premier paiement : <?php echo esc_html( self::eur( $a['achat'] + $a['annuel'] ) ); ?> (robot + 1 an d’abonnement)</span></span>
+					<span><?php /* translators: 1: prix mensuel, 2: prix annuel. */ echo wp_kses_post( sprintf( __( '<strong>Annuel</strong> · %1$s par mois, payés d’avance (%2$s par an)', 'arvator-core' ), esc_html( self::eur( $a['annuel_mois'] ) ), esc_html( self::eur( $a['annuel'] ) ) ) ); ?><br>
+					<span class="muted"><?php /* translators: %s: montant du premier paiement. */ echo esc_html( sprintf( __( 'Premier paiement : %s (robot + 1 an d’abonnement)', 'arvator-core' ), self::eur( $a['achat'] + $a['annuel'] ) ) ); ?></span></span>
 				</label>
 				<label class="arv-plan">
 					<input type="radio" name="plan" value="monthly"<?php checked( 'monthly', $pref ); ?>>
-					<span><strong>Mensuel</strong> · <?php echo esc_html( self::eur( $a['mensuel'] ) ); ?> par mois<br>
-					<span class="muted">Premier paiement : <?php echo esc_html( self::eur( $a['achat'] + $a['mensuel'] ) ); ?> (robot + 1er mois)</span></span>
+					<span><?php /* translators: %s: prix mensuel. */ echo wp_kses_post( sprintf( __( '<strong>Mensuel</strong> · %s par mois', 'arvator-core' ), esc_html( self::eur( $a['mensuel'] ) ) ) ); ?><br>
+					<span class="muted"><?php /* translators: %s: montant du premier paiement. */ echo esc_html( sprintf( __( 'Premier paiement : %s (robot + 1er mois)', 'arvator-core' ), self::eur( $a['achat'] + $a['mensuel'] ) ) ); ?></span></span>
 				</label>
 			</fieldset>
 
-			<p class="muted">Le robot (<?php echo esc_html( self::eur( $a['achat'] ) ); ?>) est payé une seule fois. L’abonnement est obligatoire : il se renouvelle jusqu’à votre résiliation, que vous pouvez faire à tout moment depuis votre espace membre.</p>
+			<p class="muted"><?php /* translators: %s: prix du robot. */ echo esc_html( sprintf( __( 'Le robot (%s) est payé une seule fois. L’abonnement est obligatoire : il se renouvelle jusqu’à votre résiliation, que vous pouvez faire à tout moment depuis votre espace membre.', 'arvator-core' ), self::eur( $a['achat'] ) ) ); ?></p>
 
 			<?php if ( $user_id ) : ?>
-				<p>Compte : <strong><?php echo esc_html( $user->user_email ); ?></strong></p>
+				<p><?php /* translators: %s: adresse email du compte. */ echo wp_kses_post( sprintf( __( 'Compte : <strong>%s</strong>', 'arvator-core' ), esc_html( $user->user_email ) ) ); ?></p>
 			<?php else : ?>
 				<p>
-					<label for="arv-buy-email">Votre adresse email</label>
+					<label for="arv-buy-email"><?php esc_html_e( 'Votre adresse email', 'arvator-core' ); ?></label>
 					<input id="arv-buy-email" name="email" type="email" required autocomplete="email" maxlength="190">
 				</p>
 			<?php endif; ?>
 
 			<p>
-				<label for="arv-buy-account">Numéro de votre compte cTrader <span class="muted">(facultatif maintenant)</span></label>
+				<label for="arv-buy-account"><?php esc_html_e( 'Numéro de votre compte cTrader', 'arvator-core' ); ?> <span class="muted"><?php esc_html_e( '(facultatif maintenant)', 'arvator-core' ); ?></span></label>
 				<input id="arv-buy-account" name="account" type="text" inputmode="numeric" pattern="[0-9]{4,12}" maxlength="12" autocomplete="off" value="<?php echo esc_attr( $user_id ? Arvator_License::account_for( $user_id ) : '' ); ?>">
-				<span class="muted">Le compte sur lequel le robot va tourner : la licence y est liée. Vous pouvez aussi l’indiquer plus tard dans votre espace membre.</span>
+				<span class="muted"><?php esc_html_e( 'Le compte sur lequel le robot va tourner : la licence y est liée. Vous pouvez aussi l’indiquer plus tard dans votre espace membre.', 'arvator-core' ); ?></span>
 			</p>
 
 			<p>
-				<label for="arv-buy-ref">Code de recommandation <span class="muted">(facultatif)</span></label>
+				<label for="arv-buy-ref"><?php esc_html_e( 'Code de recommandation', 'arvator-core' ); ?> <span class="muted"><?php esc_html_e( '(facultatif)', 'arvator-core' ); ?></span></label>
 				<input id="arv-buy-ref" name="ref" type="text" maxlength="12" autocomplete="off" value="<?php echo esc_attr( self::prefill_code() ); ?>">
-				<span class="muted">Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé.</span>
+				<span class="muted"><?php esc_html_e( 'Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé.', 'arvator-core' ); ?></span>
 			</p>
 
-			<p class="arv-check"><label><input type="checkbox" name="cgv" value="1" required> J’ai lu et j’accepte les <a href="<?php echo esc_url( Arvator_Support::page_url( 'cgv' ) ); ?>" target="_blank" rel="noopener">conditions générales de vente</a>.</label></p>
-			<p class="arv-check"><label><input type="checkbox" name="risks" value="1" required> J’ai lu l’<a href="<?php echo esc_url( Arvator_Support::page_url( 'risques' ) ); ?>" target="_blank" rel="noopener">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé.</label></p>
+			<p class="arv-check"><label><input type="checkbox" name="cgv" value="1" required> <?php /* translators: %s: adresse des CGV. */ echo wp_kses_post( sprintf( __( 'J’ai lu et j’accepte les <a href="%s" target="_blank" rel="noopener">conditions générales de vente</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'cgv' ) ) ) ); ?></label></p>
+			<p class="arv-check"><label><input type="checkbox" name="risks" value="1" required> <?php /* translators: %s: adresse de la page Risques. */ echo wp_kses_post( sprintf( __( 'J’ai lu l’<a href="%s" target="_blank" rel="noopener">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'risques' ) ) ) ); ?></label></p>
 
-			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1"<?php echo $had_trial ? ' required' : ''; ?>> <?php echo $had_trial ? '' : 'Si vous avez fait l’essai gratuit : '; ?>je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable).</label></p>
+			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1"<?php echo $had_trial ? ' required' : ''; ?>> <?php echo esc_html( $had_trial ? __( 'je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable).', 'arvator-core' ) : __( 'Si vous avez fait l’essai gratuit : je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable).', 'arvator-core' ) ); ?></label></p>
 
-			<p><button class="btn btn--primary" type="submit">Payer en toute sécurité avec Stripe</button></p>
-			<p class="muted">Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe.</p>
+			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Payer en toute sécurité avec Stripe', 'arvator-core' ); ?></button></p>
+			<p class="muted"><?php esc_html_e( 'Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe.', 'arvator-core' ); ?></p>
 		</form>
 		<?php
 		return (string) ob_get_clean();
@@ -198,13 +205,14 @@ final class Arvator_Checkout {
 			'customer_email'        => $email,
 			'success_url'           => add_query_arg( 'arv_notice', 'achat_ok', Arvator_Member::url() ),
 			'cancel_url'            => add_query_arg( 'arv_notice', 'achat_annule', $back ),
-			'locale'                => 'fr',
+			'locale'                => self::stripe_locale(),
 			'metadata'              => array(
 				'plan'          => $plan,
 				'source'        => 'arvator',
 				'trial_waiver'  => $waiver ? '1' : '0',
 				'ref'           => $ref,
 				'compte'        => $account,
+				'langue'        => determine_locale(),
 			),
 			'subscription_data'     => array(
 				'metadata' => array(
@@ -252,7 +260,7 @@ final class Arvator_Checkout {
 			array(
 				'customer'   => $customer,
 				'return_url' => $back,
-				'locale'     => 'fr',
+				'locale'     => self::stripe_locale(),
 			)
 		);
 		$url = is_array( $session ) ? (string) ( $session['url'] ?? '' ) : '';

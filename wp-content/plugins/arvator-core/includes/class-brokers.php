@@ -86,9 +86,9 @@ final class Arvator_Brokers {
 	public static function render_member(): void {
 		$list = self::all();
 		?>
-		<p>Arvator fonctionne chez tout courtier qui propose <strong>cTrader avec le cloud</strong>. Voici, à titre indicatif, des courtiers qui proposent cTrader et disposent d’une licence européenne. Cliquez sur un nom pour ouvrir son site officiel.</p>
+		<p><?php echo wp_kses_post( __( 'Arvator fonctionne chez tout courtier qui propose <strong>cTrader avec le cloud</strong>. Voici, à titre indicatif, des courtiers qui proposent cTrader et disposent d’une licence européenne. Cliquez sur un nom pour ouvrir son site officiel.', 'arvator-core' ) ); ?></p>
 		<?php if ( ! $list ) : ?>
-			<p class="muted">La liste sera bientôt complétée. En attendant, écrivez-nous depuis la page <a href="<?php echo esc_url( Arvator_Support::page_url( 'contact' ) ); ?>">Contact</a>.</p>
+			<p class="muted"><?php /* translators: %s: adresse de la page Contact. */ echo wp_kses_post( sprintf( __( 'La liste sera bientôt complétée. En attendant, écrivez-nous depuis la page <a href="%s">Contact</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'contact' ) ) ) ); ?></p>
 			<?php
 			return;
 		endif;
@@ -103,20 +103,20 @@ final class Arvator_Brokers {
 			}
 		};
 		?>
-		<div class="brokers" role="region" aria-label="Courtiers compatibles">
+		<div class="brokers" role="region" aria-label="<?php esc_attr_e( 'Courtiers compatibles', 'arvator-core' ); ?>">
 			<div class="brokers__track">
 				<ul class="brokers__list"><?php $items( false ); ?></ul>
 				<ul class="brokers__list" aria-hidden="true"><?php $items( true ); ?></ul>
 			</div>
 		</div>
 		<div class="arv-card">
-			<h3>Avant d’ouvrir un compte</h3>
+			<h3><?php esc_html_e( 'Avant d’ouvrir un compte', 'arvator-core' ); ?></h3>
 			<ul class="checklist">
-				<li>Ce n’est ni une recommandation ni un conseil : nous ne touchons <strong>aucune commission</strong> de ces courtiers. Comparez leurs conditions vous-même.</li>
-				<li>Vérifiez que le courtier est autorisé à proposer ses services en France, sur le registre officiel <a href="https://www.regafi.fr" target="_blank" rel="noopener noreferrer">REGAFI</a>, et qu’il ne figure pas sur la liste noire de l’<a href="https://www.amf-france.org" target="_blank" rel="noopener noreferrer">AMF</a>.</li>
-				<li>Vérifiez que votre compte permet de faire tourner les robots (cBots) dans le cloud cTrader : faites d’abord un essai sur un compte démo.</li>
-				<li>La taille minimale de position varie d’un courtier à l’autre : avec un petit capital, le robot peut refuser plus de trades.</li>
-				<li>Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées.</li>
+				<li><?php echo wp_kses_post( __( 'Ce n’est ni une recommandation ni un conseil : nous ne touchons <strong>aucune commission</strong> de ces courtiers. Comparez leurs conditions vous-même.', 'arvator-core' ) ); ?></li>
+				<li><?php echo wp_kses_post( __( 'Vérifiez que le courtier est autorisé à proposer ses services en France, sur le registre officiel <a href="https://www.regafi.fr" target="_blank" rel="noopener noreferrer">REGAFI</a>, et qu’il ne figure pas sur la liste noire de l’<a href="https://www.amf-france.org" target="_blank" rel="noopener noreferrer">AMF</a>.', 'arvator-core' ) ); ?></li>
+				<li><?php echo wp_kses_post( __( 'Vérifiez que votre compte permet de faire tourner les robots (cBots) dans le cloud cTrader : faites d’abord un essai sur un compte démo.', 'arvator-core' ) ); ?></li>
+				<li><?php echo wp_kses_post( __( 'La taille minimale de position varie d’un courtier à l’autre : avec un petit capital, le robot peut refuser plus de trades.', 'arvator-core' ) ); ?></li>
+				<li><?php echo wp_kses_post( __( 'Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées.', 'arvator-core' ) ); ?></li>
 			</ul>
 		</div>
 		<?php

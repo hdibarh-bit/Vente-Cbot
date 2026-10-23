@@ -1,0 +1,602 @@
+# Copyright (C) 2026 Hamid
+# This file is distributed under the Proprietary.
+msgid ""
+msgstr ""
+"Project-Id-Version: Arvator 0.7.0\n"
+"Report-Msgid-Bugs-To: support@arvator.com\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Arvator <support@arvator.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-23T17:06:15+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: arvator\n"
+
+#. Theme Name of the theme
+#: style.css
+msgid "Arvator"
+msgstr ""
+
+#. Theme URI of the theme
+#: style.css
+msgid "https://arvator.com"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "Thème doré sur mesure pour le site de vente du robot Arvator. Léger (sans jQuery, sans service externe, polices hébergées), accessible et sécurisé. La logique métier (licences, parrainage, espace client, administration) est dans le plugin « Arvator Core », pas dans ce thème."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Hamid"
+msgstr ""
+
+#: 404.php:13
+msgid "Page introuvable"
+msgstr ""
+
+#: 404.php:14
+msgid "Cette page n’existe pas ou a été déplacée."
+msgstr ""
+
+#: 404.php:15
+msgid "Retour à l’accueil"
+msgstr ""
+
+#: footer.php:25
+#: header.php:38
+#: inc/template-tags.php:182
+msgid "Essai gratuit"
+msgstr ""
+
+#: footer.php:26
+#: header.php:37
+msgid "Acheter"
+msgstr ""
+
+#: footer.php:29
+msgid "Pied de page"
+msgstr ""
+
+#: footer.php:30
+msgid "Découvrir"
+msgstr ""
+
+#: footer.php:33
+msgid "Informations légales"
+msgstr ""
+
+#: footer.php:34
+msgid "Informations"
+msgstr ""
+
+#: footer.php:41
+msgid "Tous droits réservés."
+msgstr ""
+
+#: footer.php:43
+msgid "Gérer les cookies"
+msgstr ""
+
+#: footer.php:45
+msgid "Développé par"
+msgstr ""
+
+#: footer.php:63
+msgid "Vos choix sur les cookies"
+msgstr ""
+
+#: footer.php:64
+msgid "Ce site utilise des cookies nécessaires à son fonctionnement (connexion, sécurité, mémorisation de vos choix). Avec votre accord, il utilise aussi un <strong>cookie de recommandation</strong> : si un parrain vous a envoyé son lien, son code est retenu 90&nbsp;jours pour lui attribuer sa récompense si vous achetez. Aucune publicité, aucune mesure d’audience. Vous pouvez changer d’avis à tout moment («&nbsp;Gérer les cookies&nbsp;» en bas de page)."
+msgstr ""
+
+#: footer.php:64
+msgid "En savoir plus"
+msgstr ""
+
+#: footer.php:66
+msgid "<strong>Nécessaires</strong> · toujours actifs : connexion à l’espace membre, sécurité, mémorisation de vos choix."
+msgstr ""
+
+#: footer.php:67
+msgid "<strong>Recommandation</strong> · retient 90&nbsp;jours le code du parrain qui vous a envoyé son lien."
+msgstr ""
+
+#: footer.php:71
+msgid "Tout refuser"
+msgstr ""
+
+#: footer.php:72
+msgid "Personnaliser"
+msgstr ""
+
+#: footer.php:73
+msgid "Enregistrer mes choix"
+msgstr ""
+
+#: footer.php:74
+msgid "Tout accepter"
+msgstr ""
+
+#: front-page.php:37
+msgid "Recommandation"
+msgstr ""
+
+#: front-page.php:49
+msgid "Les résultats présentés sont des <strong>performances simulées</strong> (backtest), pas des résultats réels : nous les montrons toujours avec les baisses qui vont avec."
+msgstr ""
+
+#. translators: %d: durée de l'essai en jours.
+#: front-page.php:53
+#: inc/template-tags.php:96
+msgid "Essayer %d jours sur compte démo"
+msgstr ""
+
+#. translators: %d: durée de l'essai en jours.
+#: front-page.php:54
+#: front-page.php:56
+msgid "Voir les tarifs"
+msgstr ""
+
+#: front-page.php:59
+msgid "Voir les résultats simulés"
+msgstr ""
+
+#: front-page.php:63
+msgid "Exemple de performances simulées"
+msgstr ""
+
+#: front-page.php:64
+msgid "Performances simulées · risque 1 %"
+msgstr ""
+
+#. translators: %s: capital de départ, ex. « 5 000 € ».
+#: front-page.php:65
+msgid "Capital de départ de %s"
+msgstr ""
+
+#: front-page.php:71
+#: template-parts/results-tabs.php:56
+msgid "2026 (au 7 oct.)"
+msgstr ""
+
+#: front-page.php:84
+msgid "Pire baisse sur la période"
+msgstr ""
+
+#: front-page.php:88
+#: template-parts/results-tabs.php:59
+msgid "Solde le plus bas"
+msgstr ""
+
+#. translators: %s: capital de départ.
+#: front-page.php:92
+msgid "Solde simulé du compte en fin d’année, en repartant de %s chaque 1<sup>er</sup> janvier. Backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026. Ne préjuge pas des résultats futurs."
+msgstr ""
+
+#: front-page.php:100
+msgid "Comment ça marche"
+msgstr ""
+
+#: front-page.php:101
+msgid "Trois étapes, sans rien de compliqué"
+msgstr ""
+
+#: front-page.php:105
+msgid "Vous choisissez votre formule"
+msgstr ""
+
+#: front-page.php:106
+msgid "Un achat du robot, puis un abonnement mensuel ou annuel pour garder votre licence active. Vous pouvez d’abord l’essayer 14&nbsp;jours sur un compte démo."
+msgstr ""
+
+#: front-page.php:110
+msgid "Vous l’installez sur votre compte cTrader"
+msgstr ""
+
+#: front-page.php:111
+msgid "Vous recevez votre licence et un guide pas à pas. Le robot tourne dans le cloud cTrader, sans que votre ordinateur reste allumé."
+msgstr ""
+
+#: front-page.php:115
+msgid "Vous gardez le contrôle du risque"
+msgstr ""
+
+#: front-page.php:116
+msgid "Le robot est livré réglé à 1&nbsp;% de risque par trade. Vous pouvez le monter à 2&nbsp;% ou 3&nbsp;%, jamais au-delà. Vous restez seul responsable de votre compte."
+msgstr ""
+
+#: front-page.php:119
+msgid "Nous ne touchons jamais à votre argent ni à votre compte : nous vendons un logiciel."
+msgstr ""
+
+#: front-page.php:120
+msgid "Commencer par l’essai gratuit"
+msgstr ""
+
+#: front-page.php:126
+#: inc/template-tags.php:180
+msgid "Résultats simulés"
+msgstr ""
+
+#: front-page.php:127
+msgid "Ce que le robot aurait fait entre 2024 et 2026, avec ses baisses"
+msgstr ""
+
+#: front-page.php:129
+msgid "Un backtest rejoue le robot sur des prix passés. C’est utile pour comprendre son comportement, mais ce n’est pas une promesse : regardez toujours la pire baisse à côté de chaque gain."
+msgstr ""
+
+#: front-page.php:135
+msgid "Pourquoi nous conseillons au moins 5&nbsp;000&nbsp;€"
+msgstr ""
+
+#: front-page.php:137
+msgid "Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. Plus le capital est élevé, moins il y a de trades refusés."
+msgstr ""
+
+#: front-page.php:142
+msgid "Voir tous les résultats détaillés"
+msgstr ""
+
+#: front-page.php:143
+msgid "Essayer sur compte démo"
+msgstr ""
+
+#: front-page.php:150
+#: inc/template-tags.php:174
+#: inc/template-tags.php:181
+msgid "Tarifs"
+msgstr ""
+
+#: front-page.php:151
+msgid "Ce que ça coûte, sans surprise"
+msgstr ""
+
+#: front-page.php:153
+msgid "Deux éléments : un <strong>achat unique</strong> pour le robot, puis un <strong>abonnement</strong> qui garde votre licence active. Au moment du paiement, vous réglez l’achat et le premier abonnement en une seule fois."
+msgstr ""
+
+#: front-page.php:158
+msgid "Abonnement mensuel"
+msgstr ""
+
+#: front-page.php:159
+msgid "par mois"
+msgstr ""
+
+#: front-page.php:161
+#: front-page.php:174
+msgid "Achat du robot (une seule fois)"
+msgstr ""
+
+#: front-page.php:162
+#: front-page.php:175
+msgid "Premier paiement"
+msgstr ""
+
+#: front-page.php:163
+msgid "Ensuite, chaque mois"
+msgstr ""
+
+#: front-page.php:164
+#: front-page.php:177
+msgid "Coût de la première année"
+msgstr ""
+
+#: front-page.php:166
+msgid "Choisir le mensuel"
+msgstr ""
+
+#: front-page.php:170
+msgid "Le plus avantageux"
+msgstr ""
+
+#. translators: %s: montant économisé par an.
+#: front-page.php:170
+msgid "%s d’économie par an"
+msgstr ""
+
+#. translators: %s: montant économisé par an.
+#: front-page.php:171
+msgid "Abonnement annuel"
+msgstr ""
+
+#: front-page.php:172
+msgid "par mois, payés d’avance pour l’année"
+msgstr ""
+
+#: front-page.php:176
+msgid "Ensuite, chaque année"
+msgstr ""
+
+#: front-page.php:179
+msgid "Choisir l’annuel"
+msgstr ""
+
+#: front-page.php:185
+msgid "Ce que vous recevez"
+msgstr ""
+
+#: front-page.php:187
+msgid "Le robot Arvator, prêt à installer sur votre compte cTrader"
+msgstr ""
+
+#: front-page.php:188
+msgid "Votre licence, renouvelée tant que votre abonnement est à jour"
+msgstr ""
+
+#: front-page.php:189
+msgid "Un guide d’installation pas à pas"
+msgstr ""
+
+#: front-page.php:190
+msgid "Votre espace client : téléchargement, licence, abonnement et factures"
+msgstr ""
+
+#: front-page.php:194
+msgid "Bon à savoir avant d’acheter"
+msgstr ""
+
+#. translators: %d: jours de grâce.
+#: front-page.php:196
+msgid "L’abonnement est obligatoire : sans abonnement à jour, la licence expire. Après %d jours de grâce, le robot ne prend plus de nouvelles positions."
+msgstr ""
+
+#. translators: %s: capital conseillé.
+#: front-page.php:197
+msgid "Le capital que vous placez sur votre compte cTrader est à part du prix du robot, et reste chez votre courtier. Nous conseillons au moins %s (voir plus haut pourquoi)."
+msgstr ""
+
+#. translators: %s: capital conseillé.
+#: front-page.php:198
+msgid "Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site."
+msgstr ""
+
+#. translators: %d: durée de l'essai en jours.
+#: front-page.php:205
+msgid "Essayer d’abord %d jours sur compte démo"
+msgstr ""
+
+#: front-page.php:214
+msgid "Essayez avant d’acheter"
+msgstr ""
+
+#. translators: %d: durée de l'essai en jours.
+#: front-page.php:215
+msgid "%d jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader."
+msgstr ""
+
+#: front-page.php:218
+msgid "Demander mon essai gratuit"
+msgstr ""
+
+#: front-page.php:219
+#: inc/template-tags.php:72
+#: inc/template-tags.php:97
+msgid "Acheter Arvator"
+msgstr ""
+
+#: functions.php:41
+msgid "Menu principal"
+msgstr ""
+
+#: functions.php:42
+msgid "Menu du pied de page"
+msgstr ""
+
+#: functions.php:43
+msgid "Liens légaux"
+msgstr ""
+
+#: header.php:20
+msgid "Aller au contenu"
+msgstr ""
+
+#: header.php:28
+msgid "Menu"
+msgstr ""
+
+#: header.php:31
+msgid "Navigation principale"
+msgstr ""
+
+#: header.php:35
+msgid "Mon espace"
+msgstr ""
+
+#: header.php:35
+msgid "Connexion"
+msgstr ""
+
+#: inc/customizer.php:36
+msgid "Arvator · robot de trading automatique"
+msgstr ""
+
+#: inc/customizer.php:37
+msgid "Un robot de trading automatique, transparent, testé sur\\u{00A0}2024, 2025 et\\u{00A0}2026"
+msgstr ""
+
+#: inc/customizer.php:38
+msgid "Arvator s’installe sur votre propre compte cTrader et fonctionne dans le cloud, même ordinateur éteint. Vous gardez la main sur votre compte et sur votre niveau de risque."
+msgstr ""
+
+#: inc/customizer.php:39
+msgid "Un robot de trading automatique qui s’installe sur votre propre compte cTrader. Nous ne touchons jamais à votre argent ni à votre compte."
+msgstr ""
+
+#: inc/template-tags.php:44
+msgid "resultats"
+msgstr ""
+
+#: inc/template-tags.php:67
+msgid "annual"
+msgstr ""
+
+#: inc/template-tags.php:122
+msgid "Recommandez Arvator&nbsp;!"
+msgstr ""
+
+#: inc/template-tags.php:125
+msgid "par recommandation"
+msgstr ""
+
+#: inc/template-tags.php:127
+msgid "Pour chaque proche qui achète le robot grâce à votre lien."
+msgstr ""
+
+#. translators: %s: délai en jours avant le versement de la récompense.
+#: inc/template-tags.php:131
+msgid "*Récompense de recommandation versée %s&nbsp;jours après l’achat, s’il n’est pas remboursé."
+msgstr ""
+
+#: inc/template-tags.php:134
+msgid "Inscription gratuite, <span class=\"referral__link\">voir conditions</span>."
+msgstr ""
+
+#: inc/template-tags.php:173
+msgid "Résultats"
+msgstr ""
+
+#: inc/template-tags.php:175
+#: inc/template-tags.php:185
+msgid "FAQ"
+msgstr ""
+
+#: inc/template-tags.php:176
+#: inc/template-tags.php:186
+msgid "À propos"
+msgstr ""
+
+#: inc/template-tags.php:177
+#: inc/template-tags.php:187
+msgid "Contact"
+msgstr ""
+
+#: inc/template-tags.php:183
+msgid "Rapport gratuit"
+msgstr ""
+
+#: inc/template-tags.php:184
+msgid "Parrainage"
+msgstr ""
+
+#: inc/template-tags.php:188
+msgid "Espace membre"
+msgstr ""
+
+#: inc/template-tags.php:191
+msgid "Risques"
+msgstr ""
+
+#: inc/template-tags.php:192
+msgid "Mentions légales"
+msgstr ""
+
+#: inc/template-tags.php:193
+msgid "CGV"
+msgstr ""
+
+#: inc/template-tags.php:194
+msgid "Confidentialité"
+msgstr ""
+
+#: inc/template-tags.php:195
+msgid "Cookies"
+msgstr ""
+
+#: inc/template-tags.php:196
+msgid "Conditions du parrainage"
+msgstr ""
+
+#: inc/template-tags.php:239
+msgid "accueil"
+msgstr ""
+
+#: inc/template-tags.php:264
+msgid "Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement."
+msgstr ""
+
+#: index.php:24
+msgid "Aucun contenu à afficher."
+msgstr ""
+
+#: page.php:26
+msgid "Prêt à essayer ?"
+msgstr ""
+
+#: page.php:26
+msgid "Testez le robot pendant 14 jours sur un compte démo, ou passez directement à l’achat."
+msgstr ""
+
+#: template-parts/results-tabs.php:21
+msgid "Niveau de risque par trade"
+msgstr ""
+
+#. translators: %d: niveau de risque en pourcentage.
+#: template-parts/results-tabs.php:30
+msgid "Risque %d %%"
+msgstr ""
+
+#: template-parts/results-tabs.php:32
+msgid "livré par défaut"
+msgstr ""
+
+#. translators: %d: niveau de risque en pourcentage.
+#: template-parts/results-tabs.php:43
+msgid "Performances simulées au risque %d %% par trade"
+msgstr ""
+
+#: template-parts/results-tabs.php:45
+msgid "réglage livré avec le robot"
+msgstr ""
+
+#. translators: %d: niveau de risque en pourcentage.
+#: template-parts/results-tabs.php:48
+msgid "Résultats simulés au risque %d %%"
+msgstr ""
+
+#. translators: %d: niveau de risque en pourcentage.
+#: template-parts/results-tabs.php:50
+msgid "Solde du compte en fin de période (en euros et en pourcentage) et baisses, risque %d %%"
+msgstr ""
+
+#: template-parts/results-tabs.php:53
+msgid "Capital de départ"
+msgstr ""
+
+#: template-parts/results-tabs.php:57
+msgid "2024 → 2026 enchaînés"
+msgstr ""
+
+#: template-parts/results-tabs.php:58
+msgid "Pire baisse"
+msgstr ""
+
+#: template-parts/results-tabs.php:68
+msgid "conseillé"
+msgstr ""
+
+#: template-parts/results-tabs.php:86
+msgid "Performances simulées (backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026), sans retrait. Chaque case donne le solde simulé du compte en fin de période, en euros, et l’évolution en pourcentage par rapport au capital de départ."
+msgstr ""
+
+#: template-parts/results-tabs.php:88
+msgid "Chaque année est simulée seule, en repartant du capital de départ ; la colonne « 2024 → 2026 enchaînés » montre le solde si l’on avait laissé tourner le robot sur toute la période, sans retrait."
+msgstr ""
+
+#: template-parts/results-tabs.php:90
+msgid "« Pire baisse » et « solde le plus bas » portent sur toute la période 2024 → 2026 (soldes de fin de mois)."
+msgstr ""
+
+#. translators: %d: risque maximum autorisé, en pourcentage.
+#: template-parts/results-tabs.php:94
+msgid "Le robot est livré réglé à 1 %% de risque par trade ; vous pouvez le monter jusqu’à %d %%, jamais au-delà."
+msgstr ""
+
+#: template-parts/results-tabs.php:97
+msgid "Ces chiffres sont des simulations : ils ne préjugent pas des résultats futurs, qui peuvent être très positifs, nuls ou négatifs."
+msgstr ""

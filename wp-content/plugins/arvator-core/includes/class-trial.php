@@ -49,21 +49,21 @@ final class Arvator_Trial {
 			<input type="hidden" name="action" value="arvator_trial">
 			<?php wp_nonce_field( 'arvator_trial', '_arv_nonce' ); ?>
 			<div class="arv-hp" aria-hidden="true">
-				<label>Ne pas remplir ce champ <input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
+				<label><?php esc_html_e( 'Ne pas remplir ce champ', 'arvator-core' ); ?> <input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
 			</div>
 			<p>
-				<label for="arv-trial-email">Votre adresse email</label>
+				<label for="arv-trial-email"><?php esc_html_e( 'Votre adresse email', 'arvator-core' ); ?></label>
 				<input id="arv-trial-email" name="email" type="email" required maxlength="190" autocomplete="email">
 			</p>
 			<p>
-				<label for="arv-trial-account">Numéro de votre compte <strong>démo</strong> cTrader</label>
+				<label for="arv-trial-account"><?php echo wp_kses_post( __( 'Numéro de votre compte <strong>démo</strong> cTrader', 'arvator-core' ) ); ?></label>
 				<input id="arv-trial-account" name="account" type="text" inputmode="numeric" pattern="[0-9]{4,12}" required maxlength="12" autocomplete="off">
-				<span class="muted">Uniquement des chiffres. L’essai ne fonctionne que sur un compte démo : aucun argent n’est engagé.</span>
+				<span class="muted"><?php esc_html_e( 'Uniquement des chiffres. L’essai ne fonctionne que sur un compte démo : aucun argent n’est engagé.', 'arvator-core' ); ?></span>
 			</p>
-			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1" required> <strong>Je comprends que, si j’achète le robot après cet essai, je renonce à mon droit de rétractation :</strong> l’achat ne sera alors plus remboursable.</label></p>
-			<p class="arv-check"><label><input type="checkbox" name="consent" value="1" required> J’accepte que mon adresse email soit utilisée pour m’envoyer ma licence d’essai (voir la <a href="<?php echo esc_url( Arvator_Support::page_url( 'confidentialite' ) ); ?>" target="_blank" rel="noopener">politique de confidentialité</a>).</label></p>
-			<p><button class="btn btn--primary" type="submit">Demander mon essai gratuit</button></p>
-			<p class="muted">Les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.</p>
+			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1" required> <?php echo wp_kses_post( __( '<strong>Je comprends que, si j’achète le robot après cet essai, je renonce à mon droit de rétractation :</strong> l’achat ne sera alors plus remboursable.', 'arvator-core' ) ); ?></label></p>
+			<p class="arv-check"><label><input type="checkbox" name="consent" value="1" required> <?php /* translators: %s: adresse de la politique de confidentialité. */ echo wp_kses_post( sprintf( __( 'J’accepte que mon adresse email soit utilisée pour m’envoyer ma licence d’essai (voir la <a href="%s" target="_blank" rel="noopener">politique de confidentialité</a>).', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'confidentialite' ) ) ) ); ?></label></p>
+			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Demander mon essai gratuit', 'arvator-core' ); ?></button></p>
+			<p class="muted"><?php esc_html_e( 'Les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' ); ?></p>
 		</form>
 		<?php
 		return (string) ob_get_clean();
@@ -112,7 +112,7 @@ final class Arvator_Trial {
 		$res    = Arvator_License::request_trial( $email, $account );
 		$status = is_wp_error( $res ) ? 'requested' : ( true === ( $res['ok'] ?? null ) ? 'active' : 'refused' );
 		$wpdb->update( Arvator_Repo::table( 'trials' ), array( 'status' => $status ), array( 'email' => $email ) );
-		$reminder = "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai.\n\nLes résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.\n\n" . Arvator_Site::signature();
+		$reminder = __( "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai.", 'arvator-core' ) . "\n\n" . __( 'Les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' ) . "\n\n" . Arvator_Site::signature();
 
 		if ( 'refused' === $status ) {
 			$reason = (string) ( $res['raison'] ?? '' );
@@ -128,8 +128,9 @@ final class Arvator_Trial {
 			);
 			wp_mail(
 				$email,
-				'Arvator : votre essai gratuit est activé',
-				"Bonjour,\n\nVotre essai gratuit de 14 jours est activé sur le compte démo cTrader n° $account.\nNous vous envoyons le robot et son guide d'installation par email. Une fois installé sur ce compte démo, le robot récupère sa licence d'essai tout seul.\n\n" . $reminder
+				__( 'Arvator : votre essai gratuit est activé', 'arvator-core' ),
+				/* translators: %s: numéro du compte démo cTrader. */
+				sprintf( __( "Bonjour,\n\nVotre essai gratuit de 14 jours est activé sur le compte démo cTrader n° %s.\nNous vous envoyons le robot et son guide d'installation par email. Une fois installé sur ce compte démo, le robot récupère sa licence d'essai tout seul.", 'arvator-core' ), $account ) . "\n\n" . $reminder
 			);
 			Arvator_Support::redirect( $back, 'essai_actif' );
 		}
@@ -142,8 +143,9 @@ final class Arvator_Trial {
 		);
 		wp_mail(
 			$email,
-			'Arvator : votre demande d’essai est bien reçue',
-			"Bonjour,\n\nNous avons bien reçu votre demande d'essai gratuit de 14 jours sur le compte démo cTrader n° $account.\nVous recevrez votre licence d'essai par email, à cette adresse.\n\n" . $reminder
+			__( 'Arvator : votre demande d’essai est bien reçue', 'arvator-core' ),
+			/* translators: %s: numéro du compte démo cTrader. */
+			sprintf( __( "Bonjour,\n\nNous avons bien reçu votre demande d'essai gratuit de 14 jours sur le compte démo cTrader n° %s.\nVous recevrez votre licence d'essai par email, à cette adresse.", 'arvator-core' ), $account ) . "\n\n" . $reminder
 		);
 
 		Arvator_Support::redirect( $back, 'essai_ok' );

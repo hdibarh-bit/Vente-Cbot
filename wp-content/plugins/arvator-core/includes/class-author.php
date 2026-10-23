@@ -96,7 +96,7 @@ final class Arvator_Author {
 				'<li><a class="social-links__item social-links__item--%1$s" href="%2$s" target="_blank" rel="noopener noreferrer me" aria-label="%3$s">%4$s<span>%5$s</span></a></li>',
 				esc_attr( $key ),
 				esc_url( $n['url'] ),
-				esc_attr( self::NAME . ' sur ' . $n['label'] . ' (nouvel onglet)' ),
+				/* translators: 1: nom de l'éditeur, 2: nom du réseau social. */ esc_attr( sprintf( __( '%1$s sur %2$s (nouvel onglet)', 'arvator-core' ), self::NAME, $n['label'] ) ),
 				self::icon( $key ),
 				esc_html( $n['label'] )
 			);
@@ -106,9 +106,9 @@ final class Arvator_Author {
 
 	public static function render_card(): string {
 		return '<figure class="author-card">'
-			. '<img class="author-card__photo" src="' . esc_url( self::photo_url() ) . '" alt="' . esc_attr( 'Photo de ' . self::NAME . ', fondateur et éditeur d’Arvator' ) . '" width="720" height="830" loading="lazy" decoding="async">'
+			. '<img class="author-card__photo" src="' . esc_url( self::photo_url() ) . '" alt="' . /* translators: %s: nom de l'éditeur. */ esc_attr( sprintf( __( 'Photo de %s, fondateur et éditeur d’Arvator', 'arvator-core' ), self::NAME ) ) . '" width="720" height="830" loading="lazy" decoding="async">'
 			. '<figcaption class="author-card__caption"><strong class="author-card__name">' . esc_html( self::NAME ) . '</strong>'
-			. '<span class="author-card__role">Fondateur et éditeur d’Arvator</span>'
+			. '<span class="author-card__role">' . esc_html__( 'Fondateur et éditeur d’Arvator', 'arvator-core' ) . '</span>'
 			. self::social_links()
 			. '</figcaption></figure>';
 	}

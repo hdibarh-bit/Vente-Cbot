@@ -309,7 +309,16 @@ final class Arvator_Referral_Admin {
 		foreach ( $totals as $t ) {
 			$u = get_user_by( 'id', $t['user_id'] );
 			if ( $u instanceof WP_User ) {
-				wp_mail( $u->user_email, 'Arvator : votre récompense de recommandation a été virée', "Bonjour,\n\nNous venons de vous virer " . Arvator_Referral::money( $t['total'] ) . " au titre de vos récompenses de recommandation (référence $batch).\nLe détail est dans votre espace membre, rubrique « Parrainage » :\n" . Arvator_Member::url( 'parrainage' ) . "\n\nMerci de recommander Arvator.\n\n" . Arvator_Site::signature() );
+				$switched = switch_to_user_locale( (int) $u->ID ); // email dans la langue du parrain
+				wp_mail(
+					$u->user_email,
+					__( 'Arvator : votre récompense de recommandation a été virée', 'arvator-core' ),
+					/* translators: 1: montant viré, 2: référence du virement. */
+					sprintf( __( "Bonjour,\n\nNous venons de vous virer %1\$s au titre de vos récompenses de recommandation (référence %2\$s).\nLe détail est dans votre espace membre, rubrique « Parrainage » :", 'arvator-core' ), Arvator_Referral::money( $t['total'] ), $batch ) . "\n" . Arvator_Member::url( 'parrainage' ) . "\n\n" . __( 'Merci de recommander Arvator.', 'arvator-core' ) . "\n\n" . Arvator_Site::signature()
+				);
+				if ( $switched ) {
+					restore_previous_locale();
+				}
 			}
 		}
 		Arvator_Repo::log_event( 'payout_batch_paid', get_current_user_id(), array( 'batch' => $batch, 'referrers' => count( $totals ) ) );

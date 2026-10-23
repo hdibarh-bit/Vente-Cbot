@@ -21,6 +21,15 @@ final class Arvator_Contact {
 		'autre'       => 'Autre demande',
 	);
 
+	/** Sujet affiché au visiteur (traduit) ; l'email envoyé à Hamid garde le libellé français de SUBJECTS. */
+	private static function subject_label( string $key ): string {
+		return array(
+			'avant-achat' => __( 'Question avant achat', 'arvator-core' ),
+			'support'     => __( 'Aide pour mon compte ou ma licence', 'arvator-core' ),
+			'autre'       => __( 'Autre demande', 'arvator-core' ),
+		)[ $key ] ?? (string) ( self::SUBJECTS[ $key ] ?? '' );
+	}
+
 	public static function init(): void {
 		add_shortcode( 'arvator_contact', array( self::class, 'render' ) );
 		add_action( 'admin_post_nopriv_arvator_contact', array( self::class, 'handle' ) );
@@ -55,36 +64,36 @@ final class Arvator_Contact {
 			<?php wp_nonce_field( 'arvator_contact', '_arv_nonce' ); ?>
 			<input type="hidden" name="arv_ts" value="<?php echo esc_attr( self::stamp() ); ?>">
 			<div class="arv-hp" aria-hidden="true">
-				<label>Ne pas remplir ce champ <input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
+				<label><?php esc_html_e( 'Ne pas remplir ce champ', 'arvator-core' ); ?> <input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
 			</div>
 
 			<p>
-				<label for="arv-name">Votre nom</label>
+				<label for="arv-name"><?php esc_html_e( 'Votre nom', 'arvator-core' ); ?></label>
 				<input id="arv-name" name="arv_name" type="text" required maxlength="100" autocomplete="name">
 			</p>
 			<p>
-				<label for="arv-email">Votre adresse email</label>
+				<label for="arv-email"><?php esc_html_e( 'Votre adresse email', 'arvator-core' ); ?></label>
 				<input id="arv-email" name="arv_email" type="email" required maxlength="190" autocomplete="email">
 			</p>
 			<p>
-				<label for="arv-subject">Sujet</label>
+				<label for="arv-subject"><?php esc_html_e( 'Sujet', 'arvator-core' ); ?></label>
 				<select id="arv-subject" name="arv_subject">
-					<?php foreach ( self::SUBJECTS as $key => $label ) : ?>
-						<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+					<?php foreach ( array_keys( self::SUBJECTS ) as $key ) : ?>
+						<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( self::subject_label( $key ) ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</p>
 			<p>
-				<label for="arv-message">Votre message</label>
+				<label for="arv-message"><?php esc_html_e( 'Votre message', 'arvator-core' ); ?></label>
 				<textarea id="arv-message" name="arv_message" rows="7" required minlength="20" maxlength="5000"></textarea>
 			</p>
 			<p class="arv-check">
 				<label>
 					<input type="checkbox" name="arv_consent" value="1" required>
-					J’accepte que mes données servent à répondre à ma demande (voir la <a href="<?php echo esc_url( Arvator_Support::page_url( 'confidentialite' ) ); ?>">politique de confidentialité</a>).
+					<?php /* translators: %s: adresse de la politique de confidentialité. */ echo wp_kses_post( sprintf( __( 'J’accepte que mes données servent à répondre à ma demande (voir la <a href="%s">politique de confidentialité</a>).', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'confidentialite' ) ) ) ); ?>
 				</label>
 			</p>
-			<p><button class="btn btn--primary" type="submit">Envoyer le message</button></p>
+			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Envoyer le message', 'arvator-core' ); ?></button></p>
 		</form>
 		<?php
 		return (string) ob_get_clean();

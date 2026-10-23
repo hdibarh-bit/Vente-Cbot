@@ -23,7 +23,7 @@ get_header();
 	<?php
 	// Appel à l'action discret en bas des pages d'information (jamais sur les pages légales, l'achat, l'essai ou l'espace membre).
 	if ( is_page( array( 'faq', 'a-propos', 'resultats' ) ) ) {
-		arvator_cta_band( 'Prêt à essayer ?', 'Testez le robot pendant 14 jours sur un compte démo, ou passez directement à l’achat.' );
+		arvator_cta_band( __( 'Prêt à essayer ?', 'arvator' ), __( 'Testez le robot pendant 14 jours sur un compte démo, ou passez directement à l’achat.', 'arvator' ) );
 	}
 	?>
 </div>

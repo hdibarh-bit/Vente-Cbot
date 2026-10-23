@@ -1,0 +1,1217 @@
+# Copyright (C) 2026 Hamid
+# This file is distributed under the Proprietary.
+msgid ""
+msgstr ""
+"Project-Id-Version: Arvator Core 0.8.0\n"
+"Report-Msgid-Bugs-To: support@arvator.com\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Arvator <support@arvator.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-23T17:06:15+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: arvator-core\n"
+
+#. Plugin Name of the plugin
+#: arvator-core.php
+msgid "Arvator Core"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: arvator-core.php
+msgid "https://arvator.com"
+msgstr ""
+
+#. Description of the plugin
+#: arvator-core.php
+msgid "Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks. Parrainage (lien de recommandation, récompenses, virements). Licence : liaison avec le workflow n8n (paiement, résiliation, essai). Accueillera ensuite l'administration complète."
+msgstr ""
+
+#. Author of the plugin
+#: arvator-core.php
+msgid "Hamid"
+msgstr ""
+
+#. translators: 1: nom de l'éditeur, 2: nom du réseau social.
+#: includes/class-author.php:99
+msgid "%1$s sur %2$s (nouvel onglet)"
+msgstr ""
+
+#. translators: %s: nom de l'éditeur.
+#: includes/class-author.php:109
+msgid "Photo de %s, fondateur et éditeur d’Arvator"
+msgstr ""
+
+#: includes/class-author.php:111
+msgid "Fondateur et éditeur d’Arvator"
+msgstr ""
+
+#: includes/class-brokers.php:89
+msgid "Arvator fonctionne chez tout courtier qui propose <strong>cTrader avec le cloud</strong>. Voici, à titre indicatif, des courtiers qui proposent cTrader et disposent d’une licence européenne. Cliquez sur un nom pour ouvrir son site officiel."
+msgstr ""
+
+#. translators: %s: adresse de la page Contact.
+#: includes/class-brokers.php:91
+msgid "La liste sera bientôt complétée. En attendant, écrivez-nous depuis la page <a href=\"%s\">Contact</a>."
+msgstr ""
+
+#: includes/class-brokers.php:106
+msgid "Courtiers compatibles"
+msgstr ""
+
+#: includes/class-brokers.php:113
+msgid "Avant d’ouvrir un compte"
+msgstr ""
+
+#: includes/class-brokers.php:115
+msgid "Ce n’est ni une recommandation ni un conseil : nous ne touchons <strong>aucune commission</strong> de ces courtiers. Comparez leurs conditions vous-même."
+msgstr ""
+
+#: includes/class-brokers.php:116
+msgid "Vérifiez que le courtier est autorisé à proposer ses services en France, sur le registre officiel <a href=\"https://www.regafi.fr\" target=\"_blank\" rel=\"noopener noreferrer\">REGAFI</a>, et qu’il ne figure pas sur la liste noire de l’<a href=\"https://www.amf-france.org\" target=\"_blank\" rel=\"noopener noreferrer\">AMF</a>."
+msgstr ""
+
+#: includes/class-brokers.php:117
+msgid "Vérifiez que votre compte permet de faire tourner les robots (cBots) dans le cloud cTrader : faites d’abord un essai sur un compte démo."
+msgstr ""
+
+#: includes/class-brokers.php:118
+msgid "La taille minimale de position varie d’un courtier à l’autre : avec un petit capital, le robot peut refuser plus de trades."
+msgstr ""
+
+#: includes/class-brokers.php:119
+msgid "Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées."
+msgstr ""
+
+#. translators: %s: adresse de l'espace membre.
+#: includes/class-checkout.php:60
+msgid "Vous avez déjà acheté Arvator. Retrouvez votre licence et le téléchargement dans votre <a href=\"%s\">espace membre</a>."
+msgstr ""
+
+#. translators: %s: adresse de la page Contact.
+#: includes/class-checkout.php:65
+msgid "Le paiement en ligne est en cours de configuration. Vous pouvez nous écrire depuis la page <a href=\"%s\">Contact</a>."
+msgstr ""
+
+#: includes/class-checkout.php:81
+msgid "Choisissez votre abonnement"
+msgstr ""
+
+#. translators: 1: prix mensuel, 2: prix annuel.
+#: includes/class-checkout.php:84
+msgid "<strong>Annuel</strong> · %1$s par mois, payés d’avance (%2$s par an)"
+msgstr ""
+
+#. translators: %s: montant du premier paiement.
+#: includes/class-checkout.php:85
+msgid "Premier paiement : %s (robot + 1 an d’abonnement)"
+msgstr ""
+
+#. translators: %s: prix mensuel.
+#: includes/class-checkout.php:89
+msgid "<strong>Mensuel</strong> · %s par mois"
+msgstr ""
+
+#. translators: %s: montant du premier paiement.
+#: includes/class-checkout.php:90
+msgid "Premier paiement : %s (robot + 1er mois)"
+msgstr ""
+
+#. translators: %s: prix du robot.
+#: includes/class-checkout.php:94
+msgid "Le robot (%s) est payé une seule fois. L’abonnement est obligatoire : il se renouvelle jusqu’à votre résiliation, que vous pouvez faire à tout moment depuis votre espace membre."
+msgstr ""
+
+#. translators: %s: adresse email du compte.
+#: includes/class-checkout.php:97
+msgid "Compte : <strong>%s</strong>"
+msgstr ""
+
+#: includes/class-checkout.php:100
+#: includes/class-contact.php:75
+#: includes/class-referral.php:644
+#: includes/class-trial.php:55
+msgid "Votre adresse email"
+msgstr ""
+
+#: includes/class-checkout.php:106
+msgid "Numéro de votre compte cTrader"
+msgstr ""
+
+#: includes/class-checkout.php:106
+msgid "(facultatif maintenant)"
+msgstr ""
+
+#: includes/class-checkout.php:108
+msgid "Le compte sur lequel le robot va tourner : la licence y est liée. Vous pouvez aussi l’indiquer plus tard dans votre espace membre."
+msgstr ""
+
+#: includes/class-checkout.php:112
+msgid "Code de recommandation"
+msgstr ""
+
+#: includes/class-checkout.php:112
+msgid "(facultatif)"
+msgstr ""
+
+#: includes/class-checkout.php:114
+msgid "Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé."
+msgstr ""
+
+#. translators: %s: adresse des CGV.
+#: includes/class-checkout.php:117
+msgid "J’ai lu et j’accepte les <a href=\"%s\" target=\"_blank\" rel=\"noopener\">conditions générales de vente</a>."
+msgstr ""
+
+#. translators: %s: adresse de la page Risques.
+#: includes/class-checkout.php:118
+msgid "J’ai lu l’<a href=\"%s\" target=\"_blank\" rel=\"noopener\">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé."
+msgstr ""
+
+#: includes/class-checkout.php:120
+msgid "je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable)."
+msgstr ""
+
+#: includes/class-checkout.php:120
+msgid "Si vous avez fait l’essai gratuit : je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable)."
+msgstr ""
+
+#: includes/class-checkout.php:122
+msgid "Payer en toute sécurité avec Stripe"
+msgstr ""
+
+#: includes/class-checkout.php:123
+msgid "Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe."
+msgstr ""
+
+#: includes/class-contact.php:27
+msgid "Question avant achat"
+msgstr ""
+
+#: includes/class-contact.php:28
+msgid "Aide pour mon compte ou ma licence"
+msgstr ""
+
+#: includes/class-contact.php:29
+msgid "Autre demande"
+msgstr ""
+
+#: includes/class-contact.php:67
+#: includes/class-referral.php:641
+#: includes/class-trial.php:52
+msgid "Ne pas remplir ce champ"
+msgstr ""
+
+#: includes/class-contact.php:71
+msgid "Votre nom"
+msgstr ""
+
+#: includes/class-contact.php:79
+msgid "Sujet"
+msgstr ""
+
+#: includes/class-contact.php:87
+msgid "Votre message"
+msgstr ""
+
+#. translators: %s: adresse de la politique de confidentialité.
+#: includes/class-contact.php:93
+msgid "J’accepte que mes données servent à répondre à ma demande (voir la <a href=\"%s\">politique de confidentialité</a>)."
+msgstr ""
+
+#: includes/class-contact.php:96
+msgid "Envoyer le message"
+msgstr ""
+
+#: includes/class-downloads.php:138
+#: includes/class-downloads.php:152
+#: includes/class-downloads.php:157
+msgid "Fichier introuvable."
+msgstr ""
+
+#: includes/class-downloads.php:138
+#: includes/class-downloads.php:152
+#: includes/class-downloads.php:157
+msgid "Erreur"
+msgstr ""
+
+#: includes/class-downloads.php:142
+msgid "Lien expiré. Retournez dans votre espace membre et cliquez de nouveau."
+msgstr ""
+
+#: includes/class-downloads.php:142
+msgid "Lien expiré"
+msgstr ""
+
+#: includes/class-downloads.php:147
+#: includes/class-support.php:64
+msgid "Le téléchargement n’est pas disponible pour votre compte."
+msgstr ""
+
+#: includes/class-downloads.php:147
+msgid "Accès refusé"
+msgstr ""
+
+#: includes/class-license.php:300
+#: includes/class-license.php:310
+msgid "Mon compte cTrader"
+msgstr ""
+
+#. translators: %s: numéro de compte cTrader.
+#: includes/class-license.php:301
+msgid "Licence liée au compte cTrader n° <strong>%s</strong>."
+msgstr ""
+
+#. translators: %s: adresse de la page Contact.
+#: includes/class-license.php:302
+msgid "Pour utiliser le robot sur un autre compte, écrivez-nous depuis la page <a href=\"%s\">Contact</a> en indiquant le nouveau numéro : le changement est limité à deux fois par an."
+msgstr ""
+
+#: includes/class-license.php:312
+msgid "Votre licence attend votre numéro de compte cTrader : indiquez-le ci-dessous pour l’activer."
+msgstr ""
+
+#: includes/class-license.php:314
+msgid "La licence est liée au numéro du compte cTrader sur lequel le robot va tourner. Vous le trouvez dans cTrader, en haut de la liste de vos comptes. Vérifiez-le bien : il ne se change plus seul une fois la licence activée."
+msgstr ""
+
+#: includes/class-license.php:318
+msgid "Numéro de compte cTrader"
+msgstr ""
+
+#: includes/class-license.php:320
+msgid "Activer ma licence"
+msgstr ""
+
+#: includes/class-license.php:320
+#: includes/class-member.php:369
+#: includes/class-member.php:393
+msgid "Enregistrer"
+msgstr ""
+
+#: includes/class-member.php:42
+msgid "Tableau de bord"
+msgstr ""
+
+#: includes/class-member.php:43
+msgid "Mes achats et abonnement"
+msgstr ""
+
+#: includes/class-member.php:44
+#: includes/class-member.php:166
+msgid "Ma licence"
+msgstr ""
+
+#: includes/class-member.php:45
+msgid "Téléchargements"
+msgstr ""
+
+#: includes/class-member.php:46
+msgid "Courtiers"
+msgstr ""
+
+#: includes/class-member.php:47
+msgid "Parrainage"
+msgstr ""
+
+#: includes/class-member.php:48
+msgid "Mes informations"
+msgstr ""
+
+#: includes/class-member.php:73
+msgid "Connexion"
+msgstr ""
+
+#: includes/class-member.php:78
+msgid "Adresse email"
+msgstr ""
+
+#: includes/class-member.php:82
+msgid "Mot de passe"
+msgstr ""
+
+#: includes/class-member.php:85
+msgid "Se souvenir de moi"
+msgstr ""
+
+#: includes/class-member.php:86
+msgid "Se connecter"
+msgstr ""
+
+#: includes/class-member.php:87
+msgid "Mot de passe oublié ?"
+msgstr ""
+
+#: includes/class-member.php:89
+msgid "Votre compte est créé automatiquement lors de votre achat : vous recevez un email pour choisir votre mot de passe."
+msgstr ""
+
+#. translators: %s: nom du client.
+#: includes/class-member.php:105
+msgid "Bonjour <strong>%s</strong>"
+msgstr ""
+
+#. translators: %s: nom du client.
+#: includes/class-member.php:106
+msgid "Espace membre"
+msgstr ""
+
+#: includes/class-member.php:111
+msgid "Se déconnecter"
+msgstr ""
+
+#. translators: %s: adresse de la rubrique Licence.
+#: includes/class-member.php:140
+msgid "Votre licence attend le numéro de votre compte cTrader. <a href=\"%s\">L’indiquer maintenant</a>"
+msgstr ""
+
+#: includes/class-member.php:145
+msgid "Mon robot"
+msgstr ""
+
+#. translators: %s: date d'achat.
+#: includes/class-member.php:147
+msgid "<strong>Acheté</strong> le %s"
+msgstr ""
+
+#. translators: %s: date d'achat.
+#: includes/class-member.php:148
+msgid "Télécharger le robot"
+msgstr ""
+
+#: includes/class-member.php:150
+#: includes/class-member.php:212
+msgid "Aucun achat pour le moment."
+msgstr ""
+
+#: includes/class-member.php:154
+msgid "Mon abonnement"
+msgstr ""
+
+#. translators: %s: date.
+#: includes/class-member.php:158
+msgid "Fin le %s"
+msgstr ""
+
+#. translators: %s: date.
+#: includes/class-member.php:158
+msgid "Prochaine échéance le %s"
+msgstr ""
+
+#. translators: %s: date de fin.
+#: includes/class-member.php:160
+#: includes/class-member.php:170
+msgid "Voir le détail"
+msgstr ""
+
+#: includes/class-member.php:162
+msgid "Aucun abonnement actif."
+msgstr ""
+
+#. translators: %s: date de fin.
+#: includes/class-member.php:169
+#: includes/class-member.php:246
+msgid "Valable jusqu’au %s"
+msgstr ""
+
+#: includes/class-member.php:172
+msgid "Aucune licence pour le moment."
+msgstr ""
+
+#: includes/class-member.php:183
+#: includes/class-member.php:552
+#: includes/class-referral.php:815
+msgid "Abonnement"
+msgstr ""
+
+#: includes/class-member.php:185
+msgid "Aucun abonnement."
+msgstr ""
+
+#: includes/class-member.php:187
+#: includes/class-privacy.php:68
+#: includes/class-privacy.php:76
+msgid "Formule"
+msgstr ""
+
+#: includes/class-member.php:187
+#: includes/class-member.php:215
+#: includes/class-member.php:335
+#: includes/class-privacy.php:63
+#: includes/class-privacy.php:69
+#: includes/class-privacy.php:79
+#: includes/class-privacy.php:103
+msgid "État"
+msgstr ""
+
+#: includes/class-member.php:187
+#: includes/class-privacy.php:70
+msgid "Échéance"
+msgstr ""
+
+#: includes/class-member.php:187
+msgid "Résiliation"
+msgstr ""
+
+#: includes/class-member.php:194
+msgid "Prévue à l’échéance"
+msgstr ""
+
+#: includes/class-member.php:203
+msgid "Gérer mon abonnement, mes factures et ma carte"
+msgstr ""
+
+#: includes/class-member.php:205
+msgid "Vous pouvez résilier à tout moment : la résiliation prend effet à la fin de la période déjà payée, qui n’est pas remboursée."
+msgstr ""
+
+#: includes/class-member.php:210
+msgid "Achats"
+msgstr ""
+
+#: includes/class-member.php:212
+msgid "Acheter Arvator"
+msgstr ""
+
+#: includes/class-member.php:215
+#: includes/class-member.php:335
+#: includes/class-privacy.php:60
+#: includes/class-privacy.php:100
+msgid "Date"
+msgstr ""
+
+#: includes/class-member.php:215
+#: includes/class-member.php:556
+#: includes/class-privacy.php:61
+msgid "Produit"
+msgstr ""
+
+#: includes/class-member.php:215
+#: includes/class-member.php:335
+#: includes/class-privacy.php:62
+#: includes/class-privacy.php:102
+msgid "Montant"
+msgstr ""
+
+#: includes/class-member.php:234
+msgid "Aucune licence pour le moment. Elle apparaît ici après votre achat, dès que votre numéro de compte cTrader est connu."
+msgstr ""
+
+#: includes/class-member.php:244
+msgid "Compte démo uniquement"
+msgstr ""
+
+#. translators: %s: numéro de compte cTrader.
+#: includes/class-member.php:247
+msgid "Compte cTrader n° %s"
+msgstr ""
+
+#: includes/class-member.php:249
+msgid "Rien à copier : le robot récupère sa licence tout seul à son démarrage, puis la vérifie régulièrement. Elle est renouvelée automatiquement à chaque paiement de votre abonnement."
+msgstr ""
+
+#: includes/class-member.php:251
+msgid "Votre clé de licence"
+msgstr ""
+
+#: includes/class-member.php:253
+#: includes/class-member.php:318
+msgid "Copié ✓"
+msgstr ""
+
+#: includes/class-member.php:253
+msgid "Copier la clé"
+msgstr ""
+
+#: includes/class-member.php:262
+msgid "Le téléchargement du robot est disponible après votre achat."
+msgstr ""
+
+#: includes/class-member.php:267
+msgid "Aucun fichier à télécharger pour le moment."
+msgstr ""
+
+#: includes/class-member.php:273
+msgid "Télécharger"
+msgstr ""
+
+#: includes/class-member.php:285
+msgid "La liste des courtiers compatibles est disponible après votre achat."
+msgstr ""
+
+#. translators: 1: montant de la récompense, 2: pourcentage sur les abonnements.
+#: includes/class-member.php:296
+msgid "Recommandez Arvator à vos proches : vous recevez une <strong>récompense de recommandation de %1$s</strong> pour chaque achat du robot fait avec votre lien, puis %2$s de chaque abonnement qu’ils paient. Gratuit, sans engagement."
+msgstr ""
+
+#: includes/class-member.php:312
+msgid "Mon lien de recommandation"
+msgstr ""
+
+#. translators: %s: adresse de la page Contact.
+#: includes/class-member.php:314
+msgid "Votre lien est suspendu. Écrivez-nous depuis la page <a href=\"%s\">Contact</a>."
+msgstr ""
+
+#: includes/class-member.php:316
+msgid "Partagez ce lien"
+msgstr ""
+
+#: includes/class-member.php:318
+msgid "Copier le lien"
+msgstr ""
+
+#. translators: %s: code de recommandation.
+#: includes/class-member.php:319
+msgid "Votre code : <strong>%s</strong>"
+msgstr ""
+
+#. translators: %s: code de recommandation.
+#: includes/class-member.php:320
+msgid "Ce lien mène à la page d’achat, où votre code est déjà rempli."
+msgstr ""
+
+#: includes/class-member.php:321
+msgid "Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des performances simulées et le trading comporte un risque élevé de perte en capital."
+msgstr ""
+
+#: includes/class-member.php:325
+#: includes/class-referral.php:804
+msgid "En attente"
+msgstr ""
+
+#. translators: %d: délai en jours.
+#: includes/class-member.php:325
+msgid "Disponible %d jours après chaque paiement."
+msgstr ""
+
+#. translators: %d: délai en jours.
+#: includes/class-member.php:326
+#: includes/class-referral.php:805
+msgid "À payer"
+msgstr ""
+
+#. translators: %s: montant minimum de virement.
+#: includes/class-member.php:326
+msgid "Virement de la prime dès qu’elle est disponible ; abonnements à partir de %s cumulés."
+msgstr ""
+
+#. translators: %s: montant minimum de virement.
+#: includes/class-member.php:327
+msgid "Déjà versé"
+msgstr ""
+
+#. translators: %d: nombre de personnes recommandées ayant acheté.
+#: includes/class-member.php:327
+msgid "%d personne(s) recommandée(s) ayant acheté."
+msgstr ""
+
+#: includes/class-member.php:330
+msgid "Mes récompenses de recommandation"
+msgstr ""
+
+#: includes/class-member.php:333
+msgid "Aucune récompense pour le moment."
+msgstr ""
+
+#: includes/class-member.php:335
+#: includes/class-privacy.php:101
+msgid "Type"
+msgstr ""
+
+#: includes/class-member.php:335
+msgid "Disponible le"
+msgstr ""
+
+#. translators: %s: date du virement.
+#: includes/class-member.php:343
+msgid "Versée le %s"
+msgstr ""
+
+#: includes/class-member.php:351
+msgid "Coordonnées pour le virement"
+msgstr ""
+
+#. translators: %s: titulaire du compte.
+#: includes/class-member.php:353
+msgid "Virement à <strong>%s</strong>"
+msgstr ""
+
+#. translators: %s: titulaire du compte.
+#: includes/class-member.php:353
+msgid "Entreprise"
+msgstr ""
+
+#. translators: %s: titulaire du compte.
+#: includes/class-member.php:353
+msgid "Particulier"
+msgstr ""
+
+#. translators: %s: titulaire du compte.
+#: includes/class-member.php:354
+msgid "Pour changer de compte, saisissez les nouvelles coordonnées ci-dessous."
+msgstr ""
+
+#: includes/class-member.php:356
+msgid "Indiquez où verser vos récompenses. Sans IBAN, elles restent en attente de virement."
+msgstr ""
+
+#: includes/class-member.php:361
+msgid "Nom du titulaire du compte"
+msgstr ""
+
+#: includes/class-member.php:364
+msgid "Vous êtes"
+msgstr ""
+
+#: includes/class-member.php:365
+msgid "Un particulier"
+msgstr ""
+
+#: includes/class-member.php:366
+msgid "Une entreprise (SIRET obligatoire)"
+msgstr ""
+
+#: includes/class-member.php:368
+msgid "(entreprise uniquement)"
+msgstr ""
+
+#: includes/class-member.php:370
+msgid "Votre IBAN est enregistré chiffré et ne sert qu’au virement de vos récompenses. Selon votre situation, ces récompenses peuvent être à déclarer aux impôts."
+msgstr ""
+
+#: includes/class-member.php:373
+msgid "Conditions du programme de parrainage"
+msgstr ""
+
+#: includes/class-member.php:380
+msgid "Mon compte"
+msgstr ""
+
+#. translators: %s: adresse email du client.
+#: includes/class-member.php:381
+msgid "Adresse email : <strong>%s</strong>"
+msgstr ""
+
+#. translators: %s: adresse de la page Contact.
+#: includes/class-member.php:382
+msgid "Pour changer votre adresse email, écrivez-nous depuis la page <a href=\"%s\">Contact</a>."
+msgstr ""
+
+#: includes/class-member.php:386
+msgid "Changer mon mot de passe"
+msgstr ""
+
+#: includes/class-member.php:390
+msgid "Mot de passe actuel"
+msgstr ""
+
+#: includes/class-member.php:391
+msgid "Nouveau mot de passe (12 caractères minimum)"
+msgstr ""
+
+#: includes/class-member.php:392
+msgid "Répéter le nouveau mot de passe"
+msgstr ""
+
+#: includes/class-member.php:398
+msgid "Mes données"
+msgstr ""
+
+#: includes/class-member.php:399
+msgid "Vous pouvez demander une copie de vos données ou leur effacement. Un email de confirmation vous est envoyé. Les pièces comptables sont conservées 10 ans, comme la loi l’exige."
+msgstr ""
+
+#: includes/class-member.php:403
+msgid "Recevoir une copie de mes données"
+msgstr ""
+
+#: includes/class-member.php:404
+msgid "Demander l’effacement de mes données"
+msgstr ""
+
+#: includes/class-member.php:549
+msgid "Abonnement mensuel"
+msgstr ""
+
+#: includes/class-member.php:550
+msgid "Abonnement annuel"
+msgstr ""
+
+#: includes/class-member.php:551
+msgid "Essai gratuit"
+msgstr ""
+
+#: includes/class-member.php:556
+msgid "Robot Arvator (achat)"
+msgstr ""
+
+#: includes/class-member.php:562
+msgid "Payé"
+msgstr ""
+
+#: includes/class-member.php:563
+msgid "Remboursé"
+msgstr ""
+
+#: includes/class-member.php:566
+msgid "Actif"
+msgstr ""
+
+#: includes/class-member.php:567
+msgid "Essai"
+msgstr ""
+
+#: includes/class-member.php:568
+msgid "Paiement en retard"
+msgstr ""
+
+#: includes/class-member.php:569
+msgid "Résilié"
+msgstr ""
+
+#: includes/class-member.php:572
+msgid "Active"
+msgstr ""
+
+#: includes/class-member.php:573
+msgid "Expirée"
+msgstr ""
+
+#: includes/class-member.php:574
+msgid "Révoquée"
+msgstr ""
+
+#: includes/class-member.php:575
+msgid "Résiliée"
+msgstr ""
+
+#: includes/class-privacy.php:59
+msgid "Achats Arvator"
+msgstr ""
+
+#: includes/class-privacy.php:67
+msgid "Abonnements Arvator"
+msgstr ""
+
+#: includes/class-privacy.php:71
+msgid "Créé le"
+msgstr ""
+
+#: includes/class-privacy.php:75
+#: includes/class-privacy.php:85
+msgid "Licences Arvator"
+msgstr ""
+
+#: includes/class-privacy.php:77
+#: includes/class-privacy.php:85
+msgid "Compte cTrader"
+msgstr ""
+
+#: includes/class-privacy.php:78
+msgid "Valable jusqu’au"
+msgstr ""
+
+#: includes/class-privacy.php:80
+msgid "Clé"
+msgstr ""
+
+#: includes/class-privacy.php:90
+msgid "Parrainage Arvator"
+msgstr ""
+
+#: includes/class-privacy.php:91
+msgid "Code"
+msgstr ""
+
+#: includes/class-privacy.php:92
+msgid "Inscrit le"
+msgstr ""
+
+#: includes/class-privacy.php:93
+msgid "Titulaire du compte"
+msgstr ""
+
+#: includes/class-privacy.php:95
+msgid "Statut"
+msgstr ""
+
+#: includes/class-privacy.php:99
+msgid "Récompenses de recommandation Arvator"
+msgstr ""
+
+#: includes/class-privacy.php:156
+msgid "Les pièces comptables (achats, abonnements, récompenses de recommandation) sont conservées 10 ans, sans lien avec votre identité."
+msgstr ""
+
+#: includes/class-referral-admin.php:315
+msgid "Arvator : votre récompense de recommandation a été virée"
+msgstr ""
+
+#. translators: 1: montant viré, 2: référence du virement.
+#: includes/class-referral-admin.php:317
+msgid ""
+"Bonjour,\n"
+"\n"
+"Nous venons de vous virer %1$s au titre de vos récompenses de recommandation (référence %2$s).\n"
+"Le détail est dans votre espace membre, rubrique « Parrainage » :"
+msgstr ""
+
+#. translators: 1: montant viré, 2: référence du virement.
+#: includes/class-referral-admin.php:317
+msgid "Merci de recommander Arvator."
+msgstr ""
+
+#. translators: %d: délai en jours.
+#: includes/class-referral.php:602
+msgid "par achat du robot fait avec votre lien, versés %d&nbsp;jours après l’achat"
+msgstr ""
+
+#. translators: %d: délai en jours.
+#: includes/class-referral.php:603
+msgid "de chaque abonnement payé par la personne recommandée, tant qu’elle reste abonnée"
+msgstr ""
+
+#: includes/class-referral.php:608
+msgid "Voir mon lien et mes récompenses"
+msgstr ""
+
+#. translators: %s: adresse des conditions du parrainage.
+#: includes/class-referral.php:619
+msgid "J’ai lu et j’accepte les <a href=\"%s\" target=\"_blank\" rel=\"noopener\">conditions du programme de parrainage</a>, notamment : une récompense est retirée si l’achat est remboursé ou contesté, et déduite de mes récompenses suivantes si elle m’a déjà été versée."
+msgstr ""
+
+#: includes/class-referral.php:629
+msgid "Obtenir mon lien de recommandation"
+msgstr ""
+
+#: includes/class-referral.php:630
+msgid "Gratuit et sans engagement. Aucun achat n’est nécessaire."
+msgstr ""
+
+#: includes/class-referral.php:648
+msgid "Devenir parrain gratuitement"
+msgstr ""
+
+#. translators: %s: adresse de l'espace membre.
+#: includes/class-referral.php:649
+msgid "Gratuit et sans obligation d’acheter. Vous recevez un email pour choisir votre mot de passe, puis vous retrouvez votre lien dans votre espace membre. Déjà client&nbsp;? <a href=\"%s\">Connectez-vous</a>."
+msgstr ""
+
+#: includes/class-referral.php:686
+msgid "Arvator : activer votre lien de recommandation"
+msgstr ""
+
+#: includes/class-referral.php:687
+msgid ""
+"Bonjour,\n"
+"\n"
+"Vous avez demandé à devenir parrain Arvator. Vous avez déjà un compte : connectez-vous à votre espace membre, rubrique « Parrainage », pour obtenir votre lien :"
+msgstr ""
+
+#: includes/class-referral.php:687
+msgid "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message."
+msgstr ""
+
+#: includes/class-referral.php:707
+#: includes/class-webhook.php:413
+msgid "Bonjour,"
+msgstr ""
+
+#: includes/class-referral.php:709
+msgid "Bienvenue dans le programme de parrainage Arvator."
+msgstr ""
+
+#. translators: %s: lien de recommandation.
+#: includes/class-referral.php:712
+msgid "Votre lien de recommandation (il mène à la page d'achat, où votre code est déjà rempli) : %s"
+msgstr ""
+
+#: includes/class-referral.php:716
+msgid "Choisissez votre mot de passe ici (lien valable 24 heures) pour accéder à votre espace membre :"
+msgstr ""
+
+#: includes/class-referral.php:720
+msgid "Pour recevoir vos récompenses de recommandation, indiquez votre IBAN dans votre espace membre, rubrique « Parrainage »."
+msgstr ""
+
+#: includes/class-referral.php:722
+msgid "Rappel : recommandez Arvator de façon honnête. Les résultats présentés sur le site sont des performances simulées et le trading comporte un risque élevé de perte en capital."
+msgstr ""
+
+#: includes/class-referral.php:725
+msgid "Arvator : votre lien de recommandation"
+msgstr ""
+
+#: includes/class-referral.php:806
+msgid "Payée"
+msgstr ""
+
+#: includes/class-referral.php:807
+msgid "Annulée"
+msgstr ""
+
+#: includes/class-referral.php:808
+msgid "Bloquée (vérification)"
+msgstr ""
+
+#: includes/class-referral.php:814
+msgid "Prime d’achat"
+msgstr ""
+
+#: includes/class-referral.php:816
+msgid "Déduction"
+msgstr ""
+
+#: includes/class-support.php:21
+msgid "Merci, votre message a bien été envoyé. Nous vous répondons par email."
+msgstr ""
+
+#: includes/class-support.php:22
+msgid "Votre message n’a pas pu être envoyé : vérifiez les champs (nom, email valide, message d’au moins 20 caractères) et la case de consentement, puis réessayez."
+msgstr ""
+
+#: includes/class-support.php:23
+msgid "Vous avez envoyé plusieurs messages à la suite. Merci de patienter un moment avant de réessayer."
+msgstr ""
+
+#. translators: %s: adresse email du support.
+#: includes/class-support.php:24
+msgid "Le message n’a pas pu être envoyé. Vous pouvez nous écrire directement à %s."
+msgstr ""
+
+#. translators: %s: adresse email du support.
+#: includes/class-support.php:25
+msgid "Le formulaire a expiré. Merci de le renvoyer."
+msgstr ""
+
+#: includes/class-support.php:26
+msgid "Identifiant ou mot de passe incorrect."
+msgstr ""
+
+#: includes/class-support.php:27
+msgid "Trop de tentatives. Réessayez dans 15 minutes."
+msgstr ""
+
+#: includes/class-support.php:28
+msgid "Votre session de connexion a expiré. Merci de réessayer."
+msgstr ""
+
+#: includes/class-support.php:29
+msgid "Votre mot de passe a été modifié."
+msgstr ""
+
+#: includes/class-support.php:30
+msgid "Le mot de passe actuel est incorrect."
+msgstr ""
+
+#: includes/class-support.php:31
+msgid "Les deux nouveaux mots de passe ne sont pas identiques."
+msgstr ""
+
+#: includes/class-support.php:32
+msgid "Le nouveau mot de passe doit contenir au moins 12 caractères et être différent de l’ancien."
+msgstr ""
+
+#: includes/class-support.php:33
+msgid "Trop d’essais. Réessayez dans 15 minutes."
+msgstr ""
+
+#: includes/class-support.php:34
+msgid "Un email de confirmation vient de vous être envoyé pour valider votre demande d’export de données."
+msgstr ""
+
+#: includes/class-support.php:35
+msgid "Un email de confirmation vient de vous être envoyé pour valider votre demande d’effacement de données."
+msgstr ""
+
+#: includes/class-support.php:36
+msgid "Une demande identique est déjà en cours pour votre compte."
+msgstr ""
+
+#: includes/class-support.php:37
+msgid "Vous avez déjà fait une demande aujourd’hui. Réessayez demain."
+msgstr ""
+
+#: includes/class-support.php:38
+msgid "La demande n’a pas pu être enregistrée. Écrivez-nous depuis la page Contact."
+msgstr ""
+
+#: includes/class-support.php:39
+msgid "Cette action n’a pas pu être effectuée (session expirée). Merci de réessayer."
+msgstr ""
+
+#: includes/class-support.php:40
+msgid "Merci pour votre commande ! Dès que Stripe confirme le paiement (quelques instants), vous recevez un email de confirmation. Connectez-vous ensuite pour retrouver votre achat."
+msgstr ""
+
+#: includes/class-support.php:41
+msgid "Le paiement a été annulé : vous n’avez pas été débité. Vous pouvez recommencer quand vous le souhaitez."
+msgstr ""
+
+#: includes/class-support.php:42
+msgid "Merci de choisir un abonnement, d’indiquer une adresse email valide et de cocher les deux cases obligatoires."
+msgstr ""
+
+#: includes/class-support.php:43
+msgid "Le paiement n’a pas pu être lancé. Réessayez dans un instant, ou écrivez-nous depuis la page Contact."
+msgstr ""
+
+#: includes/class-support.php:44
+msgid "Trop de tentatives. Merci de patienter un peu avant de réessayer."
+msgstr ""
+
+#: includes/class-support.php:45
+msgid "Vous avez déjà acheté Arvator : retrouvez-le dans votre espace membre."
+msgstr ""
+
+#: includes/class-support.php:46
+msgid "Votre demande d’essai est bien reçue. Vous recevrez votre licence d’essai par email, à l’adresse indiquée. Un email de confirmation vient de vous être envoyé."
+msgstr ""
+
+#: includes/class-support.php:47
+msgid "Votre essai gratuit de 14 jours est activé sur votre compte démo. Nous vous envoyons le robot et son guide d’installation par email."
+msgstr ""
+
+#: includes/class-support.php:48
+msgid "L’essai n’a pas pu être activé sur ce compte démo (un essai a peut-être déjà été utilisé). Écrivez-nous depuis la page Contact : nous regardons votre demande."
+msgstr ""
+
+#: includes/class-support.php:49
+msgid "Merci d’indiquer une adresse email valide, le numéro de votre compte démo (chiffres uniquement) et de cocher les deux cases."
+msgstr ""
+
+#: includes/class-support.php:50
+msgid "Un essai a déjà été demandé avec cette adresse email ou ce numéro de compte. L’essai est limité à un par personne : vous pouvez écrire depuis la page Contact."
+msgstr ""
+
+#: includes/class-support.php:51
+msgid "Vous avez demandé l’essai gratuit : pour acheter, merci de cocher la case de renonciation au droit de rétractation."
+msgstr ""
+
+#: includes/class-support.php:52
+msgid "La gestion de l’abonnement n’a pas pu s’ouvrir. Réessayez dans un instant ou écrivez-nous depuis la page Contact."
+msgstr ""
+
+#: includes/class-support.php:53
+msgid "Ce code de recommandation n’est pas valable. Vérifiez-le, ou laissez le champ vide."
+msgstr ""
+
+#: includes/class-support.php:54
+msgid "Merci ! Un email vient de vous être envoyé à cette adresse : il contient la suite des instructions."
+msgstr ""
+
+#: includes/class-support.php:55
+msgid "Merci d’indiquer une adresse email valide et d’accepter les conditions du programme de parrainage."
+msgstr ""
+
+#: includes/class-support.php:56
+msgid "C’est fait : voici votre lien de recommandation."
+msgstr ""
+
+#: includes/class-support.php:57
+msgid "Vos coordonnées de virement sont enregistrées."
+msgstr ""
+
+#: includes/class-support.php:58
+msgid "Coordonnées non enregistrées : vérifiez le nom du titulaire, l’IBAN et, pour une entreprise, le numéro SIRET (14 chiffres)."
+msgstr ""
+
+#: includes/class-support.php:59
+msgid "Votre numéro de compte cTrader est enregistré."
+msgstr ""
+
+#: includes/class-support.php:60
+msgid "C’est fait : votre licence est activée sur ce compte. Le robot la récupère tout seul à son prochain démarrage."
+msgstr ""
+
+#: includes/class-support.php:61
+msgid "Numéro de compte non valable : uniquement des chiffres (4 à 12)."
+msgstr ""
+
+#: includes/class-support.php:62
+msgid "Votre licence est déjà activée sur un compte. Pour en changer, écrivez-nous depuis la page Contact."
+msgstr ""
+
+#: includes/class-support.php:63
+msgid "Numéro de compte cTrader non valable : uniquement des chiffres (4 à 12), ou laissez le champ vide pour l’indiquer plus tard."
+msgstr ""
+
+#: includes/class-trial.php:59
+msgid "Numéro de votre compte <strong>démo</strong> cTrader"
+msgstr ""
+
+#: includes/class-trial.php:61
+msgid "Uniquement des chiffres. L’essai ne fonctionne que sur un compte démo : aucun argent n’est engagé."
+msgstr ""
+
+#: includes/class-trial.php:63
+msgid "<strong>Je comprends que, si j’achète le robot après cet essai, je renonce à mon droit de rétractation :</strong> l’achat ne sera alors plus remboursable."
+msgstr ""
+
+#. translators: %s: adresse de la politique de confidentialité.
+#: includes/class-trial.php:64
+msgid "J’accepte que mon adresse email soit utilisée pour m’envoyer ma licence d’essai (voir la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">politique de confidentialité</a>)."
+msgstr ""
+
+#. translators: %s: adresse de la politique de confidentialité.
+#: includes/class-trial.php:65
+msgid "Demander mon essai gratuit"
+msgstr ""
+
+#: includes/class-trial.php:66
+#: includes/class-trial.php:115
+msgid "Les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital."
+msgstr ""
+
+#: includes/class-trial.php:115
+msgid "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai."
+msgstr ""
+
+#: includes/class-trial.php:131
+msgid "Arvator : votre essai gratuit est activé"
+msgstr ""
+
+#. translators: %s: numéro du compte démo cTrader.
+#: includes/class-trial.php:133
+msgid ""
+"Bonjour,\n"
+"\n"
+"Votre essai gratuit de 14 jours est activé sur le compte démo cTrader n° %s.\n"
+"Nous vous envoyons le robot et son guide d'installation par email. Une fois installé sur ce compte démo, le robot récupère sa licence d'essai tout seul."
+msgstr ""
+
+#: includes/class-trial.php:146
+msgid "Arvator : votre demande d’essai est bien reçue"
+msgstr ""
+
+#. translators: %s: numéro du compte démo cTrader.
+#: includes/class-trial.php:148
+msgid ""
+"Bonjour,\n"
+"\n"
+"Nous avons bien reçu votre demande d'essai gratuit de 14 jours sur le compte démo cTrader n° %s.\n"
+"Vous recevrez votre licence d'essai par email, à cette adresse."
+msgstr ""
+
+#: includes/class-webhook.php:413
+msgid "Merci pour votre commande : votre paiement a bien été reçu."
+msgstr ""
+
+#: includes/class-webhook.php:418
+msgid "Votre espace membre est créé. Choisissez votre mot de passe ici (lien valable 24 heures) :"
+msgstr ""
+
+#: includes/class-webhook.php:423
+msgid "Retrouvez votre achat, votre abonnement et le téléchargement du robot dans votre espace membre :"
+msgstr ""
+
+#: includes/class-webhook.php:426
+msgid "Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital."
+msgstr ""
+
+#: includes/class-webhook.php:430
+msgid "Arvator : votre commande est confirmée"
+msgstr ""

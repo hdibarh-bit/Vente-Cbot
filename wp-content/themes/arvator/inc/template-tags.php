@@ -41,7 +41,7 @@ function arvator_menu_target( string $slug ): string {
 	if ( '' !== $url ) {
 		return $url;
 	}
-	if ( in_array( $slug, array( 'resultats', 'tarifs' ), true ) ) {
+	if ( in_array( $slug, array( __( 'resultats', 'arvator' ), 'tarifs' ), true ) ) {
 		return home_url( '/#' . $slug );
 	}
 	return '';
@@ -64,12 +64,13 @@ function arvator_buy_url( string $plan = '' ): string {
 	if ( '' === $url ) {
 		return '';
 	}
-	return in_array( $plan, array( 'annual', 'monthly' ), true ) ? add_query_arg( 'plan', $plan, $url ) : $url;
+	return in_array( $plan, array( __( 'annual', 'arvator' ), 'monthly' ), true ) ? add_query_arg( 'plan', $plan, $url ) : $url;
 }
 
 /** Bouton « Acheter » (masqué si la page d'achat n'existe pas). */
-function arvator_buy_button( string $label = 'Acheter Arvator', string $classes = 'btn btn--primary', string $plan = '' ): void {
-	$url = arvator_buy_url( $plan );
+function arvator_buy_button( string $label = '', string $classes = 'btn btn--primary', string $plan = '' ): void {
+	$label = '' !== $label ? $label : __( 'Acheter Arvator', 'arvator' );
+	$url   = arvator_buy_url( $plan );
 	if ( '' !== $url ) {
 		printf( '<a class="%s" href="%s">%s</a>', esc_attr( $classes ), esc_url( $url ), esc_html( $label ) );
 	}
@@ -91,8 +92,9 @@ function arvator_cta_band( string $title, string $text ): void {
 			<p><?php echo esc_html( $text ); ?></p>
 		</div>
 		<div class="cta-band__actions">
-			<?php arvator_button( 'essai-gratuit', 'Essayer ' . $trial . ' jours sur compte démo', 'btn btn--primary' ); ?>
-			<?php arvator_buy_button( 'Acheter Arvator', 'btn btn--ghost' ); ?>
+			<?php /* translators: %d: durée de l'essai en jours. */
+			arvator_button( 'essai-gratuit', sprintf( __( 'Essayer %d jours sur compte démo', 'arvator' ), $trial ), 'btn btn--primary' ); ?>
+			<?php arvator_buy_button( __( 'Acheter Arvator', 'arvator' ), 'btn btn--ghost' ); ?>
 		</div>
 	</aside>
 	<?php
@@ -117,15 +119,19 @@ function arvator_referral_banner(): void {
 	?>
 	<a class="referral" href="<?php echo esc_url( $url ); ?>" aria-labelledby="titre-recommandation">
 		<div class="referral__body">
-			<p class="referral__pill">Recommandez Arvator&nbsp;!</p>
+			<p class="referral__pill"><?php esc_html_e( 'Recommandez Arvator&nbsp;!', 'arvator' ); ?></p>
 			<h2 id="titre-recommandation" class="referral__title">
 				<span class="referral__amount"><?php echo esc_html( arvator_fmt_price( $prime ) ); ?><sup>*</sup></span>
-				par recommandation
+				<?php esc_html_e( 'par recommandation', 'arvator' ); ?>
 			</h2>
-			<p class="referral__sub">Pour chaque proche qui achète le robot grâce à votre lien.</p>
+			<p class="referral__sub"><?php esc_html_e( 'Pour chaque proche qui achète le robot grâce à votre lien.', 'arvator' ); ?></p>
 			<p class="referral__note">
-				*Récompense de recommandation versée <?php echo esc_html( (string) $delai ); ?>&nbsp;jours après l’achat, s’il n’est pas remboursé.
-				Inscription gratuite, <span class="referral__link">voir conditions</span>.
+				<?php
+				/* translators: %s: délai en jours avant le versement de la récompense. */
+				echo wp_kses_post( sprintf( __( '*Récompense de recommandation versée %s&nbsp;jours après l’achat, s’il n’est pas remboursé.', 'arvator' ), esc_html( (string) $delai ) ) );
+				?>
+
+				<?php echo wp_kses_post( __( 'Inscription gratuite, <span class="referral__link">voir conditions</span>.', 'arvator' ) ); ?>
 			</p>
 		</div>
 		<div class="referral__media" aria-hidden="true">
@@ -164,30 +170,30 @@ function arvator_button_or_anchor( string $slug, string $label, string $classes,
 function arvator_default_links( string $location ): array {
 	$links = array(
 		'primary' => array(
-			array( 'Résultats', 'resultats' ),
-			array( 'Tarifs', 'tarifs' ),
-			array( 'FAQ', 'faq' ),
-			array( 'À propos', 'a-propos' ),
-			array( 'Contact', 'contact' ),
+			array( __( 'Résultats', 'arvator' ), 'resultats' ),
+			array( __( 'Tarifs', 'arvator' ), 'tarifs' ),
+			array( __( 'FAQ', 'arvator' ), 'faq' ),
+			array( __( 'À propos', 'arvator' ), 'a-propos' ),
+			array( __( 'Contact', 'arvator' ), 'contact' ),
 		),
 		'footer'  => array(
-			array( 'Résultats simulés', 'resultats' ),
-			array( 'Tarifs', 'tarifs' ),
-			array( 'Essai gratuit', 'essai-gratuit' ),
-			array( 'Rapport gratuit', 'rapport-gratuit' ),
-			array( 'Parrainage', 'parrainage' ),
-			array( 'FAQ', 'faq' ),
-			array( 'À propos', 'a-propos' ),
-			array( 'Contact', 'contact' ),
-			array( 'Espace membre', 'espace-membre' ),
+			array( __( 'Résultats simulés', 'arvator' ), 'resultats' ),
+			array( __( 'Tarifs', 'arvator' ), 'tarifs' ),
+			array( __( 'Essai gratuit', 'arvator' ), 'essai-gratuit' ),
+			array( __( 'Rapport gratuit', 'arvator' ), 'rapport-gratuit' ),
+			array( __( 'Parrainage', 'arvator' ), 'parrainage' ),
+			array( __( 'FAQ', 'arvator' ), 'faq' ),
+			array( __( 'À propos', 'arvator' ), 'a-propos' ),
+			array( __( 'Contact', 'arvator' ), 'contact' ),
+			array( __( 'Espace membre', 'arvator' ), 'espace-membre' ),
 		),
 		'legal'   => array(
-			array( 'Risques', 'risques' ),
-			array( 'Mentions légales', 'mentions-legales' ),
-			array( 'CGV', 'cgv' ),
-			array( 'Confidentialité', 'confidentialite' ),
-			array( 'Cookies', 'cookies' ),
-			array( 'Conditions du parrainage', 'conditions-parrainage' ),
+			array( __( 'Risques', 'arvator' ), 'risques' ),
+			array( __( 'Mentions légales', 'arvator' ), 'mentions-legales' ),
+			array( __( 'CGV', 'arvator' ), 'cgv' ),
+			array( __( 'Confidentialité', 'arvator' ), 'confidentialite' ),
+			array( __( 'Cookies', 'arvator' ), 'cookies' ),
+			array( __( 'Conditions du parrainage', 'arvator' ), 'conditions-parrainage' ),
 		),
 	);
 
@@ -230,7 +236,7 @@ function arvator_nav( string $location, string $class ): void {
  * Logo : celui choisi dans le tableau de bord, sinon la marque en texte.
  */
 function arvator_brand(): void {
-	echo '<a class="brand" href="' . esc_url( home_url( '/' ) ) . '" aria-label="' . esc_attr( get_bloginfo( 'name' ) . ' — accueil' ) . '">';
+	echo '<a class="brand" href="' . esc_url( home_url( '/' ) ) . '" aria-label="' . esc_attr( get_bloginfo( 'name' ) . ' — ' . __( 'accueil', 'arvator' ) ) . '">';
 
 	$logo_id = (int) get_theme_mod( 'custom_logo' );
 	if ( $logo_id > 0 && wp_attachment_is_image( $logo_id ) ) {
@@ -255,5 +261,5 @@ function arvator_brand(): void {
  * Texte d'avertissement obligatoire, identique sur toutes les pages.
  */
 function arvator_risk_notice(): string {
-	return 'Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.';
+	return __( 'Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.', 'arvator' );
 }

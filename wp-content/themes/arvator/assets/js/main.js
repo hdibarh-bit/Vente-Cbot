@@ -29,7 +29,7 @@
 			target.select();
 			var done = function () {
 				var old = btn.textContent;
-				btn.textContent = 'Copié ✓';
+				btn.textContent = btn.getAttribute( 'data-copied' ) || 'Copié ✓'; // texte traduit fourni par la page
 				setTimeout( function () { btn.textContent = old; }, 1800 );
 			};
 			if ( navigator.clipboard && navigator.clipboard.writeText ) {

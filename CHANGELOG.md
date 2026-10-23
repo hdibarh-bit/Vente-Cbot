@@ -4,6 +4,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.7.0 — 23/10/2026
+- **Prêt pour une version anglaise, rien ne change à l'écran** (décision de Hamid : préparer seulement). Tous les textes du thème sont traduisibles (accueil, en-tête, pied de page, bandeau cookies, bandeau de recommandation, résultats, tarifs, menus par défaut, avertissement sur les risques). Fichier modèle : `languages/arvator.pot`. Voir `docs/13-version-anglaise.md`.
+- Textes de l'accueil (Apparence > Personnaliser) : un texte laissé tel qu'à l'origine sera traduit ; un texte modifié par vous reste tel que vous l'avez écrit.
+
 ### 0.6.6 — 23/10/2026
 - Photo de Hamid (À propos, Mentions légales) affichée **sans cadre** : plus de bordure, d'angles arrondis ni d'ombre.
 
@@ -66,6 +70,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.8.0 — 23/10/2026
+- **Prêt pour une version anglaise, rien ne change à l'écran ni dans les emails en français.** Textes traduisibles : espace membre (toutes les rubriques), page d'achat, essai gratuit, contact, parrainage, licence, courtiers, carte de l'éditeur, messages d'erreur et de confirmation, emails aux clients et aux parrains, export des données personnelles. Fichier modèle : `languages/arvator-core.pot`. L'administration et les emails d'alerte à Hamid restent en français.
+- Paiement et portail Stripe affichés dans la langue de la page (français par défaut). La langue de la page d'achat est transmise à Stripe : l'email de confirmation de commande et l'email de virement aux parrains partent dans la langue du client.
+- 415 tests réussis ; comparaison page par page avant/après : aucune différence visible.
 
 ### 0.7.5 — 23/10/2026
 - Photo de Hamid : fond noir accordé à celui du site, pour qu'elle se fonde dans la page sans cadre visible (à installer avec le thème 0.6.6).

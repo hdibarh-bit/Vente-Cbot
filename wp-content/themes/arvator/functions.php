@@ -22,6 +22,8 @@ require_once get_theme_file_path( 'inc/customizer.php' );
 add_action(
 	'after_setup_theme',
 	static function (): void {
+		// Traductions (dossier languages/, ex. arvator-en_US.mo) : le français reste la langue d'origine du site.
+		load_theme_textdomain( 'arvator', get_template_directory() . '/languages' );
 		add_theme_support( 'title-tag' );
 		add_theme_support( 'post-thumbnails' );
 		add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ) );

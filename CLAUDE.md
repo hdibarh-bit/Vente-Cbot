@@ -28,6 +28,7 @@ Les documents du projet (contexte, prompt, brief) viennent en partie de Cowork, 
 - `docs/08-points-ouverts.md` — décisions et tâches en attente
 - `docs/09-developpement-local.md` — organisation du code, tests sur WordPress jetable
 - `docs/11-espace-membre.md` — conception et sécurité de l'espace membre ; **avant chaque livraison : lancer `tests/run.sh` (voir docs/09) et corriger tout échec**
+- `docs/13-version-anglaise.md` — version anglaise : préparée (textes traduisibles), pas encore ouverte ; **tout nouveau texte affiché passe par `__()`** (domaine `arvator` ou `arvator-core`)
 - `docs/10-installation-wordpress.md` — installer, régler (logo, favicon, menus) et mettre à jour le site ; `releases/` = zip prêts à installer ; `CHANGELOG.md` = versions. **À chaque livraison : monter les versions (style.css du thème, arvator-core.php du plugin), lancer `bin/build-zip.sh`, noter dans CHANGELOG.md.**
 - `config/resultats-backtest.json` — chiffres de backtest (source unique, modifiable) : **transcrits du PDF** `assets/rapports/Backtest-cTrader-risque-1-2-3-pourcent.pdf` (1 %, 2 %, 3 %, capitaux 500 € à 10 000 €, 2024-2026, reçu le 21/10/2026). L'ancien PDF est archivé dans `docs/sources/` (**ne pas diffuser**, contient des détails de stratégie). Bot livré à 1 %, le client peut monter jusqu'à 3 %.
 - `config/reglages.json` — prix, taux, seuils (source unique, modifiable)

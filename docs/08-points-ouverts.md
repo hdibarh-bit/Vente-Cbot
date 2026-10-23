@@ -23,6 +23,10 @@
 - [ ] Envoi des emails : renseigner l'envoi SMTP dans wp-config.php (guide `10-installation-wordpress.md`).
 - [ ] Vérifier la raison sociale d'hébergeur (Hostinger International Ltd., Larnaca, Chypre) dans les mentions légales.
 
+## Version anglaise
+- [x] Préparer le site (textes traduisibles) : fait le 23/10/2026 (thème 0.7.0, plugin 0.8.0), décision de Hamid « prépare seulement ».
+- [ ] Ouvrir la version anglaise : à décider par Hamid après les premières ventes ; avis de l'avocat sur les pays visés d'abord (voir `13-version-anglaise.md`).
+
 ## Avant le lancement public (priorité)
 - [ ] Compiler le cBot `IctSmcTendance` dans cTrader (onglet Algo → Build) et corriger les erreurs.
 - [ ] Tester la connexion WebSocket (port 25345) depuis le cloud cTrader → licence automatique ou manuelle.

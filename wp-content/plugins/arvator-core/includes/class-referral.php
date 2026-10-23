@@ -599,13 +599,13 @@ final class Arvator_Referral {
 		echo wp_kses_post( Arvator_Support::render_notice() );
 		?>
 		<div class="arv-ref-summary">
-			<div class="arv-ref-summary__item"><strong><?php echo esc_html( self::money( $s['prime_cents'] ) ); ?></strong><span>par achat du robot fait avec votre lien, versés <?php echo esc_html( (string) $s['delay_days'] ); ?>&nbsp;jours après l’achat</span></div>
-			<div class="arv-ref-summary__item"><strong><?php echo esc_html( self::pct( $s['rate'] ) ); ?></strong><span>de chaque abonnement payé par la personne recommandée, tant qu’elle reste abonnée</span></div>
+			<div class="arv-ref-summary__item"><strong><?php echo esc_html( self::money( $s['prime_cents'] ) ); ?></strong><span><?php /* translators: %d: délai en jours. */ echo esc_html( sprintf( __( 'par achat du robot fait avec votre lien, versés %d&nbsp;jours après l’achat', 'arvator-core' ), (int) $s['delay_days'] ) ); ?></span></div>
+			<div class="arv-ref-summary__item"><strong><?php echo esc_html( self::pct( $s['rate'] ) ); ?></strong><span><?php esc_html_e( 'de chaque abonnement payé par la personne recommandée, tant qu’elle reste abonnée', 'arvator-core' ); ?></span></div>
 		</div>
 		<?php
 		$user_id = get_current_user_id();
 		if ( $user_id && self::referrer( $user_id ) ) {
-			echo '<p><a class="btn btn--primary" href="' . esc_url( Arvator_Member::url( 'parrainage' ) ) . '">Voir mon lien et mes récompenses</a></p>';
+			echo '<p><a class="btn btn--primary" href="' . esc_url( Arvator_Member::url( 'parrainage' ) ) . '">' . esc_html__( 'Voir mon lien et mes récompenses', 'arvator-core' ) . '</a></p>';
 		} elseif ( $user_id ) {
 			self::join_form();
 		} else {
@@ -616,7 +616,7 @@ final class Arvator_Referral {
 
 	private static function terms_checkbox(): void {
 		?>
-		<p class="arv-check"><label><input type="checkbox" name="terms" value="1" required> J’ai lu et j’accepte les <a href="<?php echo esc_url( Arvator_Support::page_url( 'conditions-parrainage' ) ); ?>" target="_blank" rel="noopener">conditions du programme de parrainage</a>, notamment : une récompense est retirée si l’achat est remboursé ou contesté, et déduite de mes récompenses suivantes si elle m’a déjà été versée.</label></p>
+		<p class="arv-check"><label><input type="checkbox" name="terms" value="1" required> <?php /* translators: %s: adresse des conditions du parrainage. */ echo wp_kses_post( sprintf( __( 'J’ai lu et j’accepte les <a href="%s" target="_blank" rel="noopener">conditions du programme de parrainage</a>, notamment : une récompense est retirée si l’achat est remboursé ou contesté, et déduite de mes récompenses suivantes si elle m’a déjà été versée.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'conditions-parrainage' ) ) ) ); ?></label></p>
 		<?php
 	}
 
@@ -626,8 +626,8 @@ final class Arvator_Referral {
 			<input type="hidden" name="action" value="arvator_referral_join">
 			<?php wp_nonce_field( 'arvator_referral_join', '_arv_nonce' ); ?>
 			<?php self::terms_checkbox(); ?>
-			<p><button class="btn btn--primary" type="submit">Obtenir mon lien de recommandation</button></p>
-			<p class="muted">Gratuit et sans engagement. Aucun achat n’est nécessaire.</p>
+			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Obtenir mon lien de recommandation', 'arvator-core' ); ?></button></p>
+			<p class="muted"><?php esc_html_e( 'Gratuit et sans engagement. Aucun achat n’est nécessaire.', 'arvator-core' ); ?></p>
 		</form>
 		<?php
 	}
@@ -638,15 +638,15 @@ final class Arvator_Referral {
 			<input type="hidden" name="action" value="arvator_referral_signup">
 			<?php wp_nonce_field( 'arvator_referral_signup', '_arv_nonce' ); ?>
 			<div class="arv-hp" aria-hidden="true">
-				<label>Ne pas remplir ce champ <input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
+				<label><?php esc_html_e( 'Ne pas remplir ce champ', 'arvator-core' ); ?> <input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
 			</div>
 			<p>
-				<label for="arv-ref-email">Votre adresse email</label>
+				<label for="arv-ref-email"><?php esc_html_e( 'Votre adresse email', 'arvator-core' ); ?></label>
 				<input id="arv-ref-email" name="email" type="email" required maxlength="190" autocomplete="email">
 			</p>
 			<?php self::terms_checkbox(); ?>
-			<p><button class="btn btn--primary" type="submit">Devenir parrain gratuitement</button></p>
-			<p class="muted">Gratuit et sans obligation d’acheter. Vous recevez un email pour choisir votre mot de passe, puis vous retrouvez votre lien dans votre espace membre. Déjà client&nbsp;? <a href="<?php echo esc_url( Arvator_Member::url() ); ?>">Connectez-vous</a>.</p>
+			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Devenir parrain gratuitement', 'arvator-core' ); ?></button></p>
+			<p class="muted"><?php /* translators: %s: adresse de l'espace membre. */ echo wp_kses_post( sprintf( __( 'Gratuit et sans obligation d’acheter. Vous recevez un email pour choisir votre mot de passe, puis vous retrouvez votre lien dans votre espace membre. Déjà client&nbsp;? <a href="%s">Connectez-vous</a>.', 'arvator-core' ), esc_url( Arvator_Member::url() ) ) ); ?></p>
 		</form>
 		<?php
 	}
@@ -683,8 +683,8 @@ final class Arvator_Referral {
 			// Compte existant : on ne l'inscrit pas à sa place, on lui explique comment faire (email à son adresse uniquement).
 			wp_mail(
 				$user->user_email,
-				'Arvator : activer votre lien de recommandation',
-				"Bonjour,\n\nVous avez demandé à devenir parrain Arvator. Vous avez déjà un compte : connectez-vous à votre espace membre, rubrique « Parrainage », pour obtenir votre lien :\n" . Arvator_Member::url( 'parrainage' ) . "\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message.\n\n" . Arvator_Site::signature()
+				__( 'Arvator : activer votre lien de recommandation', 'arvator-core' ),
+				__( "Bonjour,\n\nVous avez demandé à devenir parrain Arvator. Vous avez déjà un compte : connectez-vous à votre espace membre, rubrique « Parrainage », pour obtenir votre lien :", 'arvator-core' ) . "\n" . Arvator_Member::url( 'parrainage' ) . "\n\n" . __( "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.", 'arvator-core' ) . "\n\n" . Arvator_Site::signature()
 			);
 			Arvator_Support::redirect( $back, 'parrain_mail' );
 		}
@@ -704,24 +704,25 @@ final class Arvator_Referral {
 		$user = get_user_by( 'id', (int) $id );
 		$key  = $user instanceof WP_User ? get_password_reset_key( $user ) : '';
 		$lines = array(
-			'Bonjour,',
+			__( 'Bonjour,', 'arvator-core' ),
 			'',
-			'Bienvenue dans le programme de parrainage Arvator.',
+			__( 'Bienvenue dans le programme de parrainage Arvator.', 'arvator-core' ),
 			'',
-			'Votre lien de recommandation (il mène à la page d\'achat, où votre code est déjà rempli) : ' . self::link( $code ),
+			/* translators: %s: lien de recommandation. */
+			sprintf( __( 'Votre lien de recommandation (il mène à la page d\'achat, où votre code est déjà rempli) : %s', 'arvator-core' ), self::link( $code ) ),
 			'',
 		);
 		if ( is_string( $key ) && $user instanceof WP_User ) {
-			$lines[] = 'Choisissez votre mot de passe ici (lien valable 24 heures) pour accéder à votre espace membre :';
+			$lines[] = __( 'Choisissez votre mot de passe ici (lien valable 24 heures) pour accéder à votre espace membre :', 'arvator-core' );
 			$lines[] = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
 			$lines[] = '';
 		}
-		$lines[] = 'Pour recevoir vos récompenses de recommandation, indiquez votre IBAN dans votre espace membre, rubrique « Parrainage ».';
+		$lines[] = __( 'Pour recevoir vos récompenses de recommandation, indiquez votre IBAN dans votre espace membre, rubrique « Parrainage ».', 'arvator-core' );
 		$lines[] = '';
-		$lines[] = 'Rappel : recommandez Arvator de façon honnête. Les résultats présentés sur le site sont des performances simulées et le trading comporte un risque élevé de perte en capital.';
+		$lines[] = __( 'Rappel : recommandez Arvator de façon honnête. Les résultats présentés sur le site sont des performances simulées et le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
 		$lines[] = '';
 		$lines[] = Arvator_Site::signature();
-		wp_mail( $email, 'Arvator : votre lien de recommandation', implode( "\n", $lines ) );
+		wp_mail( $email, __( 'Arvator : votre lien de recommandation', 'arvator-core' ), implode( "\n", $lines ) );
 
 		Arvator_Support::redirect( $back, 'parrain_mail' );
 	}
@@ -800,19 +801,19 @@ final class Arvator_Referral {
 
 	public static function status_label( string $status ): string {
 		return array(
-			'pending'  => 'En attente',
-			'payable'  => 'À payer',
-			'paid'     => 'Payée',
-			'canceled' => 'Annulée',
-			'blocked'  => 'Bloquée (vérification)',
+			'pending'  => __( 'En attente', 'arvator-core' ),
+			'payable'  => __( 'À payer', 'arvator-core' ),
+			'paid'     => __( 'Payée', 'arvator-core' ),
+			'canceled' => __( 'Annulée', 'arvator-core' ),
+			'blocked'  => __( 'Bloquée (vérification)', 'arvator-core' ),
 		)[ $status ] ?? $status;
 	}
 
 	public static function kind_label( string $kind ): string {
 		return array(
-			'prime'       => 'Prime d’achat',
-			'affiliation' => 'Abonnement',
-			'adjustment'  => 'Déduction',
+			'prime'       => __( 'Prime d’achat', 'arvator-core' ),
+			'affiliation' => __( 'Abonnement', 'arvator-core' ),
+			'adjustment'  => __( 'Déduction', 'arvator-core' ),
 		)[ $kind ] ?? $kind;
 	}
 }
