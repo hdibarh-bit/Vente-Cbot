@@ -115,9 +115,9 @@ TXT,
 	),
 
 	'risques'  => array(
+		'rev'   => 2,
 		'title' => 'Risques',
 		'text'  => <<<'TXT'
-[provisoire]
 Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu'à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.
 
 ## Vous pouvez perdre tout ou partie de votre capital
@@ -147,13 +147,12 @@ TXT,
 	),
 
 	'mentions-legales' => array(
-		'rev'   => 4,
+		'rev'   => 5,
 		'title' => 'Mentions légales',
 		'text'  => <<<'TXT'
-[provisoire]
 ## Éditeur du site
 Le site {{domain}} (marque « Arvator ») est édité par :
-- Hamid DIBARH, entrepreneur individuel (micro-entrepreneur)
+- Hamid DIBARH, entrepreneur individuel exerçant sous le nom commercial COSMARTIS
 - Adresse : {{adresse}}
 - SIRET : 802 301 317 00029
 - Email : {{email}}
@@ -176,12 +175,11 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 5,
+		'rev'   => 6,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
-[provisoire]
 ## 1. Éditeur et objet
-Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid DIBARH, entrepreneur individuel établi au {{adresse}}, SIRET 802 301 317 00029 (« l'éditeur »), au client qui passe commande sur {{domain}}. Contact : {{email}}.
+Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid DIBARH, entrepreneur individuel exerçant sous le nom commercial COSMARTIS, {{adresse}}, SIRET 802 301 317 00029 (« l'éditeur »), au client qui passe commande sur {{domain}}. Contact : {{email}}.
 
 ## 2. Produit
 Arvator est un logiciel (un robot cTrader) livré sous forme de fichier numérique. L'achat donne au client une licence d'utilisation personnelle, non exclusive et non transférable, liée à un numéro de compte cTrader. Le client reste propriétaire de son argent et de son compte : l'éditeur n'y a jamais accès.
@@ -222,10 +220,9 @@ TXT,
 	),
 
 	'confidentialite' => array(
-		'rev'   => 4,
+		'rev'   => 5,
 		'title' => 'Politique de confidentialité',
 		'text'  => <<<'TXT'
-[provisoire]
 ## Qui est responsable de vos données
 Hamid DIBARH, entrepreneur individuel établi au {{adresse}} (SIRET 802 301 317 00029), est responsable du traitement. Contact : {{email}}.
 
@@ -259,10 +256,9 @@ TXT,
 	),
 
 	'cookies'  => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'Cookies',
 		'text'  => <<<'TXT'
-[provisoire]
 ## Les cookies de ce site
 Ce site n'utilise que deux sortes de cookies. Aucun cookie publicitaire, aucun outil de mesure d'audience, aucun partage avec des tiers.
 
@@ -307,10 +303,9 @@ TXT,
 	),
 
 	'conditions-parrainage' => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'Conditions du programme de parrainage',
 		'text'  => <<<'TXT'
-[provisoire]
 ## 1. Objet
 Le programme de parrainage Arvator permet à toute personne inscrite (le « parrain ») de recevoir une récompense de recommandation lorsqu'une personne qu'elle a recommandée (le « filleul ») achète le robot Arvator. Il est édité par Hamid DIBARH, entrepreneur individuel (voir les [mentions légales](/mentions-legales/)).
 

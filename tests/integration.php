@@ -140,9 +140,14 @@ foreach ( $slugs as $s ) {
 $faq = $anon->get( '/faq/' );
 check( str_contains( $faq['body'], 'wp-block-details' ) && str_contains( $faq['body'], 'tout courtier proposant cTrader avec le cloud' ), 'FAQ : questions et réponse « courtier » présentes' );
 $cgv = $anon->get( '/cgv/' );
-check( str_contains( $cgv['body'], '14 jours' ) && str_contains( $cgv['body'], 'notice-provisional' ), 'CGV : règle des 14 jours et bandeau « provisoire »' );
+check( str_contains( $cgv['body'], '14 jours' ) && ! str_contains( $cgv['body'], 'notice-provisional' ), 'CGV : règle des 14 jours, sans bandeau « provisoire »' );
+check( str_contains( $cgv['body'], 'Hamid DIBARH, entrepreneur individuel exerçant sous le nom commercial COSMARTIS, 21 rue Taffin, 59970 Fresnes-sur-Escaut, France, SIRET 802 301 317 00029' ), 'CGV article 1 : identification complète du vendeur' );
 $ml = $anon->get( '/mentions-legales/' );
 check( str_contains( $ml['body'], '802 301 317 00029' ) && str_contains( $ml['body'], 'support@arvator.com' ), 'Mentions légales : SIRET et email' );
+check( str_contains( $ml['body'], 'entrepreneur individuel exerçant sous le nom commercial COSMARTIS' ) && str_contains( $ml['body'], '21 rue Taffin, 59970 Fresnes-sur-Escaut, France' ), 'Mentions légales : nom commercial COSMARTIS et adresse complète' );
+foreach ( array( 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies' ) as $pg ) {
+	check( ! preg_match( '/notice-provisional|Version provisoire/u', $anon->get( '/' . $pg . '/' )['body'] ), "page « $pg » : aucun bandeau « provisoire »" );
+}
 foreach ( $slugs as $s ) {
 	$page = get_page_by_path( $s );
 	foreach ( array( 'ICT', 'SMC', '15 minutes', 'Nasdaq', 'US 500', 'bientôt' ) as $banned ) {
@@ -768,7 +773,7 @@ check( 200 === $pp['code'] && str_contains( $pp['body'], "225\u{00A0}€" ) && s
 check( ! preg_match( '/revenu passif|opportunit|gagnez|garanti\b/iu', strip_tags( $pp['body'] ) ), 'page Parrainage : aucun mot interdit (revenu passif, opportunité, gagnez, garanti)' );
 check( str_contains( $pp['headers'], 'no-store' ), 'page Parrainage jamais mise en cache (formulaire)' );
 $cp = $anon->get( '/conditions-parrainage/' );
-check( 200 === $cp['code'] && str_contains( $cp['body'], 'notice-provisional' ) && str_contains( $cp['body'], 'déduit des récompenses suivantes' ), 'conditions : marquées provisoires, règle de déduction écrite' );
+check( 200 === $cp['code'] && ! str_contains( $cp['body'], 'notice-provisional' ) && str_contains( $cp['body'], 'déduit des récompenses suivantes' ), 'conditions : sans bandeau « provisoire », règle de déduction écrite' );
 $home = $anon->get( '/' );
 check( str_contains( $home['body'], 'class="referral"' ) && str_contains( $home['body'], 'Recommandez Arvator' ) && str_contains( $home['body'], '/parrainage/' ), 'accueil : bandeau « Recommandez Arvator » affiché dès que la page existe' );
 check( str_contains( $home['body'], '/conditions-parrainage/' ), 'pied de page : lien vers les conditions du parrainage' );

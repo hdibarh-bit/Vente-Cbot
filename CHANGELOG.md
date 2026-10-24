@@ -71,6 +71,12 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.8.1 — 24/10/2026
+- **Bandeau « Version provisoire » retiré** (demande de Hamid) des pages Risques, Mentions légales, CGV, Politique de confidentialité, Cookies et Conditions du programme de parrainage.
+- **CGV, article 1** : le vendeur est identifié ainsi : « Hamid DIBARH, entrepreneur individuel exerçant sous le nom commercial COSMARTIS, 21 rue Taffin, 59970 Fresnes-sur-Escaut, France, SIRET 802 301 317 00029 ».
+- **Mentions légales** : même identification (« entrepreneur individuel exerçant sous le nom commercial COSMARTIS », adresse avec « France »).
+- Ces 6 pages se mettent à jour toutes seules si vous ne les avez jamais modifiées ; sinon elles sont signalées en haut du tableau de bord : faites la correction à la main.
+
 ### 0.8.0 — 23/10/2026
 - **Prêt pour une version anglaise, rien ne change à l'écran ni dans les emails en français.** Textes traduisibles : espace membre (toutes les rubriques), page d'achat, essai gratuit, contact, parrainage, licence, courtiers, carte de l'éditeur, messages d'erreur et de confirmation, emails aux clients et aux parrains, export des données personnelles. Fichier modèle : `languages/arvator-core.pot`. L'administration et les emails d'alerte à Hamid restent en français.
 - Paiement et portail Stripe affichés dans la langue de la page (français par défaut). La langue de la page d'achat est transmise à Stripe : l'email de confirmation de commande et l'email de virement aux parrains partent dans la langue du client.
