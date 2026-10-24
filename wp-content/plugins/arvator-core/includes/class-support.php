@@ -50,6 +50,8 @@ final class Arvator_Support {
 			'essai_deja'       => array( 'err', __( 'Un essai a déjà été demandé avec cette adresse email ou ce numéro de compte. L’essai est limité à un par personne : vous pouvez écrire depuis la page Contact.', 'arvator-core' ) ),
 			'achat_renonciation' => array( 'err', __( 'Vous avez demandé l’essai gratuit : pour acheter, merci de cocher la case de renonciation au droit de rétractation.', 'arvator-core' ) ),
 			'portal_erreur'    => array( 'err', __( 'La gestion de l’abonnement n’a pas pu s’ouvrir. Réessayez dans un instant ou écrivez-nous depuis la page Contact.', 'arvator-core' ) ),
+			'achat_promo'      => array( 'err', __( 'Ce code promo n’existe pas ou n’est plus valable. Vérifiez-le, ou laissez le champ vide.', 'arvator-core' ) ),
+			'achat_promo_formule' => array( 'err', __( 'Ce code promo ne s’applique pas à la formule choisie. Choisissez l’autre formule, ou laissez le champ vide.', 'arvator-core' ) ),
 			'achat_code'       => array( 'err', __( 'Ce code de recommandation n’est pas valable. Vérifiez-le, ou laissez le champ vide.', 'arvator-core' ) ),
 			'parrain_mail'     => array( 'ok', __( 'Merci ! Un email vient de vous être envoyé à cette adresse : il contient la suite des instructions.', 'arvator-core' ) ),
 			'parrain_invalid'  => array( 'err', __( 'Merci d’indiquer une adresse email valide et d’accepter les conditions du programme de parrainage.', 'arvator-core' ) ),

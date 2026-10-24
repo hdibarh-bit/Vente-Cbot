@@ -95,7 +95,8 @@ final class Arvator_Webhook {
 
 	/** @param array<string, mixed> $session */
 	private static function on_checkout_completed( array $session, bool $live ): void {
-		if ( 'paid' !== ( $session['payment_status'] ?? '' ) ) {
+		// « no_payment_required » : premier paiement à 0 € (code promo robot et 1re période offerts).
+		if ( ! in_array( $session['payment_status'] ?? '', array( 'paid', 'no_payment_required' ), true ) ) {
 			return; // paiement pas encore encaissé : on attend l'événement suivant.
 		}
 		$session_id = (string) ( $session['id'] ?? '' );
@@ -117,15 +118,15 @@ final class Arvator_Webhook {
 
 		[ $user_id, $created ] = self::find_or_create_user( $email, (int) ( $full['client_reference_id'] ?? 0 ) );
 
-		// Montant du robot = la ligne « robot » de la commande.
+		// Montant du robot = la ligne « robot » de la commande, réduction comprise (0 si un code promo l'offre).
 		$bot_price = Arvator_Stripe::price( 'bot' );
-		$amount    = 0;
+		$amount    = -1;
 		foreach ( (array) ( $full['line_items']['data'] ?? array() ) as $line ) {
 			if ( ( $line['price']['id'] ?? '' ) === $bot_price ) {
-				$amount = (int) ( $line['amount_total'] ?? 0 );
+				$amount = max( 0, (int) ( $line['amount_total'] ?? 0 ) );
 			}
 		}
-		if ( $amount <= 0 ) {
+		if ( $amount < 0 ) {
 			throw new RuntimeException( 'Ligne du robot introuvable dans la commande.' );
 		}
 
@@ -159,6 +160,7 @@ final class Arvator_Webhook {
 		$order_id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM ' . Arvator_Repo::table( 'orders' ) . ' WHERE stripe_session_id = %s', $session_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( $order_id > 0 ) {
 			Arvator_Referral::on_purchase( $user_id, $order_id, $full, $live );
+			Arvator_Promo::on_purchase( $user_id, $order_id, $full, $live );
 		}
 
 		// Licence : numéro de compte cTrader saisi à l'achat (s'il n'y en a pas déjà un), puis activation via n8n.
@@ -287,7 +289,9 @@ final class Arvator_Webhook {
 	 */
 	private static function on_invoice_paid( array $invoice, bool $live ): void {
 		Arvator_Referral::on_invoice_paid( $invoice, $live );
-		if ( 'subscription_create' === ( $invoice['billing_reason'] ?? '' ) || (int) ( $invoice['amount_paid'] ?? 0 ) <= 0 ) {
+		$reason = (string) ( $invoice['billing_reason'] ?? '' );
+		// Un renouvellement à 0 € (mois offert par un code promo) prolonge aussi la licence.
+		if ( 'subscription_create' === $reason || ( (int) ( $invoice['amount_paid'] ?? 0 ) <= 0 && 'subscription_cycle' !== $reason ) ) {
 			return;
 		}
 		$sub_id = Arvator_Stripe::invoice_subscription( $invoice );
@@ -337,8 +341,10 @@ final class Arvator_Webhook {
 			Arvator_Repo::log_event( 'refund_unmatched', null, array( 'charge' => (string) ( $charge['id'] ?? '' ) ) );
 			return;
 		}
-		if ( $refunded < (int) $order['amount_cents'] ) {
-			// Remboursement inférieur au prix du robot : on garde la trace, l'achat reste valide.
+		// Remboursement inférieur au prix payé pour le robot, robot offert (code promo) ou remboursement d'une autre
+		// facture (un renouvellement) : on garde la trace, l'achat reste valide.
+		$other_invoice = '' !== $invoice && '' !== (string) $order['stripe_invoice_id'] && $invoice !== (string) $order['stripe_invoice_id'];
+		if ( (int) $order['amount_cents'] <= 0 || $other_invoice || $refunded < (int) $order['amount_cents'] ) {
 			Arvator_Repo::log_event( 'refund_partial', (int) $order['user_id'], array( 'refunded_cents' => $refunded ) );
 			return;
 		}

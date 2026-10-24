@@ -71,6 +71,14 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.9.0 — 24/10/2026
+- **Codes promo** (Arvator > Codes promo) : vous créez vos codes vous-même. Un code donne un avantage : un pourcentage sur le prix du robot, OU sur l'abonnement (100 % = offert) pour la 1re période, pendant un nombre de mois (formule mensuelle) ou à chaque paiement. Formule au choix (mensuel, annuel ou les deux), nombre d'utilisations maximum et date de fin facultatifs. Désactiver / réactiver en un clic ; liste des clients qui ont utilisé chaque code.
+- **Page d'achat** : champ « Code promo » (affiché seulement s'il existe un code actif), prérempli par un lien `/acheter/?promo=CODE`. Code faux, terminé ou d'une autre formule : message clair. La réduction est appliquée par Stripe et visible sur sa page de paiement.
+- Parrainage : prime de 225 € inchangée ; 10 % sur ce que le client paie vraiment (décision de Hamid).
+- Mois offerts : chaque mois à 0 € prolonge quand même la licence. Premier paiement à 0 € accepté. Remboursement : comparé au prix réellement payé pour le robot.
+- **À faire dans Stripe** : ajouter le droit « Coupons : écriture » à la clé restreinte (guide `docs/12-preparer-stripe.md` §9).
+- Tests automatiques : 468 contrôles (46 nouveaux).
+
 ### 0.8.1 — 24/10/2026
 - **Bandeau « Version provisoire » retiré** (demande de Hamid) des pages Risques, Mentions légales, CGV, Politique de confidentialité, Cookies et Conditions du programme de parrainage.
 - **CGV, article 1** : le vendeur est identifié ainsi : « Hamid DIBARH, entrepreneur individuel exerçant sous le nom commercial COSMARTIS, 21 rue Taffin, 59970 Fresnes-sur-Escaut, France, SIRET 802 301 317 00029 ».

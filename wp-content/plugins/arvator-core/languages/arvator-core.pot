@@ -2,16 +2,16 @@
 # This file is distributed under the Proprietary.
 msgid ""
 msgstr ""
-"Project-Id-Version: Arvator Core 0.8.0\n"
-"Report-Msgid-Bugs-To: support@arvator.com\n"
+"Project-Id-Version: Arvator Core 0.9.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/arvator-core\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Arvator <support@arvator.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-23T17:06:15+00:00\n"
+"POT-Creation-Date: 2026-10-24T15:04:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: arvator-core\n"
 
 #. Plugin Name of the plugin
@@ -36,11 +36,13 @@ msgstr ""
 
 #. translators: 1: nom de l'éditeur, 2: nom du réseau social.
 #: includes/class-author.php:99
+#, php-format
 msgid "%1$s sur %2$s (nouvel onglet)"
 msgstr ""
 
 #. translators: %s: nom de l'éditeur.
 #: includes/class-author.php:109
+#, php-format
 msgid "Photo de %s, fondateur et éditeur d’Arvator"
 msgstr ""
 
@@ -54,6 +56,7 @@ msgstr ""
 
 #. translators: %s: adresse de la page Contact.
 #: includes/class-brokers.php:91
+#, php-format
 msgid "La liste sera bientôt complétée. En attendant, écrivez-nous depuis la page <a href=\"%s\">Contact</a>."
 msgstr ""
 
@@ -87,11 +90,13 @@ msgstr ""
 
 #. translators: %s: adresse de l'espace membre.
 #: includes/class-checkout.php:60
+#, php-format
 msgid "Vous avez déjà acheté Arvator. Retrouvez votre licence et le téléchargement dans votre <a href=\"%s\">espace membre</a>."
 msgstr ""
 
 #. translators: %s: adresse de la page Contact.
 #: includes/class-checkout.php:65
+#, php-format
 msgid "Le paiement en ligne est en cours de configuration. Vous pouvez nous écrire depuis la page <a href=\"%s\">Contact</a>."
 msgstr ""
 
@@ -101,31 +106,37 @@ msgstr ""
 
 #. translators: 1: prix mensuel, 2: prix annuel.
 #: includes/class-checkout.php:84
+#, php-format
 msgid "<strong>Annuel</strong> · %1$s par mois, payés d’avance (%2$s par an)"
 msgstr ""
 
 #. translators: %s: montant du premier paiement.
 #: includes/class-checkout.php:85
+#, php-format
 msgid "Premier paiement : %s (robot + 1 an d’abonnement)"
 msgstr ""
 
 #. translators: %s: prix mensuel.
 #: includes/class-checkout.php:89
+#, php-format
 msgid "<strong>Mensuel</strong> · %s par mois"
 msgstr ""
 
 #. translators: %s: montant du premier paiement.
 #: includes/class-checkout.php:90
+#, php-format
 msgid "Premier paiement : %s (robot + 1er mois)"
 msgstr ""
 
 #. translators: %s: prix du robot.
 #: includes/class-checkout.php:94
+#, php-format
 msgid "Le robot (%s) est payé une seule fois. L’abonnement est obligatoire : il se renouvelle jusqu’à votre résiliation, que vous pouvez faire à tout moment depuis votre espace membre."
 msgstr ""
 
 #. translators: %s: adresse email du compte.
 #: includes/class-checkout.php:97
+#, php-format
 msgid "Compte : <strong>%s</strong>"
 msgstr ""
 
@@ -153,6 +164,7 @@ msgid "Code de recommandation"
 msgstr ""
 
 #: includes/class-checkout.php:112
+#: includes/class-checkout.php:119
 msgid "(facultatif)"
 msgstr ""
 
@@ -160,29 +172,39 @@ msgstr ""
 msgid "Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé."
 msgstr ""
 
+#: includes/class-checkout.php:119
+msgid "Code promo"
+msgstr ""
+
+#: includes/class-checkout.php:121
+msgid "La réduction s’affiche sur la page de paiement Stripe, avant de payer."
+msgstr ""
+
 #. translators: %s: adresse des CGV.
-#: includes/class-checkout.php:117
+#: includes/class-checkout.php:125
+#, php-format
 msgid "J’ai lu et j’accepte les <a href=\"%s\" target=\"_blank\" rel=\"noopener\">conditions générales de vente</a>."
 msgstr ""
 
 #. translators: %s: adresse de la page Risques.
-#: includes/class-checkout.php:118
+#: includes/class-checkout.php:126
+#, php-format
 msgid "J’ai lu l’<a href=\"%s\" target=\"_blank\" rel=\"noopener\">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé."
 msgstr ""
 
-#: includes/class-checkout.php:120
+#: includes/class-checkout.php:128
 msgid "je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable)."
 msgstr ""
 
-#: includes/class-checkout.php:120
+#: includes/class-checkout.php:128
 msgid "Si vous avez fait l’essai gratuit : je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable)."
 msgstr ""
 
-#: includes/class-checkout.php:122
+#: includes/class-checkout.php:130
 msgid "Payer en toute sécurité avec Stripe"
 msgstr ""
 
-#: includes/class-checkout.php:123
+#: includes/class-checkout.php:131
 msgid "Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe."
 msgstr ""
 
@@ -218,6 +240,7 @@ msgstr ""
 
 #. translators: %s: adresse de la politique de confidentialité.
 #: includes/class-contact.php:93
+#, php-format
 msgid "J’accepte que mes données servent à répondre à ma demande (voir la <a href=\"%s\">politique de confidentialité</a>)."
 msgstr ""
 
@@ -246,7 +269,7 @@ msgid "Lien expiré"
 msgstr ""
 
 #: includes/class-downloads.php:147
-#: includes/class-support.php:64
+#: includes/class-support.php:66
 msgid "Le téléchargement n’est pas disponible pour votre compte."
 msgstr ""
 
@@ -261,11 +284,13 @@ msgstr ""
 
 #. translators: %s: numéro de compte cTrader.
 #: includes/class-license.php:301
+#, php-format
 msgid "Licence liée au compte cTrader n° <strong>%s</strong>."
 msgstr ""
 
 #. translators: %s: adresse de la page Contact.
 #: includes/class-license.php:302
+#, php-format
 msgid "Pour utiliser le robot sur un autre compte, écrivez-nous depuis la page <a href=\"%s\">Contact</a> en indiquant le nouveau numéro : le changement est limité à deux fois par an."
 msgstr ""
 
@@ -350,6 +375,7 @@ msgstr ""
 
 #. translators: %s: nom du client.
 #: includes/class-member.php:105
+#, php-format
 msgid "Bonjour <strong>%s</strong>"
 msgstr ""
 
@@ -364,6 +390,7 @@ msgstr ""
 
 #. translators: %s: adresse de la rubrique Licence.
 #: includes/class-member.php:140
+#, php-format
 msgid "Votre licence attend le numéro de votre compte cTrader. <a href=\"%s\">L’indiquer maintenant</a>"
 msgstr ""
 
@@ -373,6 +400,7 @@ msgstr ""
 
 #. translators: %s: date d'achat.
 #: includes/class-member.php:147
+#, php-format
 msgid "<strong>Acheté</strong> le %s"
 msgstr ""
 
@@ -392,11 +420,13 @@ msgstr ""
 
 #. translators: %s: date.
 #: includes/class-member.php:158
+#, php-format
 msgid "Fin le %s"
 msgstr ""
 
 #. translators: %s: date.
 #: includes/class-member.php:158
+#, php-format
 msgid "Prochaine échéance le %s"
 msgstr ""
 
@@ -413,6 +443,7 @@ msgstr ""
 #. translators: %s: date de fin.
 #: includes/class-member.php:169
 #: includes/class-member.php:246
+#, php-format
 msgid "Valable jusqu’au %s"
 msgstr ""
 
@@ -505,6 +536,7 @@ msgstr ""
 
 #. translators: %s: numéro de compte cTrader.
 #: includes/class-member.php:247
+#, php-format
 msgid "Compte cTrader n° %s"
 msgstr ""
 
@@ -543,6 +575,7 @@ msgstr ""
 
 #. translators: 1: montant de la récompense, 2: pourcentage sur les abonnements.
 #: includes/class-member.php:296
+#, php-format
 msgid "Recommandez Arvator à vos proches : vous recevez une <strong>récompense de recommandation de %1$s</strong> pour chaque achat du robot fait avec votre lien, puis %2$s de chaque abonnement qu’ils paient. Gratuit, sans engagement."
 msgstr ""
 
@@ -552,6 +585,7 @@ msgstr ""
 
 #. translators: %s: adresse de la page Contact.
 #: includes/class-member.php:314
+#, php-format
 msgid "Votre lien est suspendu. Écrivez-nous depuis la page <a href=\"%s\">Contact</a>."
 msgstr ""
 
@@ -565,6 +599,7 @@ msgstr ""
 
 #. translators: %s: code de recommandation.
 #: includes/class-member.php:319
+#, php-format
 msgid "Votre code : <strong>%s</strong>"
 msgstr ""
 
@@ -584,6 +619,7 @@ msgstr ""
 
 #. translators: %d: délai en jours.
 #: includes/class-member.php:325
+#, php-format
 msgid "Disponible %d jours après chaque paiement."
 msgstr ""
 
@@ -595,6 +631,7 @@ msgstr ""
 
 #. translators: %s: montant minimum de virement.
 #: includes/class-member.php:326
+#, php-format
 msgid "Virement de la prime dès qu’elle est disponible ; abonnements à partir de %s cumulés."
 msgstr ""
 
@@ -605,6 +642,7 @@ msgstr ""
 
 #. translators: %d: nombre de personnes recommandées ayant acheté.
 #: includes/class-member.php:327
+#, php-format
 msgid "%d personne(s) recommandée(s) ayant acheté."
 msgstr ""
 
@@ -627,6 +665,7 @@ msgstr ""
 
 #. translators: %s: date du virement.
 #: includes/class-member.php:343
+#, php-format
 msgid "Versée le %s"
 msgstr ""
 
@@ -636,6 +675,7 @@ msgstr ""
 
 #. translators: %s: titulaire du compte.
 #: includes/class-member.php:353
+#, php-format
 msgid "Virement à <strong>%s</strong>"
 msgstr ""
 
@@ -692,11 +732,13 @@ msgstr ""
 
 #. translators: %s: adresse email du client.
 #: includes/class-member.php:381
+#, php-format
 msgid "Adresse email : <strong>%s</strong>"
 msgstr ""
 
 #. translators: %s: adresse de la page Contact.
 #: includes/class-member.php:382
+#, php-format
 msgid "Pour changer votre adresse email, écrivez-nous depuis la page <a href=\"%s\">Contact</a>."
 msgstr ""
 
@@ -842,8 +884,78 @@ msgstr ""
 msgid "Récompenses de recommandation Arvator"
 msgstr ""
 
-#: includes/class-privacy.php:156
+#: includes/class-privacy.php:157
 msgid "Les pièces comptables (achats, abonnements, récompenses de recommandation) sont conservées 10 ans, sans lien avec votre identité."
+msgstr ""
+
+#. translators: %d: pourcentage de réduction.
+#: includes/class-promo.php:94
+msgid "robot offert"
+msgstr ""
+
+#. translators: %d: pourcentage de réduction.
+#: includes/class-promo.php:94
+#, php-format
+msgid "-%d %% sur le prix du robot"
+msgstr ""
+
+#. translators: %d: nombre de mois.
+#: includes/class-promo.php:100
+#, php-format
+msgid "%d mois d’abonnement offert"
+msgid_plural "%d mois d’abonnement offerts"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: pourcentage, 2: nombre de mois.
+#: includes/class-promo.php:102
+#, php-format
+msgid "-%1$d %% sur l’abonnement pendant %2$d mois"
+msgid_plural "-%1$d %% sur l’abonnement pendant %2$d mois"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: pourcentage de réduction.
+#: includes/class-promo.php:106
+msgid "abonnement offert tant qu’il n’est pas résilié"
+msgstr ""
+
+#. translators: %d: pourcentage de réduction.
+#: includes/class-promo.php:106
+#, php-format
+msgid "-%d %% sur l’abonnement, à chaque paiement"
+msgstr ""
+
+#: includes/class-promo.php:109
+msgid "1er mois d’abonnement offert"
+msgstr ""
+
+#. translators: %d: pourcentage.
+#: includes/class-promo.php:109
+#, php-format
+msgid "-%d %% sur le 1er mois d’abonnement"
+msgstr ""
+
+#. translators: %d: pourcentage.
+#: includes/class-promo.php:110
+msgid "1re année d’abonnement offerte"
+msgstr ""
+
+#. translators: %d: pourcentage.
+#: includes/class-promo.php:110
+#, php-format
+msgid "-%d %% sur la 1re année d’abonnement"
+msgstr ""
+
+#. translators: %d: pourcentage.
+#: includes/class-promo.php:111
+msgid "1re période d’abonnement offerte (1er mois ou 1re année)"
+msgstr ""
+
+#. translators: %d: pourcentage.
+#: includes/class-promo.php:111
+#, php-format
+msgid "-%d %% sur la 1re période d’abonnement (1er mois ou 1re année)"
 msgstr ""
 
 #: includes/class-referral-admin.php:315
@@ -852,6 +964,7 @@ msgstr ""
 
 #. translators: 1: montant viré, 2: référence du virement.
 #: includes/class-referral-admin.php:317
+#, php-format
 msgid ""
 "Bonjour,\n"
 "\n"
@@ -866,6 +979,7 @@ msgstr ""
 
 #. translators: %d: délai en jours.
 #: includes/class-referral.php:602
+#, php-format
 msgid "par achat du robot fait avec votre lien, versés %d&nbsp;jours après l’achat"
 msgstr ""
 
@@ -880,6 +994,7 @@ msgstr ""
 
 #. translators: %s: adresse des conditions du parrainage.
 #: includes/class-referral.php:619
+#, php-format
 msgid "J’ai lu et j’accepte les <a href=\"%s\" target=\"_blank\" rel=\"noopener\">conditions du programme de parrainage</a>, notamment : une récompense est retirée si l’achat est remboursé ou contesté, et déduite de mes récompenses suivantes si elle m’a déjà été versée."
 msgstr ""
 
@@ -897,6 +1012,7 @@ msgstr ""
 
 #. translators: %s: adresse de l'espace membre.
 #: includes/class-referral.php:649
+#, php-format
 msgid "Gratuit et sans obligation d’acheter. Vous recevez un email pour choisir votre mot de passe, puis vous retrouvez votre lien dans votre espace membre. Déjà client&nbsp;? <a href=\"%s\">Connectez-vous</a>."
 msgstr ""
 
@@ -916,7 +1032,7 @@ msgid "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message."
 msgstr ""
 
 #: includes/class-referral.php:707
-#: includes/class-webhook.php:413
+#: includes/class-webhook.php:419
 msgid "Bonjour,"
 msgstr ""
 
@@ -926,6 +1042,7 @@ msgstr ""
 
 #. translators: %s: lien de recommandation.
 #: includes/class-referral.php:712
+#, php-format
 msgid "Votre lien de recommandation (il mène à la page d'achat, où votre code est déjà rempli) : %s"
 msgstr ""
 
@@ -979,6 +1096,7 @@ msgstr ""
 
 #. translators: %s: adresse email du support.
 #: includes/class-support.php:24
+#, php-format
 msgid "Le message n’a pas pu être envoyé. Vous pouvez nous écrire directement à %s."
 msgstr ""
 
@@ -1096,46 +1214,54 @@ msgid "La gestion de l’abonnement n’a pas pu s’ouvrir. Réessayez dans un 
 msgstr ""
 
 #: includes/class-support.php:53
-msgid "Ce code de recommandation n’est pas valable. Vérifiez-le, ou laissez le champ vide."
+msgid "Ce code promo n’existe pas ou n’est plus valable. Vérifiez-le, ou laissez le champ vide."
 msgstr ""
 
 #: includes/class-support.php:54
-msgid "Merci ! Un email vient de vous être envoyé à cette adresse : il contient la suite des instructions."
+msgid "Ce code promo ne s’applique pas à la formule choisie. Choisissez l’autre formule, ou laissez le champ vide."
 msgstr ""
 
 #: includes/class-support.php:55
-msgid "Merci d’indiquer une adresse email valide et d’accepter les conditions du programme de parrainage."
+msgid "Ce code de recommandation n’est pas valable. Vérifiez-le, ou laissez le champ vide."
 msgstr ""
 
 #: includes/class-support.php:56
-msgid "C’est fait : voici votre lien de recommandation."
+msgid "Merci ! Un email vient de vous être envoyé à cette adresse : il contient la suite des instructions."
 msgstr ""
 
 #: includes/class-support.php:57
-msgid "Vos coordonnées de virement sont enregistrées."
+msgid "Merci d’indiquer une adresse email valide et d’accepter les conditions du programme de parrainage."
 msgstr ""
 
 #: includes/class-support.php:58
-msgid "Coordonnées non enregistrées : vérifiez le nom du titulaire, l’IBAN et, pour une entreprise, le numéro SIRET (14 chiffres)."
+msgid "C’est fait : voici votre lien de recommandation."
 msgstr ""
 
 #: includes/class-support.php:59
-msgid "Votre numéro de compte cTrader est enregistré."
+msgid "Vos coordonnées de virement sont enregistrées."
 msgstr ""
 
 #: includes/class-support.php:60
-msgid "C’est fait : votre licence est activée sur ce compte. Le robot la récupère tout seul à son prochain démarrage."
+msgid "Coordonnées non enregistrées : vérifiez le nom du titulaire, l’IBAN et, pour une entreprise, le numéro SIRET (14 chiffres)."
 msgstr ""
 
 #: includes/class-support.php:61
-msgid "Numéro de compte non valable : uniquement des chiffres (4 à 12)."
+msgid "Votre numéro de compte cTrader est enregistré."
 msgstr ""
 
 #: includes/class-support.php:62
-msgid "Votre licence est déjà activée sur un compte. Pour en changer, écrivez-nous depuis la page Contact."
+msgid "C’est fait : votre licence est activée sur ce compte. Le robot la récupère tout seul à son prochain démarrage."
 msgstr ""
 
 #: includes/class-support.php:63
+msgid "Numéro de compte non valable : uniquement des chiffres (4 à 12)."
+msgstr ""
+
+#: includes/class-support.php:64
+msgid "Votre licence est déjà activée sur un compte. Pour en changer, écrivez-nous depuis la page Contact."
+msgstr ""
+
+#: includes/class-support.php:65
 msgid "Numéro de compte cTrader non valable : uniquement des chiffres (4 à 12), ou laissez le champ vide pour l’indiquer plus tard."
 msgstr ""
 
@@ -1153,6 +1279,7 @@ msgstr ""
 
 #. translators: %s: adresse de la politique de confidentialité.
 #: includes/class-trial.php:64
+#, php-format
 msgid "J’accepte que mon adresse email soit utilisée pour m’envoyer ma licence d’essai (voir la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">politique de confidentialité</a>)."
 msgstr ""
 
@@ -1176,6 +1303,7 @@ msgstr ""
 
 #. translators: %s: numéro du compte démo cTrader.
 #: includes/class-trial.php:133
+#, php-format
 msgid ""
 "Bonjour,\n"
 "\n"
@@ -1189,6 +1317,7 @@ msgstr ""
 
 #. translators: %s: numéro du compte démo cTrader.
 #: includes/class-trial.php:148
+#, php-format
 msgid ""
 "Bonjour,\n"
 "\n"
@@ -1196,22 +1325,22 @@ msgid ""
 "Vous recevrez votre licence d'essai par email, à cette adresse."
 msgstr ""
 
-#: includes/class-webhook.php:413
+#: includes/class-webhook.php:419
 msgid "Merci pour votre commande : votre paiement a bien été reçu."
 msgstr ""
 
-#: includes/class-webhook.php:418
+#: includes/class-webhook.php:424
 msgid "Votre espace membre est créé. Choisissez votre mot de passe ici (lien valable 24 heures) :"
 msgstr ""
 
-#: includes/class-webhook.php:423
+#: includes/class-webhook.php:429
 msgid "Retrouvez votre achat, votre abonnement et le téléchargement du robot dans votre espace membre :"
 msgstr ""
 
-#: includes/class-webhook.php:426
+#: includes/class-webhook.php:432
 msgid "Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital."
 msgstr ""
 
-#: includes/class-webhook.php:430
+#: includes/class-webhook.php:436
 msgid "Arvator : votre commande est confirmée"
 msgstr ""

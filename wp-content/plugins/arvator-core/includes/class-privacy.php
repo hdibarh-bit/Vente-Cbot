@@ -148,6 +148,7 @@ final class Arvator_Privacy {
 				$wpdb->query( $wpdb->prepare( 'UPDATE ' . Arvator_Repo::table( 'commissions' ) . " SET $col = 0 WHERE $col = %d", $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 		}
+		$wpdb->query( $wpdb->prepare( 'UPDATE ' . Arvator_Repo::table( 'promo_uses' ) . ' SET user_id = 0 WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'events' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return array(

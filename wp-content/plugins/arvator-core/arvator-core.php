@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Arvator Core
  * Plugin URI:        https://arvator.com
- * Description:       Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks. Parrainage (lien de recommandation, récompenses, virements). Licence : liaison avec le workflow n8n (paiement, résiliation, essai). Accueillera ensuite l'administration complète.
- * Version:           0.8.1
+ * Description:       Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks. Parrainage (lien de recommandation, récompenses, virements). Licence : liaison avec le workflow n8n (paiement, résiliation, essai). Codes promo (robot, abonnement, mois offerts). Accueillera ensuite l'administration complète.
+ * Version:           0.9.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Hamid
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARVATOR_CORE_VERSION', '0.8.1' );
+define( 'ARVATOR_CORE_VERSION', '0.9.0' );
 define( 'ARVATOR_CORE_DIR', plugin_dir_path( __FILE__ ) );
 
 foreach (
@@ -39,6 +39,7 @@ foreach (
 		'class-trial',
 		'class-referral',
 		'class-license',
+		'class-promo',
 		'class-checkout',
 		'class-webhook',
 		'class-contact',
@@ -48,6 +49,7 @@ foreach (
 		'class-admin',
 		'class-referral-admin',
 		'class-license-admin',
+		'class-promo-admin',
 		'class-brokers',
 		'class-author',
 	) as $arvator_file
@@ -77,6 +79,7 @@ if ( is_admin() ) {
 	Arvator_Admin::init();
 	Arvator_Referral_Admin::init();
 	Arvator_License_Admin::init();
+	Arvator_Promo_Admin::init();
 }
 
 // Traductions (dossier languages/, ex. arvator-core-en_US.mo) : le français reste la langue d'origine du site.

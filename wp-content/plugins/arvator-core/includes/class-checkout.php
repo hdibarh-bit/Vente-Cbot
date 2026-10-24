@@ -114,6 +114,14 @@ final class Arvator_Checkout {
 				<span class="muted"><?php esc_html_e( 'Si quelqu’un vous a recommandé Arvator, son code est déjà rempli ou figure dans le lien qu’il vous a envoyé.', 'arvator-core' ); ?></span>
 			</p>
 
+			<?php if ( Arvator_Promo::any_active() ) : ?>
+				<p>
+					<label for="arv-buy-promo"><?php esc_html_e( 'Code promo', 'arvator-core' ); ?> <span class="muted"><?php esc_html_e( '(facultatif)', 'arvator-core' ); ?></span></label>
+					<input id="arv-buy-promo" name="promo" type="text" maxlength="30" autocomplete="off" value="<?php echo esc_attr( self::prefill_promo() ); ?>">
+					<span class="muted"><?php esc_html_e( 'La réduction s’affiche sur la page de paiement Stripe, avant de payer.', 'arvator-core' ); ?></span>
+				</p>
+			<?php endif; ?>
+
 			<p class="arv-check"><label><input type="checkbox" name="cgv" value="1" required> <?php /* translators: %s: adresse des CGV. */ echo wp_kses_post( sprintf( __( 'J’ai lu et j’accepte les <a href="%s" target="_blank" rel="noopener">conditions générales de vente</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'cgv' ) ) ) ); ?></label></p>
 			<p class="arv-check"><label><input type="checkbox" name="risks" value="1" required> <?php /* translators: %s: adresse de la page Risques. */ echo wp_kses_post( sprintf( __( 'J’ai lu l’<a href="%s" target="_blank" rel="noopener">avertissement sur les risques</a> et je comprends que les résultats présentés sont des performances simulées et que je peux perdre tout ou partie du capital engagé.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'risques' ) ) ) ); ?></label></p>
 
@@ -134,6 +142,16 @@ final class Arvator_Checkout {
 			$code = ( '' !== $code && Arvator_Referral::referrer_by_code( $code ) ) ? $code : '';
 		}
 		return $code;
+	}
+
+	/** Code promo prérempli depuis l'adresse (/acheter/?promo=CODE), seulement s'il est utilisable. */
+	private static function prefill_promo(): string {
+		if ( ! isset( $_GET['promo'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- simple préremplissage
+			return '';
+		}
+		$code = Arvator_Promo::normalize( sanitize_text_field( wp_unslash( (string) $_GET['promo'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$res  = '' !== $code ? Arvator_Promo::check( $code, 'both' ) : 'promo';
+		return ( is_array( $res ) || 'promo_formule' === $res ) ? $code : '';
 	}
 
 	/* --------------------------------------------------------------------- Actions */
@@ -185,6 +203,16 @@ final class Arvator_Checkout {
 			Arvator_Support::redirect( $back, 'achat_compte' );
 		}
 
+		// Code promo : vérifié ici (actif, date, nombre d'utilisations, formule) ; la réduction est appliquée par Stripe.
+		$promo_typed = isset( $_POST['promo'] ) ? trim( sanitize_text_field( wp_unslash( (string) $_POST['promo'] ) ) ) : '';
+		$promo       = null;
+		if ( '' !== $promo_typed ) {
+			$promo = Arvator_Promo::check( $promo_typed, $plan );
+			if ( ! is_array( $promo ) ) {
+				Arvator_Support::redirect( $back, 'promo_formule' === $promo ? 'achat_promo_formule' : 'achat_promo' );
+			}
+		}
+
 		$waiver = ! empty( $_POST['waiver'] );
 		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
 			Arvator_Support::redirect( $back, 'achat_renonciation' );
@@ -213,6 +241,7 @@ final class Arvator_Checkout {
 				'ref'           => $ref,
 				'compte'        => $account,
 				'langue'        => determine_locale(),
+				'promo'         => $promo ? (string) $promo['code'] : '',
 			),
 			'subscription_data'     => array(
 				'metadata' => array(
@@ -224,8 +253,11 @@ final class Arvator_Checkout {
 		if ( $user_id ) {
 			$params['client_reference_id'] = (string) $user_id;
 		}
+		if ( $promo ) {
+			$params['discounts'] = array( array( 'coupon' => (string) $promo['stripe_coupon'] ) );
+		}
 
-		$session = Arvator_Stripe::request( 'POST', 'checkout/sessions', $params, 'arv-co-' . md5( $email . $plan . gmdate( 'YmdHi' ) ) );
+		$session = Arvator_Stripe::request( 'POST', 'checkout/sessions', $params, 'arv-co-' . md5( $email . $plan . ( $promo ? $promo['code'] : '' ) . gmdate( 'YmdHi' ) ) );
 		$url     = is_array( $session ) ? (string) ( $session['url'] ?? '' ) : '';
 		if ( is_wp_error( $session ) || ! self::is_stripe_url( $url, 'checkout.stripe.com' ) ) {
 			Arvator_Repo::log_event( 'stripe_error', $user_id ?: null, array( 'where' => 'checkout', 'error' => is_wp_error( $session ) ? $session->get_error_message() : 'url invalide' ) );

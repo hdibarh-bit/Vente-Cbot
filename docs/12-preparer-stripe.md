@@ -59,7 +59,7 @@ define( 'ARVATOR_STRIPE_PRICE_MONTHLY', 'price_1UT3qVGi3zUNJ20grHHXX4zU' );
 4. Après l'enregistrement, copier le **secret de signature** (`whsec_…`) dans la ligne `ARVATOR_STRIPE_WEBHOOK_SECRET`.
 
 ### 6.3 Droits de la clé restreinte
-Écriture : Checkout Sessions, Customers, Subscriptions (nécessaire pour arrêter l'abonnement lors d'un remboursement), Customer portal sessions. Lecture : Prices, Products, Invoices, Charges, PaymentIntents, PaymentMethods (empreinte de la carte, pour repérer l'auto-parrainage). Si un droit manque, Stripe répond par une erreur claire (visible dans Développeurs → Journaux) : cocher la case indiquée.
+Écriture : Checkout Sessions, Customers, Subscriptions (nécessaire pour arrêter l'abonnement lors d'un remboursement), Customer portal sessions, **Coupons** (codes promo, plugin 0.9.0). Lecture : Prices, Products, Invoices, Charges, PaymentIntents, PaymentMethods (empreinte de la carte, pour repérer l'auto-parrainage). Si un droit manque, Stripe répond par une erreur claire (visible dans Développeurs → Journaux) : cocher la case indiquée.
 
 ### 6.4 Essai de bout en bout (bac à sable, 5 minutes)
 1. Page « Acheter Arvator » → choisir l'annuel → payer avec la carte de test `4242 4242 4242 4242` (date future, code au choix).
@@ -111,3 +111,33 @@ Sans cette ligne, rien n'est perdu : les envois attendent (Arvator > Licences) e
 2. Arvator > Licences : une ligne « Paiement · Fait ». Dans n8n, la table `Clients_cBot` a une nouvelle ligne.
 3. Espace membre > Ma licence : licence active, date de fin, compte.
 4. Rembourser 1 500 € dans Stripe : une ligne « Résiliation · Fait ».
+
+## 9. Codes promo (plugin 0.9.0)
+
+### 9.1 Un droit de plus pour la clé restreinte
+Stripe → Développeurs → Clés API → votre clé restreinte `rk_test_…` → Modifier → **Coupons : Écriture**. (La lecture des **Prices** est déjà demandée en 6.3.) Sans ce droit, la création d'un code affiche un message qui le dit.
+
+### 9.2 Créer un code
+WordPress → **Arvator > Codes promo** → « Créer un code » :
+- **Code** : le mot que le client tape (ex. `NOEL30`), 3 à 30 lettres, chiffres ou tirets.
+- **Ce que le code réduit** : le prix du robot, OU l'abonnement (un seul des deux : Stripe n'accepte qu'une réduction par paiement).
+- **Réduction** en % (100 % = offert).
+- Pour l'abonnement : **formule** (mensuel, annuel ou les deux) et **durée** : 1re période (1er mois ou 1re année), pendant N mois (mensuel seulement), ou à chaque paiement.
+- Facultatif : nombre d'utilisations maximum, date de fin.
+
+Exemples : robot à -30 % → « Le prix du robot », 30. Six mois offerts → « L'abonnement », 100, « Mensuel seulement », « Pendant 6 mois ». Un an offert → « L'abonnement », 100, « Annuel seulement », « La 1re période ». -30 % sur l'abonnement → « L'abonnement », 30, durée au choix.
+
+Un lien tout prêt pour vos messages : `https://arvator.com/acheter/?promo=NOEL30` (le code est déjà rempli).
+
+### 9.3 Bon à savoir
+- Le champ « Code promo » n'apparaît sur la page d'achat que s'il existe au moins un code actif.
+- Un code ne se modifie pas (Stripe ne le permet pas) : le désactiver et en créer un nouveau.
+- Les codes du bac à sable ne marchent pas en réel : à recréer au passage en production.
+- Parrainage : le parrain garde sa prime de 225 € entière ; ses 10 % sur l'abonnement portent sur ce que le client paie vraiment (rien pendant les mois offerts).
+- Remboursement : c'est le prix **payé** pour le robot qui compte (ex. 1 050 € avec -30 %).
+- Mois offerts : chaque mois à 0 € prolonge quand même la licence.
+
+### 9.4 Essai de bout en bout (bac à sable, 5 minutes)
+1. Créer `TEST30` (robot, 30 %) puis acheter avec la carte `4242 4242 4242 4242` en tapant `TEST30` : la page Stripe montre le robot à 1 050 €.
+2. Arvator > Codes promo : 1 utilisation, avec l'email du client.
+3. Créer `MOIS2` (abonnement, 100 %, mensuel, 2 mois) et acheter en mensuel : la page Stripe montre l'abonnement à 0 € les 2 premiers mois.

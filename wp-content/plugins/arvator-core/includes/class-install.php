@@ -206,6 +206,44 @@ final class Arvator_Install {
 ) $charset;"
 		);
 
+		// Codes promo créés par Hamid (la réduction elle-même est un coupon Stripe). Un même code peut exister en test et en réel.
+		dbDelta(
+			"CREATE TABLE {$p}promo_codes (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  code VARCHAR(30) NOT NULL,
+  target VARCHAR(10) NOT NULL,
+  percent TINYINT UNSIGNED NOT NULL,
+  duration VARCHAR(10) NOT NULL,
+  months SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  plans VARCHAR(10) NOT NULL DEFAULT 'both',
+  max_uses INT UNSIGNED NOT NULL DEFAULT 0,
+  expires_at DATETIME NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  stripe_coupon VARCHAR(190) NOT NULL,
+  is_test TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY code_mode (code,is_test)
+) $charset;"
+		);
+
+		// Utilisations des codes promo : une par paiement Stripe (stripe_session_id unique = idempotent).
+		dbDelta(
+			"CREATE TABLE {$p}promo_uses (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  promo_id BIGINT UNSIGNED NOT NULL,
+  user_id BIGINT UNSIGNED NOT NULL,
+  order_id BIGINT UNSIGNED NULL,
+  stripe_session_id VARCHAR(190) NOT NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY stripe_session_id (stripe_session_id),
+  KEY promo_id (promo_id),
+  KEY user_id (user_id)
+) $charset;"
+		);
+
 		// Journal des événements (téléchargements, webhooks, etc.). external_id unique = traitement idempotent.
 		dbDelta(
 			"CREATE TABLE {$p}events (
