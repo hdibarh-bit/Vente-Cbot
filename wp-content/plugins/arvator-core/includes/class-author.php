@@ -5,7 +5,7 @@
  * - Shortcode [arvator_auteur] : photo, nom, réseaux (pages « À propos » et « Mentions légales »).
  * - Arvator_Author::social_links() : liste des réseaux seule, appelée par le pied de page du thème.
  * - Réglages dans Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux » : photo, liens LinkedIn,
- *   Telegram, Facebook et X. Un réseau sans lien n'est jamais affiché (aucune icône vers une page absente).
+ *   Telegram, Facebook, Instagram et X. Un réseau sans lien n'est jamais affiché (aucune icône vers une page absente).
  */
 
 declare(strict_types=1);
@@ -22,8 +22,9 @@ final class Arvator_Author {
 	private const NETWORKS = array(
 		'linkedin' => array( 'LinkedIn', 'https://www.linkedin.com/in/hamid-dibarh-1936b7200', array( 'linkedin.com' ) ),
 		'telegram' => array( 'Telegram', 'https://t.me/Bot_Arvator', array( 't.me', 'telegram.me' ) ),
-		'facebook' => array( 'Facebook', '', array( 'facebook.com', 'fb.com' ) ),
-		'x'        => array( 'X', '', array( 'x.com', 'twitter.com' ) ),
+		'facebook'  => array( 'Facebook', 'https://www.facebook.com/profile.php?id=61595515365454', array( 'facebook.com', 'fb.com' ) ),
+		'instagram' => array( 'Instagram', 'https://www.instagram.com/arvatorbot', array( 'instagram.com' ) ),
+		'x'         => array( 'X', 'https://x.com/arvatorbot', array( 'x.com', 'twitter.com' ) ),
 	);
 
 	private const OPT_PHOTO = 'arvator_author_photo';
@@ -54,7 +55,15 @@ final class Arvator_Author {
 			return '';
 		}
 		$path = isset( $p['path'] ) ? preg_replace( '#[^A-Za-z0-9/._-]#', '', (string) $p['path'] ) : '/';
-		return 'https://' . $host . ( '' !== $path ? $path : '/' );
+		// Seul paramètre conservé : l'identifiant numérique d'un profil Facebook (profile.php?id=…) ; les paramètres de suivi sont retirés.
+		$query = '';
+		if ( str_ends_with( (string) $path, '/profile.php' ) && isset( $p['query'] ) ) {
+			parse_str( (string) $p['query'], $q );
+			if ( isset( $q['id'] ) && is_string( $q['id'] ) && ctype_digit( $q['id'] ) ) {
+				$query = '?id=' . $q['id'];
+			}
+		}
+		return 'https://' . $host . ( '' !== $path ? $path : '/' ) . $query;
 	}
 
 	/** @return array<string, array{label:string, url:string}> Réseaux renseignés seulement. */
@@ -83,9 +92,10 @@ final class Arvator_Author {
 			'linkedin' => 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3V9.75zm6.5 0h3.83v1.54h.05c.53-1 1.84-2.06 3.79-2.06 4.05 0 4.8 2.67 4.8 6.13V21h-4v-5.02c0-1.2-.02-2.74-1.67-2.74-1.67 0-1.93 1.3-1.93 2.65V21h-4V9.75z',
 			'telegram' => 'M21.9 4.3 18.6 19.8c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6 13.3l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 2.8c.9-.3 1.7.2 1.4 1.5z',
 			'facebook' => 'M13.5 21v-7.5h2.53l.38-2.94H13.5V8.7c0-.85.24-1.43 1.46-1.43h1.56V4.64A20.9 20.9 0 0 0 14.25 4.5c-2.25 0-3.79 1.37-3.79 3.9v2.16H7.92v2.94h2.54V21h3.04z',
+			'instagram' => 'M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
 			'x'        => 'M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3zm-1.08 16.17h1.7L7.4 4.74H5.58l11.09 14.43z',
 		);
-		return '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="' . esc_attr( $paths[ $key ] ?? '' ) . '"/></svg>';
+		return '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="' . esc_attr( $paths[ $key ] ?? '' ) . '"/></svg>';
 	}
 
 	/** Liste des réseaux renseignés ('' si aucun). */
@@ -160,7 +170,7 @@ final class Arvator_Author {
 				'arvator_social_' . $key,
 				array(
 					'label'       => 'Lien ' . $label,
-					'description' => 'Exemple : https://' . ( 't.me' === $hosts[0] ? '' : 'www.' ) . $hosts[0] . '/…',
+					'description' => 'Exemple : https://' . ( in_array( $hosts[0], array( 't.me', 'x.com' ), true ) ? '' : 'www.' ) . $hosts[0] . '/…',
 					'section'     => 'arvator_author',
 					'type'        => 'url',
 				)

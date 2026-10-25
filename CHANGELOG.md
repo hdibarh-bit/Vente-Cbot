@@ -79,6 +79,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.9.4 — 25/10/2026
+- **Réseaux sociaux** : Facebook, Instagram (@arvatorbot) et X (@arvatorbot) ajoutés à côté de LinkedIn et Telegram (pied de page, À propos, Mentions légales). Modifiables dans Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux » ; un lien vidé masque le réseau.
+
 ### 0.9.3 — 25/10/2026
 - FAQ : même explication chiffrée du minimum conseillé de 2 000 €.
 

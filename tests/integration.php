@@ -1374,6 +1374,7 @@ foreach ( array( 'mentions-legales', 'cgv' ) as $pg ) {
 /* ======================================================================== N. Éditeur : photo, réseaux sociaux, adresse */
 title( 'N. Éditeur : photo, réseaux sociaux, adresse postale' );
 delete_option( 'arvator_social_facebook' );
+delete_option( 'arvator_social_instagram' );
 delete_option( 'arvator_social_x' );
 delete_option( 'arvator_social_linkedin' );
 foreach ( array( 'a-propos', 'mentions-legales' ) as $pg ) {
@@ -1381,7 +1382,9 @@ foreach ( array( 'a-propos', 'mentions-legales' ) as $pg ) {
 	check( str_contains( $pb, 'class="author-card"' ) && str_contains( $pb, 'hamid-dibarh.jpg' ) && str_contains( $pb, 'Hamid DIBARH' ), "page « $pg » : photo et nom de l'éditeur" );
 	check( str_contains( $pb, 'href="https://www.linkedin.com/in/hamid-dibarh-1936b7200"' ), "page « $pg » : lien LinkedIn" );
 	check( str_contains( $pb, 'href="https://t.me/Bot_Arvator"' ), "page « $pg » : lien Telegram" );
-	check( ! str_contains( $pb, 'social-links__item--facebook' ) && ! str_contains( $pb, 'social-links__item--x' ), "page « $pg » : Facebook et X masqués tant qu'ils n'ont pas de lien" );
+	check( str_contains( $pb, 'href="https://www.facebook.com/profile.php?id=61595515365454"' ), "page « $pg » : lien Facebook" );
+	check( str_contains( $pb, 'href="https://www.instagram.com/arvatorbot"' ), "page « $pg » : lien Instagram" );
+	check( str_contains( $pb, 'href="https://x.com/arvatorbot"' ), "page « $pg » : lien X" );
 }
 $hp = $anon->get( '/' )['body'];
 check( 1 === preg_match( '#<footer.*social-links--footer.*linkedin\.com/in/hamid-dibarh-1936b7200#s', $hp ), 'pied de page : lien LinkedIn' );
@@ -1396,9 +1399,13 @@ check( str_contains( $hp, 'href="https://www.facebook.com/arvator"' ) && str_con
 check( '' === Arvator_Author::clean_url( 'https://pirate.example/facebook.com', array( 'facebook.com' ) ) && '' === Arvator_Author::clean_url( 'http://www.facebook.com/a', array( 'facebook.com' ) ) && '' === Arvator_Author::clean_url( 'javascript:alert(1)', array( 'x.com' ) ), 'lien refusé : mauvais site, http ou javascript' );
 check( '' === Arvator_Author::clean_url( 'https://t.me.pirate.example/Bot_Arvator', array( 't.me', 'telegram.me' ) ), 'lien Telegram refusé : faux domaine' );
 check( 'https://www.facebook.com/arvator' === Arvator_Author::clean_url( 'https://www.facebook.com/arvator?fbclid=abc#x', array( 'facebook.com' ) ), 'paramètres de suivi retirés du lien' );
+check( 'https://www.facebook.com/profile.php?id=61595515365454' === Arvator_Author::clean_url( 'https://www.facebook.com/profile.php?id=61595515365454&fbclid=abc', array( 'facebook.com' ) ) && '' !== Arvator_Author::clean_url( 'https://www.facebook.com/profile.php', array( 'facebook.com' ) ) && 'https://www.facebook.com/profile.php' === Arvator_Author::clean_url( 'https://www.facebook.com/profile.php?id=abc', array( 'facebook.com' ) ), 'profil Facebook : identifiant numérique conservé, le reste retiré' );
 update_option( 'arvator_social_linkedin', '' );
-check( ! str_contains( $anon->get( '/a-propos/' )['body'], 'linkedin.com' ), 'lien LinkedIn vidé : réseau masqué' );
+update_option( 'arvator_social_instagram', '' );
+$ap = $anon->get( '/a-propos/' )['body'];
+check( ! str_contains( $ap, 'linkedin.com' ) && ! str_contains( $ap, 'instagram.com' ), 'lien vidé : réseau masqué' );
 delete_option( 'arvator_social_facebook' );
+delete_option( 'arvator_social_instagram' );
 delete_option( 'arvator_social_x' );
 delete_option( 'arvator_social_linkedin' );
 foreach ( array( 'mentions-legales', 'cgv', 'confidentialite' ) as $pg ) {
