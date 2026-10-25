@@ -331,6 +331,10 @@ check( ! str_contains( $r['body'], "tb$tag" ) && ! str_contains( $r['body'], 'Bo
 
 /* ======================================================================== D. Téléchargement */
 title( 'D. Téléchargement du robot' );
+// Départ propre (un essai interrompu a pu laisser des fichiers ou des rôles).
+update_option( 'arvator_private_files', array(), false );
+delete_option( 'arvator_file_roles' );
+delete_option( 'arvator_video_url' );
 Arvator_Downloads::ensure_private_dir();
 $dir = Arvator_Downloads::private_dir();
 $fid = bin2hex( random_bytes( 8 ) ); $stored = bin2hex( random_bytes( 16 ) );
@@ -339,6 +343,32 @@ $files = Arvator_Downloads::files();
 $files[ $fid ] = array( 'label' => 'Robot Arvator', 'stored' => $stored, 'original' => 'Arvator.algo', 'size' => 40, 'added' => $now );
 update_option( 'arvator_private_files', $files, false );
 check( is_file( $dir . '/index.php' ) && is_file( $dir . '/.htaccess' ), 'dossier privé verrouillé (index.php, .htaccess)' );
+/** Ajoute un fichier privé de test (avec un rôle si demandé) ; retourne son identifiant. */
+$arv_add_file = static function ( string $name, string $content, string $role = '' ) use ( $dir ): string {
+	wp_cache_flush();
+	$id     = bin2hex( random_bytes( 8 ) );
+	$stored = bin2hex( random_bytes( 16 ) );
+	file_put_contents( $dir . '/' . $stored, $content );
+	$files        = Arvator_Downloads::files();
+	$files[ $id ] = array( 'label' => $name, 'stored' => $stored, 'original' => $name, 'size' => strlen( $content ), 'added' => gmdate( 'Y-m-d H:i:s' ) );
+	update_option( 'arvator_private_files', $files, false );
+	if ( '' !== $role ) {
+		$roles          = Arvator_Downloads::roles();
+		$roles[ $role ] = $id;
+		update_option( 'arvator_file_roles', $roles, false );
+	}
+	return $id;
+};
+$arv_del_file = static function ( string $id ) use ( $dir ): void {
+	wp_cache_flush();
+	$files = Arvator_Downloads::files();
+	if ( isset( $files[ $id ] ) ) {
+		@unlink( $dir . '/' . $files[ $id ]['stored'] );
+		unset( $files[ $id ] );
+		update_option( 'arvator_private_files', $files, false );
+	}
+	update_option( 'arvator_file_roles', array_filter( Arvator_Downloads::roles(), static fn( $f ) => $f !== $id ), false );
+};
 echo '  info  dossier privé : ' . $dir . "\n";
 
 $files_page = $A->get( $mp . '?section=fichiers' )['body'];
@@ -566,6 +596,7 @@ $sub = $buyer_user ? $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'su
 check( is_array( $sub ) && 'annual' === $sub['plan'] && 'active' === $sub['status'] && 0 === (int) $sub['cancel_at_period_end'] && str_starts_with( (string) $sub['current_period_end'], '2030-03-17' ), 'abonnement annuel enregistré avec sa date de fin' );
 $m = mails();
 check( 1 === count( $m ) && $buyer === $m[0]->to && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'performances simulées' ), 'email de confirmation avec lien pour choisir le mot de passe' );
+check( 1 === count( $m ) && array() === (array) $m[0]->attachments && ! str_contains( $m[0]->message, 'guide d’installation' ) && ! str_contains( $m[0]->message, 'Vidéo' ), 'aucun guide défini : email envoyé sans pièce jointe ni phrase sur le guide' );
 check( Arvator_Repo::is_entitled( (int) $buyer_user->ID ), 'le client peut télécharger le robot' );
 
 // -- Idempotence : même événement, renvoyé plusieurs fois
@@ -577,6 +608,7 @@ check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table
 $ev1b = $event( "evt_{$tag}_1b", 'checkout.session.completed', array( 'id' => $sess_id, 'payment_status' => 'paid' ) );
 $post_raw( $ev1b, $sign( $ev1b ) );
 check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$sess_id'" ), 'même session sous un autre identifiant d\'événement : toujours 1 seule commande' );
+check( 1 === count( array_filter( mails(), static fn( $x ) => $x->to === $buyer && str_contains( (string) $x->subject, 'commande est confirmée' ) ) ), 'même session sous un autre identifiant d\'événement : toujours 1 seul email de confirmation' );
 
 // -- Paiement non encaissé
 $ev2 = $event( "evt_{$tag}_2", 'checkout.session.completed', array( 'id' => "cs_unpaid_$tag", 'payment_status' => 'unpaid' ) );
@@ -1267,12 +1299,13 @@ $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email L
 $tb = new Browser( $url );
 $tp = $tb->get( '/essai-gratuit/' );
 $tq = array( 'action' => 'arvator_trial', '_arv_nonce' => field_in_form( $tp['body'], 'arvator_trial', '_arv_nonce' ), 'email' => $te, 'account' => $ta, 'waiver' => '1', 'consent' => '1' );
-check( 'essai_actif' === notice_of( $tb->post( '/wp-admin/admin-post.php', $tq ) ), 'essai : activé automatiquement' );
+check( 'essai_actif_manuel' === notice_of( $tb->post( '/wp-admin/admin-post.php', $tq ) ), 'essai : activé automatiquement (robot et guide non définis : envoi à la main)' );
 $calls = $n8n_calls();
 check( 1 === count( $calls ) && 'licence-essai' === $calls[0]['endpoint'] && $ta === $calls[0]['body']['compte'] && $te === $calls[0]['body']['email'], 'essai : demande envoyée au workflow « licence-essai »' );
 check( 'active' === $wpdb->get_var( "SELECT status FROM " . Arvator_Repo::table( 'trials' ) . " WHERE email = '$te'" ), 'essai noté « actif »' );
 $m = mails();
 check( 2 === count( $m ) && str_contains( $m[0]->subject, 'robot à envoyer' ) && $te === $m[1]->to && str_contains( $m[1]->message, 'est activé' ) && str_contains( $m[1]->message, 'droit de rétractation' ), 'emails : Hamid (robot à envoyer) + client (essai activé, rappel de renonciation)' );
+check( 2 === count( $m ) && str_contains( $m[0]->message, 'il manque le fichier du robot et le guide' ) && array() === (array) $m[1]->attachments && str_contains( $m[1]->message, 'Nous vous envoyons le robot' ), 'sans robot ni guide : Hamid sait ce qui manque, prospect sans pièce jointe' );
 $n8n_set( array( 'licence-essai' => array( 'ok' => false, 'raison' => 'essai déjà utilisé' ) ) );
 $tq2 = array( 'email' => "essai_k2_$tag@example.org", 'account' => (string) ( (int) $ta + 1 ) ) + $tq;
 check( 'essai_refuse' === notice_of( $tb->post( '/wp-admin/admin-post.php', $tq2 ) ), 'essai refusé par le serveur : message clair au visiteur' );
@@ -1757,6 +1790,7 @@ $r     = bpost( $buy2, array( 'email' => $vb2, 'ref' => $vr_c, 'promo' => 'VIR30
 $ord2  = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", $vb2 ), ARRAY_A );
 $vref2 = (string) $ord2['reference'];
 check( 302 === $r['code'] && 140880 === (int) $ord2['amount_cents'] && $vr_c === $ord2['ref_code'], 'commande avec code de recommandation et code promo' );
+$vguide = $arv_add_file( 'Guide.pdf', '%PDF-GUIDE-' . $tag, 'guide' );
 @unlink( $log );
 @unlink( $n8n_log );
 $r = $rx( array( 'transaction_id' => "tx_{$tag}_ok", 'reference' => $vref2, 'montant' => '1408,80', 'emetteur' => 'Jeanne Virement', 'libelle' => "VIR $vref2", 'date' => gmdate( 'c' ) ) );
@@ -1788,6 +1822,8 @@ check( 'deja_traite' === $r['json']['status'], 'même transaction reçue deux fo
 $r = $rx( array( 'transaction_id' => "tx_{$tag}_ok2", 'reference' => $vref2, 'montant' => 1408.80 ) );
 check( 'deja_traite' === $r['json']['status'], 'autre transaction pour une commande déjà payée : déjà traitée' );
 check( 1 === count( $n8n_calls() ) && 2 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $vu->ID ) && 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'bank:$vref2'" ) && 1 === count( array_filter( mails(), static fn( $m ) => $m->to === $vb2 ) ), 'idempotence : une licence, deux récompenses, un achat, un email' );
+check( 1 === count( $mm ) && array( 'Guide.pdf' => strlen( '%PDF-GUIDE-' . $tag ) ) === (array) $mm[0]->attachments && str_contains( $mm[0]->message, 'Le guide d’installation est joint à cet email. Vous le retrouvez aussi dans votre espace membre, onglet Téléchargements.' ), 'virement : guide d’installation joint à l’email de confirmation, avec la phrase' );
+$arv_del_file( $vguide );
 $wpdb->update( $bt, array( 'status' => 'en_attente', 'applied' => 0 ), array( 'reference' => $vref2 ) );
 $wpdb->delete( Arvator_Repo::table( 'events' ), array( 'external_id' => "bank:tx_{$tag}_ok" ) );
 $sub_before = (string) Arvator_Bank::subscription( (int) $vu->ID )['current_period_end'];
@@ -1985,6 +2021,173 @@ $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_uses' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'commissions' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id LIKE 'bank:%'" );
+
+/* ======================================================================== M. Guide d'installation, robot et essai */
+title( 'M. Guide d’installation (PDF), robot, envoi automatique aux essais, vidéo' );
+/** Relit un réglage modifié par le serveur de test (le cache de ce processus serait sinon périmé). */
+function arv_fresh( string $method, string ...$args ) {
+	wp_cache_flush();
+	return Arvator_Downloads::$method( ...$args );
+}
+clear_transients();
+delete_option( 'arvator_video_url' );
+$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name = 'arvator_file_roles'" );
+
+// -- Administration : marquer, un seul fichier par rôle, mauvais format refusé, alerte « aucun guide »
+$adm2 = new Browser( $url );
+$adm2->post( '/wp-login.php', array( 'log' => 'admin', 'pwd' => 'Test-Only-12345', 'wp-submit' => 'Log In', 'testcookie' => '1' ) );
+$ap = $adm2->get( '/wp-admin/admin.php?page=arvator' );
+check( 200 === $ap['code'] && str_contains( $ap['body'], 'Aucun guide d’installation défini' ) && str_contains( $ap['body'], 'Aucun fichier « Robot » défini' ), 'administration : « Aucun guide d’installation défini » affiché' );
+$g1 = $arv_add_file( 'Guide-v1.pdf', '%PDF-V1-' . $tag );
+$g2 = $arv_add_file( 'Guide-v2.pdf', '%PDF-V2-' . $tag );
+$rb = $arv_add_file( 'Arvator.algo', 'ROBOT-' . $tag );
+$mark = static function ( string $id, string $role ) use ( $adm2 ): array {
+	$page = $adm2->get( '/wp-admin/admin.php?page=arvator' )['body'];
+	$href = preg_match( '#href="([^"]*action=arvator_file_role(?:&|&amp;|&\x23038;)f=' . $id . '(?:&|&amp;|&\x23038;)role=' . $role . '[^"]*)"#', $page, $mm ) ? html_entity_decode( $mm[1] ) : '';
+	return '' !== $href ? $adm2->get( $href ) : array( 'code' => 0 );
+};
+check( 302 === $mark( $g1, 'guide' )['code'] && $g1 === ( arv_fresh( 'roles' )['guide'] ?? '' ), 'administration : un PDF marqué « Guide d’installation »' );
+$mark( $g2, 'guide' );
+check( $g2 === ( arv_fresh( 'roles' )['guide'] ?? '' ) && '' === arv_fresh( 'role_of', $g1 ), 'nouveau guide marqué : il remplace l’ancien (un seul guide)' );
+check( 0 === $mark( $rb, 'guide' )['code'] && 0 === $mark( $g2, 'robot' )['code'], 'pas de lien pour marquer un .algo comme guide ni un PDF comme robot' );
+$adm2->get( wp_nonce_url( '/wp-admin/admin-post.php?action=arvator_file_role&f=' . $rb . '&role=guide', 'arvator_file_role_' . $rb ) );
+check( $g2 === ( arv_fresh( 'roles' )['guide'] ?? '' ), 'un .algo forcé en « guide » : refusé' );
+$mark( $rb, 'robot' );
+check( $rb === ( arv_fresh( 'roles' )['robot'] ?? '' ), 'administration : fichier .algo marqué « Robot »' );
+$ap = $adm2->get( '/wp-admin/admin.php?page=arvator' );
+check( ! str_contains( $ap['body'], 'Aucun guide d’installation défini' ) && ! str_contains( $ap['body'], 'Aucun fichier « Robot » défini' ), 'administration : plus d’alerte une fois robot et guide marqués' );
+check( 403 === $A->get( '/wp-admin/admin-post.php?action=arvator_file_role&f=' . $rb . '&role=robot&_wpnonce=x' )['code'] || 302 === $A->get( '/wp-admin/admin-post.php?action=arvator_file_role&f=' . $rb . '&role=robot&_wpnonce=x' )['code'], 'un client ne peut pas marquer de fichier' );
+$arv_del_file( $g1 );
+
+// -- Confirmation par carte avec guide, événement rejoué : un seul email
+$gs = "cs_test_m_$tag";
+$gb = "guide_$tag@example.org";
+$set_fix( array( "GET checkout/sessions/$gs" => array( 'id' => $gs, 'payment_status' => 'paid', 'customer' => "cus_m_$tag", 'customer_email' => $gb, 'customer_details' => array( 'email' => $gb ), 'invoice' => "in_m_$tag", 'currency' => 'eur', 'line_items' => array( 'data' => array( array( 'price' => array( 'id' => 'price_annual_test' ), 'amount_total' => 35880 ), array( 'price' => array( 'id' => 'price_bot_test' ), 'amount_total' => 150000 ) ) ), 'subscription' => array( 'id' => "sub_m_$tag", 'status' => 'active', 'cancel_at_period_end' => false, 'items' => array( 'data' => array( array( 'price' => array( 'id' => 'price_annual_test' ), 'current_period_end' => 1900000000 ) ) ) ) ) ) );
+@unlink( $log );
+$em = $event( "evt_{$tag}_m1", 'checkout.session.completed', array( 'id' => $gs, 'payment_status' => 'paid' ) );
+$post_raw( $em, $sign( $em ) );
+$post_raw( $em, $sign( $em ) );
+$em2 = $event( "evt_{$tag}_m2", 'checkout.session.completed', array( 'id' => $gs, 'payment_status' => 'paid' ) );
+$post_raw( $em2, $sign( $em2 ) );
+$cm = array_values( array_filter( mails(), static fn( $x ) => $x->to === $gb && str_contains( (string) $x->subject, 'commande est confirmée' ) ) );
+check( 1 === count( $cm ), 'carte : un seul email de confirmation même si l’événement est rejoué', (string) count( $cm ) );
+check( isset( $cm[0] ) && array( 'Guide-v2.pdf' => strlen( '%PDF-V2-' . $tag ) ) === (array) $cm[0]->attachments && str_contains( $cm[0]->message, 'Le guide d’installation est joint à cet email. Vous le retrouvez aussi dans votre espace membre, onglet Téléchargements.' ), 'carte : guide joint (le même que dans l’espace membre), avec la phrase' );
+check( isset( $cm[0] ) && ! array_key_exists( 'Arvator.algo', (array) $cm[0]->attachments ), 'carte : le robot n’est pas joint (seulement le guide)' );
+
+// -- Espace membre : guide en tête pour un acheteur, invisible pour un non-acheteur et un visiteur
+$GB = new Browser( $url );
+$gbu = get_user_by( 'email', $gb );
+wp_set_password( 'Guide-Pass-' . $tag . '!', (int) $gbu->ID );
+member_login( $GB, $gbu->user_login, 'Guide-Pass-' . $tag . '!' );
+$fp = $GB->get( $mp . '?section=fichiers' )['body'];
+$pos_g = strpos( $fp, 'Guide d’installation (PDF)' );
+$pos_r = strpos( $fp, 'Arvator.algo' );
+check( false !== $pos_g && false !== $pos_r && $pos_g < $pos_r, 'espace membre : « Guide d’installation (PDF) » en tête des téléchargements' );
+preg_match( '#href="([^"]*action=arvator_download(?:&|&amp;|&\x23038;)f=' . $g2 . '[^"]*)"#', $fp, $mg );
+$glink = html_entity_decode( $mg[1] ?? '' );
+$r = $GB->get( $glink );
+check( '' !== $glink && 200 === $r['code'] && str_contains( $r['body'], '%PDF-V2-' . $tag ), 'acheteur : télécharge le guide' );
+$cp = $C->get( $mp . '?section=fichiers' )['body'];
+check( ! str_contains( $cp, 'Guide d’installation (PDF)' ) && ! str_contains( $cp, 'action=arvator_download' ), 'non-acheteur : ni guide ni robot visibles' );
+check( 302 === ( new Browser( $url ) )->get( $glink )['code'] && 403 === $C->get( $glink )['code'], 'visiteur et non-acheteur : le lien du guide ne donne rien' );
+check( ! str_contains( $fp, 'vidéo de démonstration' ), 'vidéo non définie : rien d’affiché (pas de « bientôt »)' );
+
+// -- Essai : robot + guide joints
+$trial_try = static function ( string $suffix ) use ( $url, $tag ): array {
+	$b  = new Browser( $url );
+	$tp = $b->get( '/essai-gratuit/' );
+	$em = "essai_m{$suffix}_$tag@example.org";
+	$r  = $b->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_trial', '_arv_nonce' => field_in_form( $tp['body'], 'arvator_trial', '_arv_nonce' ), 'email' => $em, 'account' => (string) ( 300000 + (int) hexdec( substr( $tag, 0, 4 ) ) * 10 + strlen( $suffix ) ), 'waiver' => '1', 'consent' => '1' ) );
+	$all = mails();
+	return array( notice_of( $r ), array_values( array_filter( $all, static fn( $x ) => $x->to === $em ) ), array_values( array_filter( $all, static fn( $x ) => 'support@arvator.com' === $x->to ) ), $em );
+};
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE 'essai_m%$tag@example.org'" );
+@unlink( $log );
+[ $tn, $tp_, $th ] = $trial_try( 'a' );
+check( 'essai_actif' === $tn && 1 === count( $tp_ ) && array( 'Arvator.algo' => strlen( 'ROBOT-' . $tag ), 'Guide-v2.pdf' => strlen( '%PDF-V2-' . $tag ) ) === (array) $tp_[0]->attachments, 'essai : robot et guide joints à l’email du prospect' );
+check( isset( $tp_[0] ) && str_contains( $tp_[0]->message, 'Le robot et son guide d’installation sont joints à cet email.' ) && ! str_contains( $tp_[0]->message, 'Nous vous envoyons' ) && str_contains( $tp_[0]->message, 'droit de rétractation' ), 'essai : texte « joints à cet email » + rappel de renonciation' );
+check( 1 === count( $th ) && str_contains( $th[0]->message, 'Robot et guide envoyés automatiquement' ) && ! str_contains( $th[0]->message, 'À faire' ), 'Hamid : simple information, plus de « À faire »' );
+$ess = ( new Browser( $url ) )->get( '/essai-gratuit/?arv_notice=essai_actif' )['body'];
+check( str_contains( $ess, 'viennent de vous être envoyés par email' ), 'message à l’écran mis à jour' );
+
+// -- Essai : robot manquant, puis guide manquant
+$roles_saved = arv_fresh( 'roles' );
+update_option( 'arvator_file_roles', array( 'guide' => $g2 ), false );
+clear_transients();
+@unlink( $log );
+[ $tn, $tp_, $th ] = $trial_try( 'bb' );
+check( 'essai_actif_manuel' === $tn && isset( $tp_[0] ) && array() === (array) $tp_[0]->attachments && str_contains( $tp_[0]->message, 'Nous vous envoyons le robot' ), 'robot manquant : prospect sans pièce jointe, phrase actuelle' );
+check( isset( $th[0] ) && str_contains( $th[0]->message, 'À faire' ) && str_contains( $th[0]->message, 'il manque le fichier du robot.' ), 'robot manquant : Hamid reçoit « À faire » en précisant le robot' );
+update_option( 'arvator_file_roles', array( 'robot' => $rb ), false );
+@unlink( $log );
+[ $tn, $tp_, $th ] = $trial_try( 'ccc' );
+check( 'essai_actif_manuel' === $tn && isset( $tp_[0] ) && array() === (array) $tp_[0]->attachments, 'guide manquant : prospect sans pièce jointe' );
+check( isset( $th[0] ) && str_contains( $th[0]->message, 'À faire' ) && str_contains( $th[0]->message, 'il manque le guide d’installation (PDF).' ), 'guide manquant : Hamid reçoit « À faire » en précisant le guide' );
+update_option( 'arvator_file_roles', $roles_saved, false );
+
+// -- Essai : pièces trop lourdes → liens privés de 14 jours, liés à l'essai
+$big = $arv_add_file( 'Arvator-gros.zip', str_repeat( 'Z', Arvator_Downloads::max_attach_bytes() ) . 'FIN-' . $tag, 'robot' );
+@unlink( $log );
+[ $tn, $tp_, $th, $tem ] = $trial_try( 'dddd' );
+check( 'essai_actif' === $tn && isset( $tp_[0] ) && array() === (array) $tp_[0]->attachments && str_contains( $tp_[0]->message, 'valables 14 jours' ), 'trop lourd : aucune pièce jointe, liens de téléchargement (14 jours)' );
+preg_match_all( '#(http\S+action=arvator_trial_dl\S+)#', $tp_[0]->message ?? '', $tl );
+$links = $tl[1] ?? array();
+check( 2 === count( $links ) && isset( $th[0] ) && str_contains( $th[0]->message, 'liens de téléchargement privés valables 14 jours' ), 'trop lourd : deux liens (robot, guide), Hamid informé' );
+$robot_link = (string) ( array_values( array_filter( $links, static fn( $l ) => str_contains( $l, 'f=robot' ) ) )[0] ?? '' );
+$guide_link = (string) ( array_values( array_filter( $links, static fn( $l ) => str_contains( $l, 'f=guide' ) ) )[0] ?? '' );
+$nb = new Browser( $url );
+$r  = $nb->get( $guide_link );
+check( 200 === $r['code'] && str_contains( $r['body'], '%PDF-V2-' . $tag ) && str_contains( $r['headers'], 'attachment' ), 'lien d’essai : le guide se télécharge sans compte' );
+$r = $nb->get( $robot_link );
+check( 200 === $r['code'] && str_ends_with( $r['body'], 'FIN-' . $tag ), 'lien d’essai : le robot se télécharge' );
+check( ! str_contains( $tp_[0]->message ?? '', (string) $wpdb->get_var( "SELECT dl_token_hash FROM " . Arvator_Repo::table( 'trials' ) . " WHERE email = '$tem'" ) ), 'le jeton n’est stocké qu’en empreinte (jamais en clair)' );
+$fake = preg_replace( '/t=[a-f0-9]{64}/', 't=' . str_repeat( 'a', 64 ), $guide_link );
+check( 403 === $nb->get( $fake )['code'] && 403 === $nb->get( str_replace( 'f=guide', 'f=autre', $guide_link ) )['code'], 'lien d’essai : faux jeton ou fichier inconnu refusé (403)' );
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'trials' ) . " SET dl_expires = '2000-01-01 00:00:00' WHERE email = '$tem'" );
+check( 403 === $nb->get( $guide_link )['code'], 'lien d’essai expiré (après 14 jours) : refusé' );
+$wpdb->query( 'UPDATE ' . Arvator_Repo::table( 'trials' ) . " SET dl_expires = '2099-01-01 00:00:00', status = 'refused' WHERE email = '$tem'" );
+check( 403 === $nb->get( $guide_link )['code'], 'lien d’essai d’un essai non actif : refusé' );
+$arv_del_file( $big );
+update_option( 'arvator_file_roles', $roles_saved, false );
+$esp = ( new Browser( $url ) )->get( '/espace-membre/' )['body'];
+check( ! str_contains( $esp, 'action=arvator_download' ), 'onglet Téléchargements toujours fermé aux personnes en essai (visiteur)' );
+
+// -- Vidéo : réglage, puis affichée dans l'espace membre et les emails
+$vp   = $adm2->get( '/wp-admin/admin.php?page=arvator' )['body'];
+$vn   = field_in_form( $vp, 'arvator_video', '_arv_nonce' );
+$adm2->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_video', '_arv_nonce' => $vn, 'video' => 'http://exemple.com/x' ) );
+check( '' === arv_fresh( 'video_url' ), 'vidéo : lien non https refusé' );
+$adm2->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_video', '_arv_nonce' => $vn, 'video' => 'https://www.youtube.com/watch?v=test' . $tag ) );
+check( 'https://www.youtube.com/watch?v=test' . $tag === arv_fresh( 'video_url' ), 'vidéo : lien enregistré par l’administrateur' );
+check( str_contains( $GB->get( $mp . '?section=fichiers' )['body'], 'watch?v=test' . $tag ), 'vidéo : lien affiché dans l’espace membre' );
+@unlink( $log );
+[ $tn, $tp_ ] = $trial_try( 'eeeee' );
+check( isset( $tp_[0] ) && str_contains( $tp_[0]->message, 'watch?v=test' . $tag ), 'vidéo : lien dans l’email d’essai' );
+$buser = get_user_by( 'email', $gb );
+@unlink( $log );
+Arvator_Webhook::send_confirmation( (int) $buser->ID, false );
+check( (bool) array_filter( mails(), static fn( $x ) => str_contains( $x->message, 'watch?v=test' . $tag ) ), 'vidéo : lien dans l’email de confirmation' );
+$adm2->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_video', '_arv_nonce' => $vn, 'video' => '' ) );
+check( '' === arv_fresh( 'video_url' ), 'vidéo : lien retiré' );
+
+// -- Suppression d'un fichier marqué : son rôle disparaît
+$dp = $adm2->get( '/wp-admin/admin.php?page=arvator' )['body'];
+$dl = preg_match( '#href="([^"]*action=arvator_delete_file(?:&|&amp;|&\x23038;)f=' . $g2 . '[^"]*)"#', $dp, $md ) ? html_entity_decode( $md[1] ) : '';
+$adm2->get( $dl );
+check( ! isset( arv_fresh( 'roles' )['guide'] ) && ! isset( arv_fresh( 'files' )[ $g2 ] ), 'guide supprimé : plus aucun guide défini' );
+
+// Nettoyage M
+$arv_del_file( $rb );
+delete_option( 'arvator_file_roles' );
+delete_option( 'arvator_video_url' );
+if ( $buser ) {
+	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) . ' WHERE user_id = %d', $buser->ID ) );
+	Arvator_Repo::delete_test_rows_for_user( (int) $buser->ID );
+	wp_delete_user( (int) $buser->ID );
+}
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = '$gs'" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE 'essai_m%$tag@example.org'" );
+$set_fix( array() );
 
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {

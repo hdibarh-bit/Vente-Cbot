@@ -4,7 +4,7 @@ add_filter(
 	'pre_wp_mail',
 	static function ( $null, $atts ) {
 		$log = getenv( 'ARV_MAILLOG' ) ?: sys_get_temp_dir() . '/arvator-mail.log';
-		file_put_contents( $log, wp_json_encode( array( 'to' => is_array( $atts['to'] ) ? implode( ',', $atts['to'] ) : $atts['to'], 'subject' => $atts['subject'], 'message' => $atts['message'], 'headers' => $atts['headers'] ) ) . "\n", FILE_APPEND );
+		file_put_contents( $log, wp_json_encode( array( 'to' => is_array( $atts['to'] ) ? implode( ',', $atts['to'] ) : $atts['to'], 'subject' => $atts['subject'], 'message' => $atts['message'], 'headers' => $atts['headers'], 'attachments' => array_map( static fn( $f ) => is_file( $f ) ? filesize( $f ) : -1, (array) $atts['attachments'] ) ) ) . "\n", FILE_APPEND );
 		return true;
 	},
 	10,

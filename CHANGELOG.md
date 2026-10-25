@@ -82,6 +82,15 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.11.0 — 25/10/2026
+- **Guide d'installation (PDF)** : dans Arvator > Fichiers privés, un fichier se marque « Robot » (.algo/.zip) et un autre « Guide d'installation » (.pdf), un seul de chaque. Alerte « Aucun guide d'installation défini » tant qu'il manque.
+- Espace membre > Téléchargements : le guide apparaît en tête, libellé « Guide d'installation (PDF) », pour tout acheteur (carte ou virement).
+- Email de confirmation d'achat (carte ET virement) : le guide est joint, avec la phrase « Le guide d'installation est joint à cet email… ». Sans guide défini : email inchangé.
+- **Essai gratuit : envoi automatique** du robot et du guide en pièces jointes dès l'activation. Hamid reçoit une simple information. S'il manque le robot ou le guide : email au prospect sans pièce jointe (phrase d'avant) et email « À faire » à Hamid qui précise ce qui manque. Fichiers trop lourds (plus de 10 Mo, réglable) : liens de téléchargement privés valables 14 jours, liés à l'essai (jeton jamais stocké en clair).
+- Réglage « lien de la vidéo de démonstration » : rien d'affiché tant qu'il est vide.
+- Correction : un paiement par carte reçu de Stripe sous deux identifiants d'événement n'envoie plus deux emails de confirmation.
+- Tests : 635 réussis, 0 échec.
+
 ### 0.10.0 — 25/10/2026
 - **Paiement par virement SEPA** (formule annuelle : robot + abonnement, puis renouvellement annuel). Voir `docs/14-paiement-virement.md`.
   - Page d'achat : choix « Virement bancaire (SEPA) » / « Carte bancaire », nom pour la facture ; le mensuel est masqué en mode virement.

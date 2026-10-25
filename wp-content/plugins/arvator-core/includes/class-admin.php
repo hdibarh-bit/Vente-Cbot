@@ -1,7 +1,8 @@
 <?php
 /**
  * Écrans d'administration (réservés aux administrateurs) :
- * - Fichiers privés : mettre en ligne le robot que les clients téléchargent ;
+ * - Fichiers privés : mettre en ligne le robot et le guide d'installation que les clients téléchargent
+ *   (et le lien de la vidéo de démonstration) ;
  * - Clients de démonstration : voir l'espace membre avec de fausses données (supprimables en un clic).
  */
 
@@ -21,6 +22,8 @@ final class Arvator_Admin {
 		add_action( 'admin_post_arvator_dismiss_review', array( self::class, 'handle_dismiss_review' ) );
 		add_action( 'admin_post_arvator_upload_file', array( self::class, 'handle_upload' ) );
 		add_action( 'admin_post_arvator_delete_file', array( self::class, 'handle_delete' ) );
+		add_action( 'admin_post_arvator_file_role', array( self::class, 'handle_role' ) );
+		add_action( 'admin_post_arvator_video', array( self::class, 'handle_video' ) );
 		add_action( 'admin_post_arvator_demo_create', array( self::class, 'handle_demo_create' ) );
 		add_action( 'admin_post_arvator_demo_delete', array( self::class, 'handle_demo_delete' ) );
 	}
@@ -72,7 +75,16 @@ final class Arvator_Admin {
 		}
 		echo '<div class="wrap"><h1>Fichiers privés</h1>';
 		self::show_notice();
-		echo '<p>Le fichier du robot que vous mettez en ligne ici est <strong>invisible du public</strong> : seuls les clients ayant acheté peuvent le télécharger depuis leur espace membre. Formats acceptés : .algo, .zip, .pdf (100 Mo maximum).</p>';
+		echo '<p>Les fichiers que vous mettez en ligne ici sont <strong>invisibles du public</strong> : seuls les clients ayant acheté peuvent les télécharger depuis leur espace membre. Formats acceptés : .algo, .zip, .pdf (100 Mo maximum).</p>';
+		echo '<p>Marquez <strong>un fichier « Robot »</strong> (.algo ou .zip) et <strong>un fichier « Guide d’installation »</strong> (.pdf) : le guide est joint à l’email de confirmation de chaque achat (carte ou virement) et affiché en tête de l’espace membre ; le robot et le guide sont envoyés automatiquement aux personnes dont l’essai gratuit est activé. Un nouveau fichier marqué remplace l’ancien.</p>';
+		if ( null === Arvator_Downloads::role_file( 'guide' ) ) {
+			echo '<div class="notice notice-warning inline"><p><strong>Aucun guide d’installation défini.</strong> L’email de confirmation part sans guide, et le robot n’est pas envoyé automatiquement aux personnes en essai.</p></div>';
+		}
+		if ( null === Arvator_Downloads::role_file( 'robot' ) ) {
+			echo '<div class="notice notice-warning inline"><p><strong>Aucun fichier « Robot » défini.</strong> Les personnes en essai ne reçoivent pas le robot automatiquement (vous recevez un email « À faire »).</p></div>';
+		}
+		$mb = Arvator_Downloads::max_attach_bytes();
+		printf( '<p><em>Pièces jointes :</em> %s maximum par email (au-delà, l’essai reçoit des liens de téléchargement privés valables 14 jours).</p>', esc_html( size_format( $mb ) ) );
 		printf( '<p><em>Dossier de stockage :</em> <code>%s</code></p>', esc_html( Arvator_Downloads::private_dir() ) );
 		?>
 		<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -81,6 +93,11 @@ final class Arvator_Admin {
 			<table class="form-table" role="presentation">
 				<tr><th scope="row"><label for="arv-label">Nom affiché aux clients</label></th><td><input id="arv-label" name="label" type="text" class="regular-text" maxlength="120" placeholder="Robot Arvator"></td></tr>
 				<tr><th scope="row"><label for="arv-file">Fichier</label></th><td><input id="arv-file" name="file" type="file" required></td></tr>
+				<tr><th scope="row">Rôle</th><td>
+					<label><input type="radio" name="role" value="" checked> Aucun</label><br>
+					<label><input type="radio" name="role" value="robot"> Robot (.algo ou .zip)</label><br>
+					<label><input type="radio" name="role" value="guide"> Guide d’installation (.pdf)</label>
+				</td></tr>
 			</table>
 			<?php submit_button( 'Mettre en ligne' ); ?>
 		</form>
@@ -88,22 +105,48 @@ final class Arvator_Admin {
 		<?php
 		$files = Arvator_Downloads::files();
 		if ( ! $files ) {
-			echo '<p>Aucun fichier.</p></div>';
-			return;
-		}
-		echo '<table class="widefat striped"><thead><tr><th>Nom affiché</th><th>Fichier d’origine</th><th>Taille</th><th>Ajouté le (UTC)</th><th></th></tr></thead><tbody>';
-		foreach ( $files as $id => $f ) {
-			$del = wp_nonce_url( admin_url( 'admin-post.php?action=arvator_delete_file&f=' . rawurlencode( (string) $id ) ), 'arvator_delete_file_' . $id );
-			printf(
-				'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><a href="%s" onclick="return confirm(\'Supprimer ce fichier ?\');">Supprimer</a></td></tr>',
-				esc_html( (string) $f['label'] ),
-				esc_html( (string) $f['original'] ),
-				esc_html( size_format( (int) $f['size'] ) ),
-				esc_html( (string) $f['added'] ),
-				esc_url( $del )
+			echo '<p>Aucun fichier.</p>';
+		} else {
+			$names = array(
+				'robot' => 'Robot',
+				'guide' => 'Guide d’installation',
 			);
+			echo '<table class="widefat striped"><thead><tr><th>Nom affiché</th><th>Fichier d’origine</th><th>Taille</th><th>Ajouté le (UTC)</th><th>Rôle</th><th></th></tr></thead><tbody>';
+			foreach ( $files as $id => $f ) {
+				$id   = (string) $id;
+				$del  = wp_nonce_url( admin_url( 'admin-post.php?action=arvator_delete_file&f=' . rawurlencode( $id ) ), 'arvator_delete_file_' . $id );
+				$role = Arvator_Downloads::role_of( $id );
+				$ext  = strtolower( pathinfo( (string) $f['original'], PATHINFO_EXTENSION ) );
+				$cell = '' !== $role ? '<strong>' . esc_html( $names[ $role ] ) . '</strong>' : '';
+				foreach ( Arvator_Downloads::ROLES as $r => $exts ) {
+					if ( $r !== $role && in_array( $ext, $exts, true ) ) {
+						$mark  = wp_nonce_url( admin_url( 'admin-post.php?action=arvator_file_role&f=' . rawurlencode( $id ) . '&role=' . $r ), 'arvator_file_role_' . $id );
+						$cell .= sprintf( '<a href="%s">Marquer « %s »</a>', esc_url( $mark ), esc_html( $names[ $r ] ) );
+					}
+				}
+				printf(
+					'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><a href="%s" onclick="return confirm(\'Supprimer ce fichier ?\');">Supprimer</a></td></tr>',
+					esc_html( (string) $f['label'] ),
+					esc_html( (string) $f['original'] ),
+					esc_html( size_format( (int) $f['size'] ) ),
+					esc_html( (string) $f['added'] ),
+					wp_kses( $cell, array( 'a' => array( 'href' => array() ), 'strong' => array() ) ),
+					esc_url( $del )
+				);
+			}
+			echo '</tbody></table>';
 		}
-		echo '</tbody></table></div>';
+		?>
+		<h2>Vidéo de démonstration</h2>
+		<p>Une fois rempli, ce lien apparaît dans l’espace membre (Téléchargements), l’email de confirmation d’achat et l’email d’essai. Laissez vide tant que la vidéo n’est pas prête : rien n’est affiché.</p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<input type="hidden" name="action" value="arvator_video">
+			<?php wp_nonce_field( 'arvator_video', '_arv_nonce' ); ?>
+			<p><label for="arv-video">Lien de la vidéo (https://…)</label><br><input id="arv-video" name="video" type="url" class="regular-text" maxlength="500" value="<?php echo esc_attr( Arvator_Downloads::video_url() ); ?>" placeholder="https://"></p>
+			<?php submit_button( 'Enregistrer le lien', 'secondary' ); ?>
+		</form>
+		</div>
+		<?php
 	}
 
 	public static function page_demo(): void {
@@ -157,10 +200,19 @@ final class Arvator_Admin {
 		self::guard( 'arvator_upload_file' );
 		$label = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['label'] ) ) : '';
 		$file  = isset( $_FILES['file'] ) && is_array( $_FILES['file'] ) ? $_FILES['file'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$role  = isset( $_POST['role'] ) ? sanitize_key( wp_unslash( (string) $_POST['role'] ) ) : '';
 		$res   = Arvator_Downloads::add( $file, $label );
+		if ( 'ok' === $res && '' !== $role ) {
+			$files = Arvator_Downloads::files();
+			$res   = Arvator_Downloads::set_role( (string) array_key_last( $files ), $role );
+			$res   = 'ok' === $res ? 'ok_role' : $res;
+		}
 
 		$messages = array(
 			'ok'        => array( 'ok', 'Fichier mis en ligne.' ),
+			'ok_role'   => array( 'ok', 'Fichier mis en ligne et marqué.' ),
+			'role'      => array( 'err', 'Fichier mis en ligne, mais rôle inconnu : marquez-le dans la liste.' ),
+			'role_ext'  => array( 'err', 'Fichier mis en ligne, mais pas marqué : le robot doit être un .algo ou un .zip, le guide un .pdf.' ),
 			'extension' => array( 'err', 'Format refusé : seuls .algo, .zip et .pdf sont acceptés.' ),
 			'size'      => array( 'err', 'Fichier vide ou trop lourd (100 Mo maximum).' ),
 			'upload'    => array( 'err', 'Le téléversement a échoué.' ),
@@ -182,6 +234,35 @@ final class Arvator_Admin {
 		if ( 1 === preg_match( '/^[a-f0-9]{16}$/', $id ) ) {
 			Arvator_Downloads::remove( $id );
 			self::flash( 'ok', 'Fichier supprimé.' );
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=arvator' ) );
+		exit;
+	}
+
+	public static function handle_role(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Accès refusé.', '', array( 'response' => 403 ) );
+		}
+		$id   = isset( $_GET['f'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['f'] ) ) : '';
+		$role = isset( $_GET['role'] ) ? sanitize_key( wp_unslash( (string) $_GET['role'] ) ) : '';
+		check_admin_referer( 'arvator_file_role_' . $id );
+		$res = Arvator_Downloads::set_role( $id, $role );
+		if ( 'ok' === $res ) {
+			self::flash( 'ok', 'robot' === $role ? 'Fichier marqué « Robot ».' : 'Fichier marqué « Guide d’installation ».' );
+		} else {
+			self::flash( 'err', 'Ce fichier ne peut pas avoir ce rôle : le robot doit être un .algo ou un .zip, le guide un .pdf.' );
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=arvator' ) );
+		exit;
+	}
+
+	public static function handle_video(): void {
+		self::guard( 'arvator_video' );
+		$url = isset( $_POST['video'] ) ? (string) wp_unslash( $_POST['video'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nettoyé par set_video_url
+		if ( Arvator_Downloads::set_video_url( $url ) ) {
+			self::flash( 'ok', '' === Arvator_Downloads::video_url() ? 'Lien de la vidéo retiré : rien n’est affiché.' : 'Lien de la vidéo enregistré.' );
+		} else {
+			self::flash( 'err', 'Lien refusé : il doit commencer par https://' );
 		}
 		wp_safe_redirect( admin_url( 'admin.php?page=arvator' ) );
 		exit;

@@ -5,6 +5,10 @@
  * Emplacement : la constante ARVATOR_PRIVATE_DIR si elle est définie dans wp-config.php ; sinon un dossier
  * AU-DESSUS du dossier public du site si c'est possible ; sinon un dossier protégé dans « uploads ».
  * Les fichiers sont enregistrés sous un nom aléatoire, sans extension.
+ *
+ * Deux fichiers peuvent porter un rôle (un seul de chaque, le nouveau remplace l'ancien) : « Robot » (.algo ou .zip)
+ * et « Guide d'installation » (.pdf). Le guide est joint à l'email de confirmation d'achat ; robot et guide sont
+ * joints à l'email d'essai (ou remplacés par des liens privés de 14 jours s'ils sont trop lourds, voir Arvator_Trial).
  */
 
 declare(strict_types=1);
@@ -16,8 +20,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Arvator_Downloads {
 
 	private const OPTION      = 'arvator_private_files';
+	private const ROLES_OPT   = 'arvator_file_roles';
+	private const VIDEO_OPT   = 'arvator_video_url';
 	private const EXTENSIONS  = array( 'algo', 'zip', 'pdf' );
 	private const MAX_BYTES   = 100 * MB_IN_BYTES;
+	/** Formats acceptés pour chaque rôle. */
+	public const ROLES        = array(
+		'robot' => array( 'algo', 'zip' ),
+		'guide' => array( 'pdf' ),
+	);
+	/** Poids maximal des pièces jointes d'un email (réglable : ARVATOR_MAIL_MAX_ATTACH_MB dans wp-config.php). */
+	private const ATTACH_MB   = 10;
 
 	public static function init(): void {
 		add_action( 'admin_post_arvator_download', array( self::class, 'serve' ) );
@@ -59,6 +72,122 @@ final class Arvator_Downloads {
 	public static function files(): array {
 		$files = get_option( self::OPTION, array() );
 		return is_array( $files ) ? $files : array();
+	}
+
+	/* --------------------------------------------------------------------- Rôles : robot et guide d'installation */
+
+	/** @return array<string, string>  rôle => identifiant du fichier */
+	public static function roles(): array {
+		$roles = get_option( self::ROLES_OPT, array() );
+		return is_array( $roles ) ? $roles : array();
+	}
+
+	/** Donne un rôle à un fichier (le précédent fichier de ce rôle le perd). Retourne 'ok' ou un code d'erreur. */
+	public static function set_role( string $id, string $role ): string {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return 'denied';
+		}
+		$files = self::files();
+		if ( ! isset( self::ROLES[ $role ] ) || ! isset( $files[ $id ] ) ) {
+			return 'role';
+		}
+		$ext = strtolower( pathinfo( (string) $files[ $id ]['original'], PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, self::ROLES[ $role ], true ) ) {
+			return 'role_ext';
+		}
+		$roles = self::roles();
+		foreach ( $roles as $r => $fid ) {
+			if ( $fid === $id ) {
+				unset( $roles[ $r ] ); // un fichier n'a qu'un rôle
+			}
+		}
+		$roles[ $role ] = $id;
+		update_option( self::ROLES_OPT, $roles, false );
+		return 'ok';
+	}
+
+	/** Rôle d'un fichier ('robot', 'guide' ou ''). */
+	public static function role_of( string $id ): string {
+		$found = array_search( $id, self::roles(), true );
+		return is_string( $found ) ? $found : '';
+	}
+
+	/**
+	 * Fichier qui porte ce rôle, s'il existe vraiment sur le disque.
+	 *
+	 * @return array{id:string, path:string, name:string, size:int, label:string}|null
+	 */
+	public static function role_file( string $role ): ?array {
+		$id    = self::roles()[ $role ] ?? '';
+		$files = self::files();
+		if ( '' === $id || ! isset( $files[ $id ] ) ) {
+			return null;
+		}
+		$path = self::path( $id );
+		if ( null === $path ) {
+			return null;
+		}
+		return array(
+			'id'    => $id,
+			'path'  => $path,
+			'name'  => (string) $files[ $id ]['original'],
+			'size'  => (int) filesize( $path ),
+			'label' => (string) $files[ $id ]['label'],
+		);
+	}
+
+	/** Chemin réel d'un fichier privé, seulement s'il est bien dans le dossier privé. */
+	public static function path( string $id ): ?string {
+		$files = self::files();
+		if ( ! isset( $files[ $id ] ) ) {
+			return null;
+		}
+		$dir  = realpath( self::private_dir() );
+		$path = realpath( self::private_dir() . '/' . $files[ $id ]['stored'] );
+		if ( false === $dir || false === $path || ! str_starts_with( $path, $dir . DIRECTORY_SEPARATOR ) || ! is_file( $path ) ) {
+			return null;
+		}
+		return $path;
+	}
+
+	/** Poids maximal (octets) des pièces jointes d'un même email. */
+	public static function max_attach_bytes(): int {
+		$mb = defined( 'ARVATOR_MAIL_MAX_ATTACH_MB' ) ? (float) ARVATOR_MAIL_MAX_ATTACH_MB : self::ATTACH_MB;
+		return (int) ( max( 0.0, $mb ) * MB_IN_BYTES );
+	}
+
+	/**
+	 * Pièces jointes pour wp_mail : nom affiché => chemin (le fichier stocké n'a pas d'extension).
+	 *
+	 * @param array<int, array{path:string, name:string}> $files
+	 * @return array<string, string>
+	 */
+	public static function attachments( array $files ): array {
+		$out = array();
+		foreach ( $files as $f ) {
+			$out[ $f['name'] ] = $f['path'];
+		}
+		return $out;
+	}
+
+	/* --------------------------------------------------------------------- Vidéo de démonstration */
+
+	public static function video_url(): string {
+		$url = (string) get_option( self::VIDEO_OPT, '' );
+		return str_starts_with( $url, 'https://' ) ? $url : '';
+	}
+
+	/** Enregistre le lien de la vidéo (https uniquement ; vide = rien n'est affiché). */
+	public static function set_video_url( string $url ): bool {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return false;
+		}
+		$url = esc_url_raw( trim( $url ), array( 'https' ) );
+		if ( '' !== $url && ! str_starts_with( $url, 'https://' ) ) {
+			return false;
+		}
+		update_option( self::VIDEO_OPT, $url, false );
+		return true;
 	}
 
 	/** Lien de téléchargement (valable pour la session de l'utilisateur connecté). */
@@ -124,6 +253,8 @@ final class Arvator_Downloads {
 		}
 		unset( $files[ $id ] );
 		update_option( self::OPTION, $files, false );
+		$roles = array_filter( self::roles(), static fn( $fid ): bool => $fid !== $id );
+		update_option( self::ROLES_OPT, $roles, false );
 	}
 
 	/* --------------------------------------------------------------------- Téléchargement */
@@ -147,18 +278,20 @@ final class Arvator_Downloads {
 			wp_die( esc_html__( 'Le téléchargement n’est pas disponible pour votre compte.', 'arvator-core' ), esc_html__( 'Accès refusé', 'arvator-core' ), array( 'response' => 403 ) );
 		}
 
-		$files = self::files();
-		if ( ! isset( $files[ $id ] ) ) {
+		if ( null === self::path( $id ) ) {
 			wp_die( esc_html__( 'Fichier introuvable.', 'arvator-core' ), esc_html__( 'Erreur', 'arvator-core' ), array( 'response' => 404 ) );
 		}
-		$dir  = realpath( self::private_dir() );
-		$path = realpath( self::private_dir() . '/' . $files[ $id ]['stored'] );
-		if ( false === $dir || false === $path || ! str_starts_with( $path, $dir . DIRECTORY_SEPARATOR ) || ! is_file( $path ) ) {
-			wp_die( esc_html__( 'Fichier introuvable.', 'arvator-core' ), esc_html__( 'Erreur', 'arvator-core' ), array( 'response' => 404 ) );
-		}
-
 		Arvator_Repo::log_event( 'download', $user_id, array( 'file' => $id ) );
+		self::send_file( $id );
+	}
 
+	/** Envoie le fichier au navigateur (après les contrôles d'accès faits par l'appelant). */
+	public static function send_file( string $id ): never {
+		$files = self::files();
+		$path  = self::path( $id );
+		if ( null === $path ) {
+			wp_die( esc_html__( 'Fichier introuvable.', 'arvator-core' ), esc_html__( 'Erreur', 'arvator-core' ), array( 'response' => 404 ) );
+		}
 		$name = (string) $files[ $id ]['original'];
 		nocache_headers();
 		header( 'Content-Type: application/octet-stream' );

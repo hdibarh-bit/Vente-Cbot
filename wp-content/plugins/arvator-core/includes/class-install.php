@@ -119,6 +119,8 @@ final class Arvator_Install {
   status VARCHAR(20) NOT NULL DEFAULT 'requested',
   waiver_at DATETIME NOT NULL,
   created_at DATETIME NOT NULL,
+  dl_token_hash CHAR(64) NULL,
+  dl_expires DATETIME NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY email (email),
   UNIQUE KEY account_number (account_number)

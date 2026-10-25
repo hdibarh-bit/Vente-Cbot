@@ -308,9 +308,18 @@ final class Arvator_Member {
 			return;
 		}
 		$files = Arvator_Downloads::files();
+		$video = Arvator_Downloads::video_url();
+		if ( '' !== $video ) {
+			printf( '<p><a class="btn btn--ghost btn--sm" href="%s" target="_blank" rel="noopener">%s</a></p>', esc_url( $video ), esc_html__( 'Voir la vidéo de démonstration de l’installation', 'arvator-core' ) );
+		}
 		if ( ! $files ) {
 			echo '<p>' . esc_html__( 'Aucun fichier à télécharger pour le moment.', 'arvator-core' ) . '</p>';
 			return;
+		}
+		// Le guide d'installation en tête, avec un libellé fixe.
+		$guide = Arvator_Downloads::role_file( 'guide' );
+		if ( null !== $guide && isset( $files[ $guide['id'] ] ) ) {
+			$files = array( $guide['id'] => array( 'label' => __( 'Guide d’installation (PDF)', 'arvator-core' ) ) + $files[ $guide['id'] ] ) + $files;
 		}
 		echo '<ul class="arv-files">';
 		foreach ( $files as $id => $f ) {

@@ -179,7 +179,11 @@ final class Arvator_Webhook {
 		}
 
 		Arvator_Repo::log_event( 'purchase', $user_id, array( 'session' => $session_id, 'amount_cents' => $amount ) );
-		self::send_confirmation( $user_id, $created );
+		// Un seul email par paiement, même si Stripe renvoie la même session sous un autre identifiant d'événement.
+		if ( ! in_array( $session_id, (array) get_user_meta( $user_id, 'arv_confirmation_sent' ), true ) ) {
+			add_user_meta( $user_id, 'arv_confirmation_sent', $session_id );
+			self::send_confirmation( $user_id, $created );
+		}
 	}
 
 	/**
@@ -429,11 +433,30 @@ final class Arvator_Webhook {
 		$lines[] = __( 'Retrouvez votre achat, votre abonnement et le téléchargement du robot dans votre espace membre :', 'arvator-core' );
 		$lines[] = Arvator_Member::url();
 		$lines[] = '';
+
+		// Guide d'installation joint (le même que dans l'espace membre), s'il est défini et assez léger pour un email.
+		$guide       = Arvator_Downloads::role_file( 'guide' );
+		$attachments = array();
+		if ( null !== $guide && $guide['size'] <= Arvator_Downloads::max_attach_bytes() ) {
+			$attachments = Arvator_Downloads::attachments( array( $guide ) );
+			$lines[]     = __( 'Le guide d’installation est joint à cet email. Vous le retrouvez aussi dans votre espace membre, onglet Téléchargements.', 'arvator-core' );
+			$lines[]     = '';
+		} elseif ( null !== $guide ) {
+			$lines[] = __( 'Le guide d’installation est à télécharger dans votre espace membre, onglet Téléchargements.', 'arvator-core' );
+			$lines[] = '';
+		}
+		$video = Arvator_Downloads::video_url();
+		if ( '' !== $video ) {
+			$lines[] = __( 'Vidéo de démonstration de l’installation :', 'arvator-core' );
+			$lines[] = $video;
+			$lines[] = '';
+		}
+
 		$lines[] = __( 'Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
 		$lines[] = '';
 		$lines[] = Arvator_Site::signature();
 
-		wp_mail( $user->user_email, __( 'Arvator : votre commande est confirmée', 'arvator-core' ), implode( "\n", $lines ) );
+		wp_mail( $user->user_email, __( 'Arvator : votre commande est confirmée', 'arvator-core' ), implode( "\n", $lines ), '', $attachments );
 		if ( $switched ) {
 			restore_previous_locale();
 		}
