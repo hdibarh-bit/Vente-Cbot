@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.2 — 25/10/2026
+- Section Tarifs : « Paiement par carte (sécurisé par Stripe) ou par virement bancaire pour la formule annuelle ».
+
 ### 0.8.1 — 25/10/2026
 - Explication du minimum conseillé de 2 000 € : « 20 trades refusés au risque 1 %, aucun aux risques 2 % et 3 % » (chiffres confirmés par Hamid).
 
@@ -78,6 +81,17 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.10.0 — 25/10/2026
+- **Paiement par virement SEPA** (formule annuelle : robot + abonnement, puis renouvellement annuel). Voir `docs/14-paiement-virement.md`.
+  - Page d'achat : choix « Virement bancaire (SEPA) » / « Carte bancaire », nom pour la facture ; le mensuel est masqué en mode virement.
+  - Commande « en attente » avec référence unique `ARV-123456`, page et email avec IBAN, BIC, montant exact, référence à copier, délai de 24 h, **QR code de virement (EPC)** généré sans service extérieur ; une seule commande ouverte par client.
+  - Point d'appel signé `POST /wp-json/arvator/v1/virement-recu` pour n8n (HMAC-SHA256 + horodatage 5 min, idempotent par identifiant de transaction ; réponses `ok`, `deja_traite`, `sans_reference`, `commande_inconnue`, `montant_insuffisant`, `trop_percu`).
+  - Virement reçu : même traitement qu'un paiement Stripe (compte, email, achat, abonnement, parrainage, code promo, licence via n8n, facture numérotée).
+  - Rappels J+3 / J+7, annulation automatique à J+30 ; renouvellement annuel (commande 30 jours avant, rappels J-30 à J+2), bouton « Renouveler par virement », factures dans l'espace membre.
+  - Administration Arvator > Virements : liste, recherche, marquer payée, annuler, remboursement effectué, réglages. RGPD : export et effacement pris en compte.
+  - FAQ, CGV et confidentialité : virement, délai d'activation, renouvellement sans reconduction automatique.
+- Réseaux sociaux : Facebook, Instagram et X (0.9.4).
 
 ### 0.9.4 — 25/10/2026
 - **Réseaux sociaux** : Facebook, Instagram (@arvatorbot) et X (@arvatorbot) ajoutés à côté de LinkedIn et Telegram (pied de page, À propos, Mentions légales). Modifiables dans Apparence > Personnaliser > « Arvator : éditeur et réseaux sociaux » ; un lien vidé masque le réseau.

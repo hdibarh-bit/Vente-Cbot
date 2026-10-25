@@ -28,7 +28,7 @@ final class Arvator_Checkout {
 	}
 
 	/** @return array{achat:float, mensuel:float, annuel:float, annuel_mois:float} */
-	private static function amounts(): array {
+	public static function amounts(): array {
 		$p = function_exists( 'arvator_pricing' ) ? arvator_pricing() : array();
 		return array(
 			'achat'       => (float) ( $p['achat'] ?? 1500 ),
@@ -54,13 +54,27 @@ final class Arvator_Checkout {
 		ob_start();
 		echo wp_kses_post( Arvator_Support::render_notice() );
 
+		// Page des coordonnées de virement d'une commande (adresse avec jeton secret, reçue par email).
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- simple affichage, le jeton est l'autorisation
+		if ( isset( $_GET['arv_virement'] ) ) {
+			$order = Arvator_Bank::by_token( sanitize_text_field( wp_unslash( (string) $_GET['arv_virement'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( $order && Arvator_Bank::enabled() ) {
+				echo '<h2>' . esc_html__( 'Il reste une étape : votre virement', 'arvator-core' ) . '</h2>';
+				echo Arvator_Bank::instructions_html( $order ); // phpcs:ignore WordPress.Security.EscapeOutput -- échappé dans instructions_html()
+				echo '<p class="muted">' . esc_html__( 'Un email avec les mêmes informations vient de vous être envoyé.', 'arvator-core' ) . '</p>';
+				return (string) ob_get_clean();
+			}
+		}
+
 		$user_id = get_current_user_id();
 		if ( $user_id && Arvator_Repo::has_paid_order( $user_id ) ) {
 			/* translators: %s: adresse de l'espace membre. */
 			echo '<p>' . wp_kses_post( sprintf( __( 'Vous avez déjà acheté Arvator. Retrouvez votre licence et le téléchargement dans votre <a href="%s">espace membre</a>.', 'arvator-core' ), esc_url( Arvator_Member::url() ) ) ) . '</p>';
 			return (string) ob_get_clean();
 		}
-		if ( ! Arvator_Stripe::configured() ) {
+		$card = Arvator_Stripe::configured();
+		$bank = Arvator_Bank::enabled();
+		if ( ! $card && ! $bank ) {
 			/* translators: %s: adresse de la page Contact. */
 			echo '<p>' . wp_kses_post( sprintf( __( 'Le paiement en ligne est en cours de configuration. Vous pouvez nous écrire depuis la page <a href="%s">Contact</a>.', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'contact' ) ) ) ) . '</p>';
 			return (string) ob_get_clean();
@@ -77,6 +91,25 @@ final class Arvator_Checkout {
 			<input type="hidden" name="action" value="arvator_checkout">
 			<?php wp_nonce_field( 'arvator_checkout', '_arv_nonce' ); ?>
 
+			<?php if ( $bank && $card ) : ?>
+				<fieldset class="arv-plans arv-methods">
+					<legend><?php esc_html_e( 'Moyen de paiement', 'arvator-core' ); ?></legend>
+					<label class="arv-plan">
+						<input type="radio" name="method" value="bank" checked>
+						<span><?php echo wp_kses_post( __( '<strong>Virement bancaire (SEPA)</strong> · sans frais', 'arvator-core' ) ); ?><br>
+						<span class="muted"><?php esc_html_e( 'Disponible pour la formule annuelle. Vous recevez les coordonnées bancaires juste après votre commande.', 'arvator-core' ); ?></span></span>
+					</label>
+					<label class="arv-plan">
+						<input type="radio" name="method" value="card">
+						<span><?php echo wp_kses_post( __( '<strong>Carte bancaire</strong> (paiement sécurisé par Stripe)', 'arvator-core' ) ); ?></span>
+					</label>
+				</fieldset>
+			<?php elseif ( $bank ) : ?>
+				<input type="hidden" name="method" value="bank">
+			<?php else : ?>
+				<input type="hidden" name="method" value="card">
+			<?php endif; ?>
+
 			<fieldset class="arv-plans">
 				<legend><?php esc_html_e( 'Choisissez votre abonnement', 'arvator-core' ); ?></legend>
 				<label class="arv-plan">
@@ -84,12 +117,15 @@ final class Arvator_Checkout {
 					<span><?php /* translators: 1: prix mensuel, 2: prix annuel. */ echo wp_kses_post( sprintf( __( '<strong>Annuel</strong> · %1$s par mois, payés d’avance (%2$s par an)', 'arvator-core' ), esc_html( self::eur( $a['annuel_mois'] ) ), esc_html( self::eur( $a['annuel'] ) ) ) ); ?><br>
 					<span class="muted"><?php /* translators: %s: montant du premier paiement. */ echo esc_html( sprintf( __( 'Premier paiement : %s (robot + 1 an d’abonnement)', 'arvator-core' ), self::eur( $a['achat'] + $a['annuel'] ) ) ); ?></span></span>
 				</label>
-				<label class="arv-plan">
+				<label class="arv-plan" data-plan="monthly">
 					<input type="radio" name="plan" value="monthly"<?php checked( 'monthly', $pref ); ?>>
 					<span><?php /* translators: %s: prix mensuel. */ echo wp_kses_post( sprintf( __( '<strong>Mensuel</strong> · %s par mois', 'arvator-core' ), esc_html( self::eur( $a['mensuel'] ) ) ) ); ?><br>
 					<span class="muted"><?php /* translators: %s: montant du premier paiement. */ echo esc_html( sprintf( __( 'Premier paiement : %s (robot + 1er mois)', 'arvator-core' ), self::eur( $a['achat'] + $a['mensuel'] ) ) ); ?></span></span>
 				</label>
 			</fieldset>
+			<?php if ( $bank ) : ?>
+				<p class="muted arv-bank-note" hidden><?php esc_html_e( 'Le paiement par virement est disponible pour la formule annuelle.', 'arvator-core' ); ?></p>
+			<?php endif; ?>
 
 			<p class="muted"><?php /* translators: %s: prix du robot. */ echo esc_html( sprintf( __( 'Le robot (%s) est payé une seule fois. L’abonnement est obligatoire : il se renouvelle jusqu’à votre résiliation, que vous pouvez faire à tout moment depuis votre espace membre.', 'arvator-core' ), self::eur( $a['achat'] ) ) ); ?></p>
 
@@ -99,6 +135,13 @@ final class Arvator_Checkout {
 				<p>
 					<label for="arv-buy-email"><?php esc_html_e( 'Votre adresse email', 'arvator-core' ); ?></label>
 					<input id="arv-buy-email" name="email" type="email" required autocomplete="email" maxlength="190">
+				</p>
+			<?php endif; ?>
+
+			<?php if ( $bank ) : ?>
+				<p class="arv-bank-field" <?php echo $card ? 'hidden' : ''; ?>>
+					<label for="arv-buy-name"><?php esc_html_e( 'Votre nom (pour la facture)', 'arvator-core' ); ?></label>
+					<input id="arv-buy-name" name="name" type="text" maxlength="120" autocomplete="name" value="<?php echo esc_attr( $user_id ? $user->display_name : '' ); ?>"<?php echo $card ? '' : ' required'; ?>>
 				</p>
 			<?php endif; ?>
 
@@ -118,7 +161,7 @@ final class Arvator_Checkout {
 				<p>
 					<label for="arv-buy-promo"><?php esc_html_e( 'Code promo', 'arvator-core' ); ?> <span class="muted"><?php esc_html_e( '(facultatif)', 'arvator-core' ); ?></span></label>
 					<input id="arv-buy-promo" name="promo" type="text" maxlength="30" autocomplete="off" value="<?php echo esc_attr( self::prefill_promo() ); ?>">
-					<span class="muted"><?php esc_html_e( 'La réduction s’affiche sur la page de paiement Stripe, avant de payer.', 'arvator-core' ); ?></span>
+					<span class="muted"><?php esc_html_e( 'Par carte, la réduction s’affiche sur la page de paiement Stripe, avant de payer ; par virement, elle est calculée dans le montant à virer.', 'arvator-core' ); ?></span>
 				</p>
 			<?php endif; ?>
 
@@ -127,9 +170,25 @@ final class Arvator_Checkout {
 
 			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1"<?php echo $had_trial ? ' required' : ''; ?>> <?php echo esc_html( $had_trial ? __( 'je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable).', 'arvator-core' ) : __( 'Si vous avez fait l’essai gratuit : je confirme renoncer à mon droit de rétractation, comme annoncé avant l’essai (l’achat n’est alors plus remboursable).', 'arvator-core' ) ); ?></label></p>
 
-			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Payer en toute sécurité avec Stripe', 'arvator-core' ); ?></button></p>
-			<p class="muted"><?php esc_html_e( 'Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe.', 'arvator-core' ); ?></p>
+			<p><button class="btn btn--primary" type="submit"><?php echo esc_html( $bank ? __( 'Valider ma commande', 'arvator-core' ) : __( 'Payer en toute sécurité avec Stripe', 'arvator-core' ) ); ?></button></p>
+			<?php if ( $card ) : ?>
+				<p class="muted arv-note-stripe"><?php esc_html_e( 'Paiement par carte sécurisé par Stripe : vos données de carte ne passent jamais par ce site. Vous recevez ensuite un email pour choisir votre mot de passe.', 'arvator-core' ); ?></p>
+			<?php endif; ?>
+			<?php if ( $bank ) : ?>
+				<p class="muted arv-bank-note2" <?php echo $card ? 'hidden' : ''; ?>><?php esc_html_e( 'Par virement : vous recevez les coordonnées bancaires et une référence à recopier. Votre licence est activée dans les 24 heures suivant la réception du virement.', 'arvator-core' ); ?></p>
+			<?php endif; ?>
 		</form>
+		<?php if ( $bank && $card ) : ?>
+			<script>
+			(function(){var f=document.querySelector('.arv-buy');if(!f)return;
+			function sync(){var m=f.querySelector('input[name=method]:checked');var bank=m&&m.value==='bank';
+			var mo=f.querySelector('[data-plan=monthly]');if(mo){mo.hidden=bank;if(bank){var a=f.querySelector('input[name=plan][value=annual]');if(a){a.checked=true;}}}
+			['.arv-bank-note','.arv-bank-note2','.arv-bank-field'].forEach(function(s){var e=f.querySelector(s);if(e){e.hidden=!bank;}});
+			var c=f.querySelector('.arv-note-stripe');if(c){c.hidden=bank;}
+			var n=f.querySelector('#arv-buy-name');if(n){n.required=bank;}}
+			f.addEventListener('change',sync);sync();})();
+			</script>
+		<?php endif; ?>
 		<?php
 		return (string) ob_get_clean();
 	}
@@ -162,7 +221,11 @@ final class Arvator_Checkout {
 		if ( ! wp_verify_nonce( $nonce, 'arvator_checkout' ) ) {
 			Arvator_Support::redirect( $back, 'generic_invalid' );
 		}
-		if ( ! Arvator_Stripe::configured() ) {
+		$method = isset( $_POST['method'] ) && 'bank' === sanitize_key( wp_unslash( (string) $_POST['method'] ) ) ? 'bank' : 'card';
+		if ( 'bank' === $method && ! Arvator_Bank::enabled() ) {
+			Arvator_Support::redirect( $back, 'virement_indispo' );
+		}
+		if ( 'card' === $method && ! Arvator_Stripe::configured() ) {
 			Arvator_Support::redirect( $back, 'achat_erreur' );
 		}
 
@@ -175,6 +238,9 @@ final class Arvator_Checkout {
 		$plan = isset( $_POST['plan'] ) ? sanitize_key( wp_unslash( (string) $_POST['plan'] ) ) : '';
 		if ( ! in_array( $plan, array( 'annual', 'monthly' ), true ) || empty( $_POST['cgv'] ) || empty( $_POST['risks'] ) ) {
 			Arvator_Support::redirect( $back, 'achat_invalid' );
+		}
+		if ( 'bank' === $method && 'annual' !== $plan ) {
+			Arvator_Support::redirect( $back, 'achat_virement_annuel' );
 		}
 
 		$user_id = get_current_user_id();
@@ -213,16 +279,42 @@ final class Arvator_Checkout {
 			}
 		}
 
+		$waiver = ! empty( $_POST['waiver'] );
+		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
+			Arvator_Support::redirect( $back, 'achat_renonciation' );
+		}
+
+		// Virement : commande « en attente » avec référence unique, puis page et email avec les coordonnées bancaires.
+		if ( 'bank' === $method ) {
+			$name = isset( $_POST['name'] ) ? trim( sanitize_text_field( wp_unslash( (string) $_POST['name'] ) ) ) : '';
+			if ( mb_strlen( $name ) < 2 || mb_strlen( $name ) > 120 ) {
+				Arvator_Support::redirect( $back, 'achat_virement_nom' );
+			}
+			$order = Arvator_Bank::create_initial(
+				array(
+					'user_id'  => $user_id,
+					'email'    => $email,
+					'name'     => $name,
+					'account'  => $account,
+					'ref_code' => $ref,
+					'waiver'   => $waiver,
+					'locale'   => determine_locale(),
+				),
+				is_array( $promo ) ? $promo : null
+			);
+			if ( is_wp_error( $order ) ) {
+				Arvator_Support::redirect( $back, 'zero' === $order->get_error_code() ? 'achat_virement_zero' : 'achat_erreur' );
+			}
+			Arvator_Bank::send_initial( $order );
+			wp_safe_redirect( Arvator_Bank::url( $order ) );
+			exit;
+		}
+
 		// Robot : prix normal, ou prix réduit si le code promo réduit le robot.
 		$bot_line = Arvator_Promo::bot_line( is_array( $promo ) ? $promo : null );
 		if ( is_wp_error( $bot_line ) ) {
 			Arvator_Repo::log_event( 'stripe_error', $user_id ?: null, array( 'where' => 'promo_bot', 'error' => $bot_line->get_error_message() ) );
 			Arvator_Support::redirect( $back, 'achat_erreur' );
-		}
-
-		$waiver = ! empty( $_POST['waiver'] );
-		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
-			Arvator_Support::redirect( $back, 'achat_renonciation' );
 		}
 
 		$params = array(

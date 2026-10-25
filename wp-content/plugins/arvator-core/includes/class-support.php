@@ -63,6 +63,12 @@ final class Arvator_Support {
 			'compte_invalide'  => array( 'err', __( 'Numéro de compte non valable : uniquement des chiffres (4 à 12).', 'arvator-core' ) ),
 			'compte_verrouille' => array( 'err', __( 'Votre licence est déjà activée sur un compte. Pour en changer, écrivez-nous depuis la page Contact.', 'arvator-core' ) ),
 			'achat_compte'     => array( 'err', __( 'Numéro de compte cTrader non valable : uniquement des chiffres (4 à 12), ou laissez le champ vide pour l’indiquer plus tard.', 'arvator-core' ) ),
+			'achat_virement_annuel' => array( 'err', __( 'Le paiement par virement est disponible pour la formule annuelle. Choisissez l’abonnement annuel, ou payez par carte.', 'arvator-core' ) ),
+			'achat_virement_nom' => array( 'err', __( 'Merci d’indiquer votre nom : il figure sur la facture.', 'arvator-core' ) ),
+			'achat_virement_zero' => array( 'err', __( 'Avec ce code promo, le total est de 0 € : il n’y a rien à virer. Choisissez le paiement par carte.', 'arvator-core' ) ),
+			'virement_indispo' => array( 'err', __( 'Le paiement par virement n’est pas disponible pour le moment.', 'arvator-core' ) ),
+			'virement_renouv_ok' => array( 'ok', __( 'Votre commande de renouvellement est créée : les coordonnées du virement sont ci-dessous et vous les recevez par email.', 'arvator-core' ) ),
+			'virement_renouv_deja' => array( 'ok', __( 'Une commande de renouvellement est déjà en cours pour votre abonnement : les coordonnées sont ci-dessous.', 'arvator-core' ) ),
 			'download_denied'  => array( 'err', __( 'Le téléchargement n’est pas disponible pour votre compte.', 'arvator-core' ) ),
 		);
 	}

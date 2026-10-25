@@ -488,7 +488,8 @@ check( 'a%5Bb%5D%5B0%5D=c&d=true' === Arvator_Stripe::encode( array( 'a' => arra
 // -- Page d'achat
 $buy = $anon->get( '/acheter/' );
 check( 200 === $buy['code'] && str_contains( $buy['body'], 'value="annual" checked' ) && str_contains( $buy['body'], 'name="cgv"' ) && str_contains( $buy['body'], 'name="risks"' ), 'page d\'achat : formule annuelle par défaut, deux cases obligatoires' );
-check( ! preg_match( '/card|carte bancaire.*<input|cvc/i', preg_replace( '/Paiement sécurisé.*?site\./su', '', $buy['body'] ) ), 'page d\'achat : aucun champ de carte bancaire' );
+// (le choix « Virement / Carte » est un simple bouton radio : aucun champ de saisie de carte)
+check( ! preg_match( '/card|carte bancaire.*<input|cvc/i', preg_replace( array( '/Paiement par carte sécurisé.*?site\./su', '#<fieldset class="arv-plans arv-methods">.*?</fieldset>#su', '#<script>.*?</script>#su', '#<input type="hidden" name="method"[^>]*>#' ), '', $buy['body'] ) ), 'page d\'achat : aucun champ de carte bancaire' );
 check( str_contains( $buy['headers'], 'no-store' ), 'page d\'achat jamais mise en cache' );
 $nonce = field_in_form( $buy['body'], 'arvator_checkout', '_arv_nonce' );
 $buyer = "acheteur_$tag@example.org";
@@ -1638,6 +1639,352 @@ foreach ( array( $p1u, $p2u, get_user_by( 'email', "promo3_$tag@example.org" ) )
 }
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_codes' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_uses' ) );
+
+/* ======================================================================== P. Virement */
+title( 'P. Paiement par virement SEPA (commande, réception signée, idempotence, parrainage, renouvellement, administration)' );
+clear_transients();
+// (la limite de 10 commandes par heure et par adresse IP n'est pas l'objet de ces tests)
+function bpost( Browser $b, array $data ): array {
+	clear_transients();
+	return $b->post( '/wp-admin/admin-post.php', $data );
+}
+$bt        = Arvator_Repo::table( 'bank_orders' );
+$bank_sec  = 'secret-de-test-virement-0123456789';
+$bank_post = static function ( string $body, ?string $ts = null, ?string $sig = null ) use ( $url, $bank_sec ): array {
+	$ts  = $ts ?? (string) time();
+	$sig = $sig ?? Arvator_Bank::sign( $ts, $body, $bank_sec );
+	$ch  = curl_init( $url . '/wp-json/arvator/v1/virement-recu' );
+	curl_setopt_array( $ch, array( CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_POSTFIELDS => $body, CURLOPT_HTTPHEADER => array( 'Content-Type: application/json', 'X-Arvator-Timestamp: ' . $ts, 'X-Arvator-Signature: ' . $sig ), CURLOPT_TIMEOUT => 60 ) );
+	$resp = (string) curl_exec( $ch );
+	$code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+	curl_close( $ch );
+	return array( 'code' => $code, 'json' => json_decode( $resp, true ), 'body' => $resp );
+};
+$rx       = static fn( array $p ): array => $bank_post( (string) wp_json_encode( $p ) );
+$bank_row = static fn( string $ref ): array => (array) Arvator_Bank::by_reference( $ref );
+$n8n_set( array() );
+@unlink( $n8n_log );
+
+check( Arvator_Bank::configured() && Arvator_Bank::enabled(), 'virement : coordonnées et secret posés dans wp-config → proposé' );
+check( $wpdb->get_var( "SHOW TABLES LIKE '$bt'" ) === $bt, 'table « bank_orders » créée' );
+
+// -- Unités : référence, signature, QR
+check( 'ARV-482913' === Arvator_Bank::extract_reference( 'Virement arv 482913 merci' ) && 'ARV-000123' === Arvator_Bank::extract_reference( 'ARV-000123' ) && '' === Arvator_Bank::extract_reference( 'ARV-1234567' ) && '' === Arvator_Bank::extract_reference( 'rien' ), 'référence retrouvée dans un libellé libre (casse, espaces), refusée si mal formée' );
+$refs = array();
+for ( $i = 0; $i < 25; $i++ ) {
+	$o = Arvator_Bank::create_initial( array( 'user_id' => 0, 'email' => "uniq{$i}_$tag@example.org", 'name' => 'Test', 'account' => '', 'ref_code' => '', 'waiver' => false, 'locale' => 'fr_FR' ), null );
+	$refs[] = $o['reference'];
+}
+check( 25 === count( array_unique( $refs ) ) && 25 === count( array_filter( $refs, static fn( $r ) => 1 === preg_match( '/^ARV-[0-9]{6}$/', $r ) ) ), 'références uniques, au format ARV- + 6 chiffres' );
+$wpdb->query( "DELETE FROM $bt WHERE email LIKE 'uniq%_$tag@example.org'" );
+$qr = Arvator_QR::svg( "BCD\n001\n1\nSCT\nPSSTFRPPXXX\nHamid DIBARH\nFR1420041010050500013M02606\nEUR1858.80\n\n\nARV-482913" );
+check( str_starts_with( $qr, '<svg' ) && str_contains( $qr, '<path' ) && ! str_contains( $qr, 'http://' . 'evil' ), 'QR code SEPA généré en SVG, sans ressource externe' );
+
+// -- Page d'achat : choix du moyen de paiement
+$buy = $anon->get( '/acheter/' );
+check( str_contains( $buy['body'], 'name="method" value="bank" checked' ) && str_contains( $buy['body'], 'name="method" value="card"' ) && str_contains( $buy['body'], 'Virement bancaire' ), 'page d’achat : virement mis en avant, carte gardée en option' );
+check( str_contains( $buy['body'], 'Le paiement par virement est disponible pour la formule annuelle' ) && str_contains( $buy['body'], 'name="name"' ), 'page d’achat : phrase neutre sur le virement annuel, champ « nom »' );
+
+// -- Création de la commande
+$vb     = "virement_$tag@example.org";
+$vgood  = array( 'action' => 'arvator_checkout', '_arv_nonce' => field( $buy['body'], '_arv_nonce' ), 'method' => 'bank', 'plan' => 'annual', 'email' => $vb, 'name' => 'Jeanne Virement', 'account' => '7788991', 'cgv' => '1', 'risks' => '1' );
+$vv     = new Browser( $url );
+check( 'achat_virement_annuel' === notice_of( bpost( $vv, array( 'plan' => 'monthly' ) + $vgood ) ), 'virement + formule mensuelle : refusé, message clair' );
+check( 'achat_virement_nom' === notice_of( bpost( $vv, array( 'name' => '' ) + $vgood ) ), 'virement sans nom : refusé' );
+check( 'achat_invalid' === notice_of( bpost( $vv, array( 'cgv' => '' ) + $vgood ) ), 'virement sans accepter les CGV : refusé' );
+check( 'generic_invalid' === notice_of( bpost( $vv, array( '_arv_nonce' => 'faux' ) + $vgood ) ), 'virement sans clé de sécurité valide : refusé' );
+check( 'achat_compte' === notice_of( bpost( $vv, array( 'account' => 'abc' ) + $vgood ) ), 'virement : numéro de compte invalide refusé' );
+@unlink( $log );
+$r = bpost( $vv, $vgood );
+check( 302 === $r['code'] && str_contains( $r['location'], '/acheter/?arv_virement=' ), 'virement : redirection vers la page des coordonnées', $r['code'] . ' ' . $r['location'] );
+$order = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", $vb ), ARRAY_A );
+check( 1 === preg_match( '/^ARV-[0-9]{6}$/', (string) ( $order['reference'] ?? '' ) ) && 'en_attente' === ( $order['status'] ?? '' ) && 185880 === (int) ( $order['amount_cents'] ?? 0 ) && 150000 === (int) $order['bot_cents'] && 35880 === (int) $order['sub_cents'] && 'annual' === $order['plan'] && 'initial' === $order['kind'], 'commande en attente : 1 500 € + 358,80 € = 1 858,80 €, référence unique' );
+$vref  = (string) $order['reference'];
+$vpage = $anon->get( '/acheter/?arv_virement=' . $order['token'] );
+check( str_contains( $vpage['body'], 'FR14 2004 1010 0505 0001 3M02 606' ) && str_contains( $vpage['body'], 'PSSTFRPPXXX' ) && str_contains( $vpage['body'], 'Hamid DIBARH (test)' ), 'page des coordonnées : titulaire, IBAN, BIC' );
+check( str_contains( $vpage['body'], $vref ) && str_contains( $vpage['body'], "1\u{202F}858,80\u{00A0}€" ) && str_contains( $vpage['body'], 'data-copy="' . $vref . '"' ), 'page des coordonnées : montant exact et référence avec bouton « copier »' );
+check( str_contains( $vpage['body'], 'dans les 24 heures suivant la réception de votre virement' ) && str_contains( $vpage['body'], 'virement instantané' ) && str_contains( $vpage['body'], '<svg' ), 'page des coordonnées : délai de 24 h, conseil virement instantané, QR code' );
+$nt = $anon->get( '/acheter/?arv_virement=' . str_repeat( 'a', 32 ) );
+check( ! str_contains( $nt['body'], 'FR14 2004' ) && ! str_contains( $nt['body'], $vref ), 'jeton inconnu : aucune coordonnée affichée, aucune commande divulguée' );
+check( ! str_contains( $anon->get( '/acheter/?arv_virement=ARV-123456' )['body'], 'FR14 2004' ), 'la référence seule ne donne pas accès à la page' );
+$m1 = array_values( array_filter( mails(), static fn( $m ) => $m->to === $vb ) );
+check( 1 === count( $m1 ) && str_contains( $m1[0]->message, $vref ) && str_contains( $m1[0]->message, 'FR14 2004 1010 0505 0001 3M02 606' ) && str_contains( $m1[0]->message, '24 heures' ), 'email au client : mêmes instructions, référence comprise' );
+check( ! str_contains( implode( "\n", (array) $m1[0]->headers ), 'Bcc' ), 'email : pas de copie cachée' );
+$r2 = bpost( $vv, $vgood );
+check( 1 === (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $bt WHERE email = %s", $vb ) ) && $vref === (string) $wpdb->get_var( $wpdb->prepare( "SELECT reference FROM $bt WHERE email = %s", $vb ) ), 'même client qui recommande : une seule commande en attente, même référence' );
+check( 0 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'bank:$vref'" ) && false === get_user_by( 'email', $vb ), 'avant paiement : ni achat, ni compte, ni licence' );
+$mstr = mails();
+check( false === get_user_by( 'email', $vb ) && 0 === count( array_filter( $mstr, static fn( $m ) => str_contains( (string) $m->subject, 'commande est confirmée' ) ) ), 'avant paiement : aucun email de confirmation' );
+
+// -- Code promo avec le virement (montant calculé côté site)
+$wpdb->insert( Arvator_Repo::table( 'promo_codes' ), array( 'code' => 'VIR30', 'target' => '', 'percent' => 0, 'bot_percent' => 30, 'sub_percent' => 0, 'duration' => 'once', 'months' => 0, 'plans' => 'both', 'max_uses' => 0, 'active' => 1, 'stripe_coupon' => '', 'is_test' => 1, 'created_at' => gmdate( 'Y-m-d H:i:s' ), 'updated_at' => gmdate( 'Y-m-d H:i:s' ) ) );
+$wpdb->insert( Arvator_Repo::table( 'promo_codes' ), array( 'code' => 'VIRFREE', 'target' => '', 'percent' => 0, 'bot_percent' => 100, 'sub_percent' => 100, 'duration' => 'once', 'months' => 0, 'plans' => 'both', 'max_uses' => 0, 'active' => 1, 'stripe_coupon' => 'cpn_x', 'is_test' => 1, 'created_at' => gmdate( 'Y-m-d H:i:s' ), 'updated_at' => gmdate( 'Y-m-d H:i:s' ) ) );
+$pv = new Browser( $url );
+$r  = bpost( $pv, array( 'email' => "virpromo_$tag@example.org", 'promo' => 'VIR30' ) + $vgood );
+$po = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", "virpromo_$tag@example.org" ), ARRAY_A );
+check( 302 === $r['code'] && 105000 === (int) $po['bot_cents'] && 35880 === (int) $po['sub_cents'] && 140880 === (int) $po['amount_cents'] && 'VIR30' === $po['promo_code'], 'code promo -30 % sur le robot : montant à virer 1 408,80 €' );
+check( 'achat_virement_zero' === notice_of( bpost( $pv, array( 'email' => "virfree_$tag@example.org", 'promo' => 'VIRFREE' ) + $vgood ) ), 'total à 0 € : pas de virement, message clair' );
+check( 'achat_promo' === notice_of( bpost( $pv, array( 'email' => "virnope_$tag@example.org", 'promo' => 'NOPE' ) + $vgood ) ), 'code promo inconnu : refusé' );
+$wpdb->query( "DELETE FROM $bt WHERE email LIKE 'virpromo_$tag%'" );
+
+// -- Réception : sécurité de la signature
+$vref_ = $vref;
+$body0 = (string) wp_json_encode( array( 'transaction_id' => "tx_{$tag}_0", 'reference' => $vref, 'montant' => 1858.80, 'emetteur' => 'Jeanne', 'libelle' => $vref, 'date' => gmdate( 'c' ) ) );
+check( 403 === $bank_post( $body0, null, 'abc' )['code'], 'virement-recu : signature fausse → 403' );
+check( 403 === $bank_post( $body0, (string) ( time() - 3600 ) )['code'], 'virement-recu : message vieux d’une heure → 403 (rejeu)' );
+check( 403 === $bank_post( $body0, (string) time(), Arvator_Bank::sign( (string) time(), $body0 . ' ', $bank_sec ) )['code'], 'virement-recu : corps modifié → 403' );
+check( 403 === $bank_post( $body0, 'pas-un-nombre', 'x' )['code'], 'virement-recu : horodatage absent ou illisible → 403' );
+check( 403 === $bank_post( $body0, null, Arvator_Bank::sign( (string) time(), $body0, 'autre-secret-autre-secret' ) )['code'], 'virement-recu : signature d’un autre secret → 403' );
+check( 'en_attente' === $bank_row( $vref )['status'], 'rien n’est modifié avec une mauvaise signature' );
+check( 400 === $bank_post( 'pas du json' )['code'] && 400 === $rx( array( 'reference' => $vref, 'montant' => 5 ) )['code'] && 400 === $rx( array( 'transaction_id' => 'x', 'montant' => 'abc' ) )['code'] && 400 === $rx( array( 'transaction_id' => 'x', 'montant' => -5 ) )['code'], 'virement-recu : corps invalide → 400' );
+
+// -- Réception : cas métier
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_a", 'montant' => 1858.80, 'libelle' => 'virement sans reference' ) );
+check( 200 === $r['code'] && 'sans_reference' === $r['json']['status'], 'sans référence : signalé (sans_reference)', $r['body'] );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_b", 'reference' => 'ARV-999999', 'montant' => 1858.80 ) );
+check( 'commande_inconnue' === $r['json']['status'], 'référence inconnue : signalé (commande_inconnue)', $r['body'] );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_c", 'reference' => $vref, 'montant' => 1000 ) );
+check( 'montant_insuffisant' === $r['json']['status'] && 1858.8 === (float) $r['json']['attendu'] && 'en_attente' === $bank_row( $vref )['status'], 'montant insuffisant : signalé, commande toujours en attente', $r['body'] );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_c", 'reference' => $vref, 'montant' => 1000 ) );
+check( 'deja_traite' === $r['json']['status'], 'même transaction renvoyée : déjà traitée (pas de nouvelle alerte)' );
+
+// -- Réception : cas normal, avec parrain
+$vr_u  = wp_insert_user( array( 'user_login' => "virref_$tag", 'user_email' => "virref_$tag@example.org", 'user_pass' => wp_generate_password( 20 ), 'role' => Arvator_Roles::CLIENT ) );
+$vr_c  = Arvator_Referral::enroll( (int) $vr_u );
+$vb2   = "virement2_$tag@example.org";
+$buy2  = new Browser( $url );
+$r     = bpost( $buy2, array( 'email' => $vb2, 'ref' => $vr_c, 'promo' => 'VIR30', 'account' => '8899001' ) + $vgood );
+$ord2  = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", $vb2 ), ARRAY_A );
+$vref2 = (string) $ord2['reference'];
+check( 302 === $r['code'] && 140880 === (int) $ord2['amount_cents'] && $vr_c === $ord2['ref_code'], 'commande avec code de recommandation et code promo' );
+@unlink( $log );
+@unlink( $n8n_log );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_ok", 'reference' => $vref2, 'montant' => '1408,80', 'emetteur' => 'Jeanne Virement', 'libelle' => "VIR $vref2", 'date' => gmdate( 'c' ) ) );
+check( 200 === $r['code'] && 'ok' === $r['json']['status'] && $vref2 === $r['json']['reference'], 'virement reçu : ok', $r['body'] );
+$ord2 = $bank_row( $vref2 );
+check( 'payee' === $ord2['status'] && "tx_{$tag}_ok" === $ord2['tx_id'] && 140880 === (int) $ord2['received_cents'] && 1 === preg_match( '/^FA-' . gmdate( 'Y' ) . '-[0-9]{4}$/', (string) $ord2['invoice_no'] ), 'commande payée : transaction notée, facture numérotée' );
+$vu = get_user_by( 'email', $vb2 );
+check( $vu instanceof WP_User && in_array( Arvator_Roles::CLIENT, $vu->roles, true ), 'compte client créé' );
+$shop = (array) $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'orders' ) . ' WHERE stripe_session_id = %s', "bank:$vref2" ), ARRAY_A );
+check( (int) $vu->ID === (int) ( $shop['user_id'] ?? 0 ) && 'paid' === ( $shop['status'] ?? '' ) && 105000 === (int) ( $shop['amount_cents'] ?? 0 ) && 'cbot' === ( $shop['product'] ?? '' ), 'achat du robot enregistré (prix après code promo), robot téléchargeable' );
+check( Arvator_Repo::has_paid_order( (int) $vu->ID ) && Arvator_Repo::is_entitled( (int) $vu->ID ), 'le client a accès au robot' );
+$sub = (array) Arvator_Bank::subscription( (int) $vu->ID );
+$end = (int) strtotime( (string) ( $sub['current_period_end'] ?? '' ) . ' UTC' );
+check( 'annual' === ( $sub['plan'] ?? '' ) && 'active' === ( $sub['status'] ?? '' ) && 'bank' === ( $sub['method'] ?? '' ) && abs( $end - strtotime( '+1 year' ) ) < 2 * DAY_IN_SECONDS, 'abonnement annuel enregistré : fin dans un an' );
+$cal = $n8n_calls();
+check( 1 === count( $cal ) && 'licence-paiement' === $cal[0]['endpoint'] && 'annuel' === $cal[0]['body']['plan'] && '8899001' === (string) $cal[0]['body']['compte'] && 'paiement' === $cal[0]['body']['action'], 'licence : envoi au workflow n8n existant (annuel, bon compte)', wp_json_encode( $cal ) );
+$sy = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'license_sync' ) . ' WHERE user_id = %d', $vu->ID ), ARRAY_A );
+check( "pay:bank:$vref2" === ( $sy['source_id'] ?? '' ), 'licence : origine « pay:bank:<référence> » (jamais deux envois)' );
+$com = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = %d ORDER BY kind', $vu->ID ), ARRAY_A );
+check( 2 === count( $com ) && 'affiliation' === $com[0]['kind'] && 3588 === (int) $com[0]['amount_cents'] && 'prime' === $com[1]['kind'] && 22500 === (int) $com[1]['amount_cents'] && 'pending' === $com[1]['status'] && (int) $vr_u === (int) $com[1]['referrer_user_id'], 'parrainage : prime de 225 € + 10 % de l’abonnement (35,88 €), à payer dans 30 jours' );
+check( (string) gmdate( 'Y-m-d', strtotime( '+30 days' ) ) === substr( (string) $com[1]['available_at'], 0, 10 ), 'prime « à payer » 30 jours après la réception du virement' );
+check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'promo_uses' ) . " WHERE stripe_session_id = 'bank:$vref2'" ), 'code promo : utilisation notée une fois' );
+$mm = array_values( array_filter( mails(), static fn( $m ) => $m->to === $vb2 ) );
+check( 1 === count( $mm ) && str_contains( (string) $mm[0]->subject, 'commande est confirmée' ) && str_contains( $mm[0]->message, 'wp-login.php?action=rp' ) && str_contains( $mm[0]->message, '/espace-membre/' ), 'email de bienvenue : lien pour choisir son mot de passe et espace membre' );
+
+// -- Idempotence
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_ok", 'reference' => $vref2, 'montant' => '1408,80' ) );
+check( 'deja_traite' === $r['json']['status'], 'même transaction reçue deux fois : déjà traitée' );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_ok2", 'reference' => $vref2, 'montant' => 1408.80 ) );
+check( 'deja_traite' === $r['json']['status'], 'autre transaction pour une commande déjà payée : déjà traitée' );
+check( 1 === count( $n8n_calls() ) && 2 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $vu->ID ) && 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'bank:$vref2'" ) && 1 === count( array_filter( mails(), static fn( $m ) => $m->to === $vb2 ) ), 'idempotence : une licence, deux récompenses, un achat, un email' );
+$wpdb->update( $bt, array( 'status' => 'en_attente', 'applied' => 0 ), array( 'reference' => $vref2 ) );
+$wpdb->delete( Arvator_Repo::table( 'events' ), array( 'external_id' => "bank:tx_{$tag}_ok" ) );
+$sub_before = (string) Arvator_Bank::subscription( (int) $vu->ID )['current_period_end'];
+$rx( array( 'transaction_id' => "tx_{$tag}_ok", 'reference' => $vref2, 'montant' => '1408,80' ) );
+check( 1 === count( $n8n_calls() ) && 2 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE referee_user_id = ' . (int) $vu->ID ) && 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id = 'bank:$vref2'" ), 'traitement rejoué après une panne : rien n’est dédoublé (licence, récompenses, achat)' );
+check( 'payee' === $bank_row( $vref2 )['status'], 'traitement rejoué : commande de nouveau payée' );
+
+// -- Trop-perçu : accepté, signalé
+$vb3  = "virement3_$tag@example.org";
+$buy3 = new Browser( $url );
+bpost( $buy3, array( 'email' => $vb3 ) + $vgood );
+$ref3 = (string) $wpdb->get_var( $wpdb->prepare( "SELECT reference FROM $bt WHERE email = %s", $vb3 ) );
+$r    = $rx( array( 'transaction_id' => "tx_{$tag}_over", 'libelle' => "paiement " . strtolower( str_replace( '-', ' ', $ref3 ) ), 'montant' => 1900 ) );
+check( 'trop_percu' === $r['json']['status'] && 1858.8 === (float) $r['json']['attendu'] && 'payee' === $bank_row( $ref3 )['status'], 'trop-perçu : accepté (licence lancée) mais signalé ; référence retrouvée dans le libellé', $r['body'] );
+check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'events' ) . " WHERE type = 'bank_overpaid' AND payload LIKE '%$ref3%'" ), 'trop-perçu : noté dans le journal' );
+
+// -- Commande annulée mais payée en retard : acceptée
+$vb4 = "virement4_$tag@example.org";
+$buy4 = new Browser( $url );
+bpost( $buy4, array( 'email' => $vb4 ) + $vgood );
+$o4  = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", $vb4 ), ARRAY_A );
+check( Arvator_Bank::cancel( (int) $o4['id'] ) && 'annulee' === $bank_row( $o4['reference'] )['status'], 'annulation d’une commande en attente' );
+check( str_contains( $anon->get( '/acheter/?arv_virement=' . $o4['token'] )['body'], 'annulée' ), 'page d’une commande annulée : dit qu’elle est annulée' );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_late", 'reference' => $o4['reference'], 'montant' => 1858.80 ) );
+check( 'ok' === $r['json']['status'] && 'payee' === $bank_row( $o4['reference'] )['status'], 'virement reçu après annulation : accepté (l’argent est arrivé)' );
+
+// -- Rappels et annulation automatique d'un achat non payé
+$vb5  = "virement5_$tag@example.org";
+$buy5 = new Browser( $url );
+bpost( $buy5, array( 'email' => $vb5 ) + $vgood );
+$o5  = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", $vb5 ), ARRAY_A );
+$cnt = static fn( string $to ): int => count( array_filter( mails(), static fn( $m ) => $m->to === $to ) );
+$age = static function ( int $days ) use ( $wpdb, $bt, $o5 ): void {
+	$wpdb->update( $bt, array( 'created_at' => gmdate( 'Y-m-d H:i:s', time() - $days * DAY_IN_SECONDS - 600 ) ), array( 'id' => (int) $o5['id'] ) );
+};
+Arvator_Bank::daily();
+check( 1 === $cnt( $vb5 ), 'jour 0 : pas de rappel' );
+$age( 3 );
+Arvator_Bank::daily();
+check( 2 === $cnt( $vb5 ), 'J+3 : un rappel' );
+Arvator_Bank::daily();
+check( 2 === $cnt( $vb5 ), 'J+3, tâche relancée : pas de second rappel' );
+$age( 7 );
+Arvator_Bank::daily();
+check( 3 === $cnt( $vb5 ), 'J+7 : un second rappel' );
+$age( 31 );
+Arvator_Bank::daily();
+check( 'annulee' === $bank_row( $o5['reference'] )['status'] && 4 === $cnt( $vb5 ), 'J+31 : commande annulée automatiquement, client prévenu' );
+update_option( 'arvator_bank_cancel_days', 10 );
+check( 10 === Arvator_Bank::cancel_days(), 'délai d’annulation modifiable dans les réglages' );
+delete_option( 'arvator_bank_cancel_days' );
+
+// -- Renouvellement annuel
+$uid  = (int) $vu->ID;
+$vsub = Arvator_Bank::subscription( $uid );
+$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'current_period_end' => gmdate( 'Y-m-d H:i:s', time() + 20 * DAY_IN_SECONDS ) ), array( 'id' => (int) $vsub['id'] ) );
+@unlink( $n8n_log );
+$before = $cnt( $vb2 );
+Arvator_Bank::daily();
+$ren = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE user_id = %d AND kind = 'renewal'", $uid ), ARRAY_A );
+check( 'en_attente' === ( $ren['status'] ?? '' ) && 35880 === (int) ( $ren['amount_cents'] ?? 0 ) && 0 === (int) ( $ren['bot_cents'] ?? 1 ) && 1 === preg_match( '/^ARV-[0-9]{6}$/', (string) ( $ren['reference'] ?? '' ) ) && $ren['reference'] !== $vref2, 'renouvellement : commande de 358,80 € créée 30 jours avant, nouvelle référence' );
+check( $before + 1 === $cnt( $vb2 ), 'renouvellement : premier email avec montant, IBAN et référence' );
+$lastmail = array_values( array_filter( mails(), static fn( $m ) => $m->to === $vb2 ) );
+$lastmail = end( $lastmail );
+check( str_contains( $lastmail->message, 'ne se renouvelle pas tout seul' ) && str_contains( $lastmail->message, (string) $ren['reference'] ) && str_contains( $lastmail->message, '358,80' ), 'email de renouvellement : sans reconduction automatique, montant et référence' );
+Arvator_Bank::daily();
+check( 1 === (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $bt WHERE user_id = %d AND kind = 'renewal'", $uid ) ) && $before + 1 === $cnt( $vb2 ), 'tâche relancée : pas de seconde commande, pas de second email' );
+// J-7
+$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'current_period_end' => gmdate( 'Y-m-d H:i:s', time() + 5 * DAY_IN_SECONDS ) ), array( 'id' => (int) $vsub['id'] ) );
+$wpdb->update( $bt, array( 'due_at' => gmdate( 'Y-m-d H:i:s', time() + 5 * DAY_IN_SECONDS ) ), array( 'id' => (int) $ren['id'] ) );
+Arvator_Bank::daily();
+check( $before + 2 === $cnt( $vb2 ), 'rappel J-7 envoyé' );
+// J0 puis J+1
+$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'current_period_end' => gmdate( 'Y-m-d H:i:s', time() - 600 ) ), array( 'id' => (int) $vsub['id'] ) );
+$wpdb->update( $bt, array( 'due_at' => gmdate( 'Y-m-d H:i:s', time() - 600 ) ), array( 'id' => (int) $ren['id'] ) );
+Arvator_Bank::daily();
+$lm = array_values( array_filter( mails(), static fn( $m ) => $m->to === $vb2 ) );
+check( $before + 3 === $cnt( $vb2 ) && str_contains( end( $lm )->message, '3 jours de grâce' ), 'rappel J0 : licence échue, 3 jours de grâce' );
+$wpdb->update( $bt, array( 'due_at' => gmdate( 'Y-m-d H:i:s', time() - 36 * 3600 ) ), array( 'id' => (int) $ren['id'] ) );
+$wpdb->update( Arvator_Repo::table( 'subscriptions' ), array( 'current_period_end' => gmdate( 'Y-m-d H:i:s', time() - 36 * 3600 ) ), array( 'id' => (int) $vsub['id'] ) );
+Arvator_Bank::daily();
+$lm = array_values( array_filter( mails(), static fn( $m ) => $m->to === $vb2 ) );
+check( $before + 4 === $cnt( $vb2 ) && str_contains( end( $lm )->message, 'n’ouvre plus de nouveaux trades' ) && 'past_due' === Arvator_Bank::subscription( $uid )['status'], 'rappel J+1 : le robot n’ouvre plus de nouveaux trades ; abonnement « en retard »', $cnt( $vb2 ) . '/' . ( $before + 4 ) . ' ' . Arvator_Bank::subscription( $uid )['status'] . ' ' . substr( end( $lm )->message, 0, 200 ) );
+
+// Espace membre : renouvellement et facture
+$mb = new Browser( $url );
+$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->users} SET user_pass = %s WHERE ID = %d", wp_hash_password( 'Mot-de-passe-test-12' ), $uid ) );
+member_login( $mb, $vb2, 'Mot-de-passe-test-12' );
+$pg = $mb->get( '/espace-membre/?section=achats' );
+check( str_contains( $pg['body'], $ren['reference'] ) && str_contains( $pg['body'], 'Renouvellement à régler par virement' ) && str_contains( $pg['body'], 'FR14 2004 1010 0505 0001 3M02 606' ), 'espace membre : renouvellement en attente avec IBAN et référence' );
+check( ! str_contains( $pg['body'], 'Gérer mon abonnement, mes factures et ma carte' ), 'espace membre : pas de portail Stripe pour un abonnement par virement' );
+$inv_link = preg_match( '#href="([^"]*arvator_bank_invoice[^"]*)"#', html_entity_decode( $pg['body'] ), $mi ) ? $mi[1] : '';
+$iv       = $mb->get( str_replace( $url, '', $inv_link ) );
+check( 200 === $iv['code'] && str_contains( $iv['body'], (string) $ord2['invoice_no'] ) && str_contains( $iv['body'], 'Jeanne Virement' ) && str_contains( $iv['body'], 'SIRET 802 301 317 00029' ) && str_contains( $iv['body'], 'TVA non applicable' ), 'facture : numéro, client, vendeur, mention de TVA' );
+check( str_contains( $iv['body'], "1\u{202F}050\u{00A0}€" ) && str_contains( $iv['body'], "358,80\u{00A0}€" ), 'facture : robot (prix après code promo) et abonnement' );
+$other = new Browser( $url );
+$ou    = wp_insert_user( array( 'user_login' => "virother_$tag", 'user_email' => "virother_$tag@example.org", 'user_pass' => 'Autre-mot-de-passe-12', 'role' => Arvator_Roles::CLIENT ) );
+member_login( $other, "virother_$tag", 'Autre-mot-de-passe-12' );
+check( 404 === $other->get( str_replace( $url, '', $inv_link ) )['code'], 'facture : un autre client n’y accède pas (404)' );
+check( in_array( $anon->get( str_replace( $url, '', $inv_link ) )['code'], array( 302, 303 ), true ), 'facture : visiteur renvoyé vers la connexion' );
+wp_delete_user( (int) $ou );
+// La tâche quotidienne ne recrée jamais une commande de renouvellement annulée pour la même échéance
+$wpdb->update( $bt, array( 'status' => 'annulee' ), array( 'id' => (int) $ren['id'] ) );
+$nb = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $bt WHERE user_id = %d AND kind = 'renewal'", $uid ) );
+Arvator_Bank::daily();
+check( $nb === (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $bt WHERE user_id = %d AND kind = 'renewal'", $uid ) ), 'renouvellement annulé : la tâche quotidienne n’en recrée pas une autre pour la même échéance' );
+// Bouton « Renouveler par virement » quand il n'y a pas de commande ouverte
+$wpdb->update( $bt, array( 'status' => 'annulee' ), array( 'id' => (int) $ren['id'] ) );
+$pg2 = $mb->get( '/espace-membre/?section=achats' );
+check( str_contains( $pg2['body'], 'Renouveler par virement' ), 'espace membre : bouton « Renouveler par virement »', substr( preg_replace( '/\s+/', ' ', strip_tags( substr( $pg2['body'], (int) strpos( $pg2['body'], 'Paiement par virement' ) ) ) ), 0, 400 ) );
+$rr = $mb->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_renew', '_arv_nonce' => 'faux' ) );
+check( 'generic_invalid' === notice_of( $rr ), 'renouvellement sans clé de sécurité valide refusé' );
+$rr = $mb->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_renew', '_arv_nonce' => field_in_form( $pg2['body'], 'arvator_bank_renew', '_arv_nonce' ) ) );
+$ren2 = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE user_id = %d AND kind = 'renewal' AND status = 'en_attente'", $uid ), ARRAY_A );
+check( 'virement_renouv_ok' === notice_of( $rr ) && 1 === preg_match( '/^ARV-[0-9]{6}$/', (string) ( $ren2['reference'] ?? '' ) ), 'bouton « Renouveler » : commande créée, instructions affichées' );
+
+// Paiement du renouvellement
+@unlink( $n8n_log );
+$r = $rx( array( 'transaction_id' => "tx_{$tag}_ren", 'reference' => $ren2['reference'], 'montant' => 358.80, 'libelle' => $ren2['reference'] ) );
+check( 'ok' === $r['json']['status'], 'renouvellement reçu : ok', $r['body'] );
+$sub2 = Arvator_Bank::subscription( $uid );
+check( 'active' === $sub2['status'] && abs( (int) strtotime( $sub2['current_period_end'] . ' UTC' ) - strtotime( '+1 year' ) ) < 2 * DAY_IN_SECONDS, 'renouvellement : abonnement prolongé d’un an, de nouveau actif' );
+$cal = $n8n_calls();
+check( 1 === count( $cal ) && 'paiement' === $cal[0]['body']['action'] && 'annuel' === $cal[0]['body']['plan'], 'renouvellement : licence prolongée via n8n' );
+check( 3588 === (int) $wpdb->get_var( $wpdb->prepare( 'SELECT amount_cents FROM ' . Arvator_Repo::table( 'commissions' ) . ' WHERE source_id = %s', 'aff:bank:' . $ren2['reference'] ) ), 'renouvellement : 10 % (35,88 €) au parrain' );
+check( 1 === preg_match( '/^FA-' . gmdate( 'Y' ) . '-[0-9]{4}$/', (string) $bank_row( $ren2['reference'] )['invoice_no'] ) && $bank_row( $ren2['reference'] )['invoice_no'] !== $ord2['invoice_no'], 'renouvellement : nouvelle facture, numéro différent' );
+check( 1 === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Arvator_Repo::table( 'orders' ) . ' WHERE user_id = ' . $uid ), 'renouvellement : pas de second « achat du robot »' );
+$rx( array( 'transaction_id' => "tx_{$tag}_ren", 'reference' => $ren2['reference'], 'montant' => 358.80 ) );
+check( 1 === count( $n8n_calls() ), 'renouvellement reçu deux fois : licence prolongée une seule fois' );
+
+// -- Administration
+$adm_page = $adm->get( '/wp-admin/admin.php?page=arvator-virements&q=' . $ref3 );
+$o3       = $bank_row( $ref3 );
+check( str_contains( $adm_page['body'], 'Virements' ) && str_contains( $adm_page['body'], $ref3 ), 'administration : page Virements avec recherche par référence' );
+$vb6  = "virement6_$tag@example.org";
+$buy6 = new Browser( $url );
+bpost( $buy6, array( 'email' => $vb6 ) + $vgood );
+$o6   = (array) $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $bt WHERE email = %s", $vb6 ), ARRAY_A );
+$ap6  = $adm->get( '/wp-admin/admin.php?page=arvator-virements&q=' . $o6['reference'] );
+check( str_contains( $ap6['body'], 'Marquer payée' ) && str_contains( $ap6['body'], 'Annuler' ), 'administration : commande en attente avec « Marquer payée » et « Annuler »' );
+$nm = field_in_form( $ap6['body'], 'arvator_bank_markpaid', '_arv_nonce' );
+$r  = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_markpaid', '_arv_nonce' => 'faux', 'id' => $o6['id'], 'tx' => "tx_{$tag}_man", 'date' => gmdate( 'Y-m-d' ) ) );
+check( 403 === $r['code'] && 'en_attente' === $bank_row( $o6['reference'] )['status'], 'administration : « Marquer payée » sans clé de sécurité valide refusé' );
+$r  = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_markpaid', '_arv_nonce' => $nm, 'id' => $o6['id'], 'tx' => '', 'date' => gmdate( 'Y-m-d' ) ) );
+check( 'en_attente' === $bank_row( $o6['reference'] )['status'], 'administration : identifiant de transaction obligatoire' );
+$r  = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_markpaid', '_arv_nonce' => $nm, 'id' => $o6['id'], 'tx' => "tx_{$tag}_man", 'date' => gmdate( 'Y-m-d' ) ) );
+$o6n = $bank_row( $o6['reference'] );
+check( 'payee' === $o6n['status'] && "tx_{$tag}_man" === $o6n['tx_id'] && '' !== (string) $o6n['invoice_no'] && false !== get_user_by( 'email', $vb6 ), 'administration : « Marquer payée » déclenche compte, licence, facture' );
+check( 'transaction_deja_utilisee' === Arvator_Bank::mark_paid_manually( (int) $o4['id'], "tx_{$tag}_man", gmdate( 'Y-m-d' ) ) || 'deja_traite' === Arvator_Bank::mark_paid_manually( (int) $o4['id'], "tx_{$tag}_man", gmdate( 'Y-m-d' ) ), 'administration : on ne rejoue pas une commande payée' );
+$ap6 = $adm->get( '/wp-admin/admin.php?page=arvator-virements&q=' . $o6['reference'] );
+check( str_contains( $ap6['body'], 'Remboursement effectué' ), 'administration : commande payée avec « Remboursement effectué »' );
+$cust = new Browser( $url );
+check( 403 === $cust->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_cancel', '_arv_nonce' => $nm, 'id' => $o6['id'] ) )['code'] || in_array( $cust->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_cancel', '_arv_nonce' => $nm, 'id' => $o6['id'] ) )['code'], array( 400, 403 ), true ), 'administration : un visiteur ne peut rien faire' );
+// Remboursement
+$u6 = get_user_by( 'email', $vb6 );
+@unlink( $n8n_log );
+$nr = field_in_form( $ap6['body'], 'arvator_bank_refund', '_arv_nonce' );
+$r  = $adm->post( '/wp-admin/admin-post.php', array( 'action' => 'arvator_bank_refund', '_arv_nonce' => $nr, 'id' => $o6['id'] ) );
+$shop6 = (array) $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'orders' ) . ' WHERE stripe_session_id = %s', 'bank:' . $o6['reference'] ), ARRAY_A );
+check( 'remboursee' === $bank_row( $o6['reference'] )['status'] && 'refunded' === ( $shop6['status'] ?? '' ) && 'canceled' === Arvator_Bank::subscription( (int) $u6->ID )['status'], 'remboursement : achat remboursé, abonnement arrêté' );
+check( ! Arvator_Repo::has_paid_order( (int) $u6->ID ), 'remboursement : plus d’achat payé (téléchargement refusé)' );
+// Remboursement avec parrain : prime annulée
+$u2 = $vu;
+$ref_com = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referee_user_id = %d AND kind = 'prime'", $u2->ID ), ARRAY_A );
+Arvator_Bank::refund( (int) $ord2['id'] );
+$ref_com2 = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'commissions' ) . " WHERE referee_user_id = %d AND kind = 'prime'", $u2->ID ), ARRAY_A );
+check( 'pending' === $ref_com['status'] && 'canceled' === $ref_com2['status'], 'remboursement : prime du parrain annulée' );
+$cal = $n8n_calls();
+check( count( array_filter( $cal, static fn( $c ) => 'resilier' === ( $c['body']['action'] ?? '' ) ) ) >= 1, 'remboursement : licence coupée via n8n' );
+// Désactivation
+update_option( 'arvator_bank_enabled', '0' );
+$off = $anon->get( '/acheter/' );
+check( ! str_contains( $off['body'], 'value="bank"' ) && 'virement_indispo' === notice_of( bpost( new Browser( $url ), array( 'email' => "virnone_$tag@example.org" ) + $vgood ) ), 'virement désactivé dans les réglages : plus proposé, refusé' );
+delete_option( 'arvator_bank_enabled' );
+// RGPD
+$exp = Arvator_Privacy::export( $vb2 );
+check( count( array_filter( $exp['data'], static fn( $d ) => 'arvator-virements' === $d['group_id'] ) ) >= 1, 'export RGPD : les virements sont inclus' );
+Arvator_Privacy::erase( $vb2 );
+$kept = (array) $bank_row( $vref2 );
+check( 0 === (int) $kept['user_id'] && '' === $kept['name'] && 'efface@invalid' === $kept['email'] && '' !== $kept['invoice_no'], 'effacement RGPD : facture gardée sans identité' );
+
+// Nettoyage
+foreach ( array( $vb2, $vb3, $vb4, $vb6 ) as $e ) {
+	$du = get_user_by( 'email', $e );
+	if ( $du instanceof WP_User ) {
+		Arvator_Repo::delete_test_rows_for_user( (int) $du->ID );
+		wp_delete_user( (int) $du->ID );
+	}
+}
+Arvator_Repo::delete_test_rows_for_user( (int) $vr_u );
+wp_delete_user( (int) $vr_u );
+$wpdb->query( "DELETE FROM $bt" );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_codes' ) );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_uses' ) );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'commissions' ) );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id LIKE 'bank:%'" );
 
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {

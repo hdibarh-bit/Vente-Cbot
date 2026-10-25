@@ -12,7 +12,7 @@ export ARV_N8N_LOG="${ARV_N8N_LOG:-/tmp/arvator-n8n.log}"
 export ARV_N8N_FIXTURES="${ARV_N8N_FIXTURES:-/tmp/arvator-n8n-fixtures.json}"
 # Fausses API Stripe et n8n, journal des emails (aucun appel réel, aucun email envoyé).
 mkdir -p "$ARV_WP/wp-content/mu-plugins"
-cp "$(dirname "$0")/mu-plugins/arvator-test-stripe.php" "$(dirname "$0")/mu-plugins/arvator-test-mail.php" "$(dirname "$0")/mu-plugins/arvator-test-n8n.php" "$ARV_WP/wp-content/mu-plugins/"
+cp "$(dirname "$0")/mu-plugins/arvator-test-stripe.php" "$(dirname "$0")/mu-plugins/arvator-test-mail.php" "$(dirname "$0")/mu-plugins/arvator-test-n8n.php" "$(dirname "$0")/mu-plugins/arvator-test-bank.php" "$ARV_WP/wp-content/mu-plugins/"
 php -S "127.0.0.1:${PORT}" -t "$ARV_WP" >/tmp/arvator-test-server.log 2>&1 &
 SERVER=$!
 trap 'kill $SERVER 2>/dev/null || true' EXIT

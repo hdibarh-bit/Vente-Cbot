@@ -77,6 +77,7 @@ final class Arvator_Install {
   stripe_subscription_id VARCHAR(190) NULL,
   stripe_customer_id VARCHAR(190) NULL,
   plan VARCHAR(10) NOT NULL,
+  method VARCHAR(10) NOT NULL DEFAULT 'card',
   status VARCHAR(20) NOT NULL DEFAULT 'active',
   current_period_end DATETIME NULL,
   cancel_at_period_end TINYINT(1) NOT NULL DEFAULT 0,
@@ -244,6 +245,49 @@ final class Arvator_Install {
   UNIQUE KEY stripe_session_id (stripe_session_id),
   KEY promo_id (promo_id),
   KEY user_id (user_id)
+) $charset;"
+		);
+
+		// Commandes payées par virement (achat initial et renouvellements annuels). reference = « ARV-123456 » ; token = accès à la
+		// page des coordonnées bancaires ; tx_id = identifiant de la transaction bancaire (unique = idempotent).
+		dbDelta(
+			"CREATE TABLE {$p}bank_orders (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  reference VARCHAR(16) NOT NULL,
+  token VARCHAR(40) NOT NULL,
+  kind VARCHAR(10) NOT NULL DEFAULT 'initial',
+  user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  email VARCHAR(190) NOT NULL,
+  name VARCHAR(120) NOT NULL DEFAULT '',
+  account VARCHAR(40) NOT NULL DEFAULT '',
+  plan VARCHAR(10) NOT NULL DEFAULT 'annual',
+  amount_cents INT UNSIGNED NOT NULL,
+  bot_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  sub_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  ref_code VARCHAR(16) NOT NULL DEFAULT '',
+  promo_code VARCHAR(30) NOT NULL DEFAULT '',
+  waiver TINYINT(1) NOT NULL DEFAULT 0,
+  locale VARCHAR(10) NOT NULL DEFAULT '',
+  status VARCHAR(20) NOT NULL DEFAULT 'en_attente',
+  tx_id VARCHAR(190) NULL,
+  received_cents INT UNSIGNED NULL,
+  paid_at DATETIME NULL,
+  order_id BIGINT UNSIGNED NULL,
+  invoice_no VARCHAR(20) NULL,
+  due_at DATETIME NULL,
+  reminder_stage SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  applied TINYINT(1) NOT NULL DEFAULT 0,
+  is_test TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY reference (reference),
+  UNIQUE KEY token (token),
+  UNIQUE KEY tx_id (tx_id),
+  UNIQUE KEY invoice_no (invoice_no),
+  KEY user_id (user_id),
+  KEY email (email),
+  KEY status (status)
 ) $charset;"
 		);
 

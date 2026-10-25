@@ -71,6 +71,15 @@ final class Arvator_Privacy {
 				__( 'Créé le', 'arvator-core' )   => (string) $s['created_at'],
 			) );
 		}
+		foreach ( Arvator_Bank::for_user( $uid ) as $b ) {
+			$data[] = self::item( 'arvator-virements', __( 'Virements Arvator', 'arvator-core' ), 'bank-' . $b['id'], array(
+				__( 'Référence', 'arvator-core' ) => (string) $b['reference'],
+				__( 'Montant', 'arvator-core' )   => number_format( (int) $b['amount_cents'] / 100, 2, ',', ' ' ) . ' EUR',
+				__( 'État', 'arvator-core' )      => (string) $b['status'],
+				__( 'Facture', 'arvator-core' )   => (string) $b['invoice_no'],
+				__( 'Créée le', 'arvator-core' )  => (string) $b['created_at'],
+			) );
+		}
 		foreach ( Arvator_Repo::licenses_for_user( $uid ) as $l ) {
 			$data[] = self::item( 'arvator-licences', __( 'Licences Arvator', 'arvator-core' ), 'lic-' . $l['id'], array(
 				__( 'Formule', 'arvator-core' )           => (string) $l['plan'],
@@ -132,6 +141,14 @@ final class Arvator_Privacy {
 				$retained = true;
 				$wpdb->query( $wpdb->prepare( 'UPDATE ' . Arvator_Repo::table( $t ) . ' SET user_id = 0 WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			}
+		}
+		// Virements : les commandes non payées sont supprimées ; les payées (factures) sont gardées sans identité.
+		$bank = Arvator_Repo::table( 'bank_orders' );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM $bank WHERE (user_id = %d OR email = %s) AND status IN ('en_attente','annulee')", $uid, $user->user_email ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$kept = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $bank WHERE user_id = %d", $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( $kept > 0 ) {
+			$retained = true;
+			$wpdb->query( $wpdb->prepare( "UPDATE $bank SET user_id = 0, name = '', email = 'efface@invalid', account = '', ref_code = '' WHERE user_id = %d", $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'licenses' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) . ' WHERE user_id = %d', $uid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

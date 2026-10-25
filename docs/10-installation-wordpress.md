@@ -24,6 +24,7 @@ Deux fichiers à installer, dans le dossier `releases/` du dépôt (ou envoyés 
   (valeurs exactes indiquées dans hPanel > Emails > Configuration). Testez ensuite le formulaire de contact.
 - **Mettre le robot en ligne** : tableau de bord > Arvator > Fichiers privés : choisissez le fichier (.algo, .zip ou .pdf) et un nom. Il n'est visible de personne d'autre que des clients ayant acheté.
 - **Voir l'espace membre comme un client** : Arvator > Clients de démonstration > Créer. Le mot de passe s'affiche une seule fois ; ouvrez une fenêtre de navigation privée pour vous connecter. Supprimez-les ensuite d'un clic.
+- **Paiement par virement** (facultatif, voir `14-paiement-virement.md`) : ajoutez dans `wp-config.php` `ARVATOR_VIREMENT_TITULAIRE`, `ARVATOR_VIREMENT_IBAN`, `ARVATOR_VIREMENT_BIC` (coordonnées du compte Qonto) et `ARVATOR_VIREMENT_SECRET` (longue chaîne aléatoire, la même dans le workflow n8n). Sans ces quatre lignes, le virement n'est pas proposé.
 - **Dossier privé** : par défaut au-dessus du dossier public du site si l'hébergement le permet. Vérifiez qu'on ne peut pas ouvrir l'adresse d'un fichier de ce dossier. Pour choisir l'emplacement, ajoutez dans `wp-config.php` : `define( 'ARVATOR_PRIVATE_DIR', '/chemin/vers/un/dossier/hors/du/site' );`
 
 ## Ce que vous réglez vous-même (sans passer par Claude)

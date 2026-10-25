@@ -207,6 +207,8 @@ final class Arvator_Member {
 			}
 		}
 
+		self::bank_block( $user_id );
+
 		echo '<h3>' . esc_html__( 'Achats', 'arvator-core' ) . '</h3>';
 		if ( ! $orders ) {
 			echo '<p>' . esc_html__( 'Aucun achat pour le moment.', 'arvator-core' ) . ' <a href="' . esc_url( Arvator_Checkout::url() ) . '">' . esc_html__( 'Acheter Arvator', 'arvator-core' ) . '</a></p>';
@@ -223,6 +225,49 @@ final class Arvator_Member {
 			);
 		}
 		echo '</tbody></table></div>';
+	}
+
+	/** Paiement par virement : échéance, renouvellement, instructions des virements en attente et factures. */
+	private static function bank_block( int $user_id ): void {
+		$orders = Arvator_Bank::for_user( $user_id );
+		if ( ! $orders && ! Arvator_Bank::subscription( $user_id ) ) {
+			return;
+		}
+		echo '<h3>' . esc_html__( 'Paiement par virement', 'arvator-core' ) . '</h3>';
+		$sub = Arvator_Bank::subscription( $user_id );
+		if ( $sub ) {
+			echo '<p class="muted">' . esc_html__( 'Votre abonnement annuel ne se renouvelle pas automatiquement : vous le prolongez d’un an en faisant un virement, et nous vous écrivons avant l’échéance.', 'arvator-core' ) . '</p>';
+			if ( Arvator_Bank::enabled() && ! Arvator_Bank::open_renewal( $user_id ) ) {
+				?>
+				<form class="arv-form arv-form--inline" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="arvator_bank_renew">
+					<?php wp_nonce_field( 'arvator_bank_renew', '_arv_nonce' ); ?>
+					<button class="btn btn--primary btn--sm" type="submit"><?php esc_html_e( 'Renouveler par virement', 'arvator-core' ); ?></button>
+				</form>
+				<?php
+			}
+		}
+		foreach ( $orders as $o ) {
+			if ( Arvator_Bank::PENDING === $o['status'] ) {
+				echo '<h4>' . esc_html( 'renewal' === $o['kind'] ? __( 'Renouvellement à régler par virement', 'arvator-core' ) : __( 'Commande à régler par virement', 'arvator-core' ) ) . '</h4>';
+				echo Arvator_Bank::instructions_html( $o ); // phpcs:ignore WordPress.Security.EscapeOutput -- échappé dans instructions_html()
+			}
+		}
+		$paid = array_values( array_filter( $orders, static fn( array $o ): bool => '' !== (string) $o['invoice_no'] ) );
+		if ( $paid ) {
+			echo '<div class="table-wrap"><table class="arv-table"><thead><tr><th scope="col">' . esc_html__( 'Date', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Facture', 'arvator-core' ) . '</th><th scope="col">' . esc_html__( 'Montant', 'arvator-core' ) . '</th><th scope="col"></th></tr></thead><tbody>';
+			foreach ( $paid as $o ) {
+				printf(
+					'<tr><td>%s</td><td>%s</td><td>%s</td><td><a href="%s" target="_blank" rel="noopener">%s</a></td></tr>',
+					esc_html( self::date( (string) $o['paid_at'] ) ),
+					esc_html( (string) $o['invoice_no'] ),
+					esc_html( self::money( (int) $o['bot_cents'] + (int) $o['sub_cents'] ) ),
+					esc_url( Arvator_Bank::invoice_url( $o ) ),
+					esc_html__( 'Voir la facture', 'arvator-core' )
+				);
+			}
+			echo '</tbody></table></div>';
+		}
 	}
 
 	private static function section_license( int $user_id ): void {

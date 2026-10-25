@@ -184,7 +184,7 @@ get_header();
 				<ul class="checklist">
 					<li><?php /* translators: %d: jours de grâce. */ echo esc_html( sprintf( __( 'L’abonnement est obligatoire : sans abonnement à jour, la licence expire. Après %d jours de grâce, le robot ne prend plus de nouvelles positions.', 'arvator' ), $grace ) ); ?></li>
 					<li><?php /* translators: %s: capital conseillé. */ echo esc_html( sprintf( __( 'Le capital que vous placez sur votre compte cTrader est à part du prix du robot, et reste chez votre courtier. Nous conseillons au moins %s (voir plus haut pourquoi).', 'arvator' ), arvator_fmt_capital( $cap ) ) ); ?></li>
-					<li><?php esc_html_e( 'Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site.', 'arvator' ); ?></li>
+					<li><?php esc_html_e( 'Paiement par carte (sécurisé par Stripe : vos données de carte ne passent jamais par ce site) ou par virement bancaire pour la formule annuelle.', 'arvator' ); ?></li>
 				</ul>
 			</div>
 		</div>

@@ -188,7 +188,7 @@ final class Arvator_Webhook {
 	 *
 	 * @return array{0:int, 1:bool}  [identifiant, compte créé ?]
 	 */
-	private static function find_or_create_user( string $email, int $reference ): array {
+	public static function find_or_create_user( string $email, int $reference ): array {
 		if ( $reference > 0 ) {
 			$user = get_user_by( 'id', $reference );
 			if ( $user instanceof WP_User && 0 === strcasecmp( $user->user_email, $email ) ) {
@@ -410,7 +410,7 @@ final class Arvator_Webhook {
 
 	/* --------------------------------------------------------------------- Email */
 
-	private static function send_confirmation( int $user_id, bool $created ): void {
+	public static function send_confirmation( int $user_id, bool $created ): void {
 		$user = get_user_by( 'id', $user_id );
 		if ( ! $user instanceof WP_User ) {
 			return;

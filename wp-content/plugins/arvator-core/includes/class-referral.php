@@ -260,12 +260,33 @@ final class Arvator_Referral {
 	 * @param array<string, mixed> $session  Session Checkout complète, relue chez Stripe.
 	 */
 	public static function on_purchase( int $user_id, int $order_id, array $session, bool $live ): void {
+		// 10 % du premier abonnement, payé dans le même passage que le robot.
+		$sub_cents = 0;
+		foreach ( (array) ( $session['line_items']['data'] ?? array() ) as $line ) {
+			if ( '' !== Arvator_Stripe::plan_for_price( (string) ( $line['price']['id'] ?? '' ) ) ) {
+				$sub_cents += (int) ( $line['amount_total'] ?? 0 );
+			}
+		}
+		$source = '' !== (string) ( $session['invoice'] ?? '' ) ? 'aff:inv:' . $session['invoice'] : 'aff:first:' . (string) ( $session['id'] ?? $order_id );
+		self::attach_purchase( $user_id, $order_id, (string) ( $session['metadata']['ref'] ?? '' ), (string) ( $session['customer'] ?? '' ), $sub_cents, $source, $live );
+	}
+
+	/**
+	 * Achat confirmé (carte ou virement) : rattache le filleul à son parrain (une seule fois), crée la prime d'achat et la
+	 * récompense sur le premier abonnement. Utilisé par on_purchase() (Stripe) et par les virements (Arvator_Bank).
+	 *
+	 * @param string $raw_code   Code de recommandation saisi à l'achat (peut être vide).
+	 * @param string $customer   Client Stripe (vide pour un virement) : sert au contrôle anti-fraude.
+	 * @param int    $sub_cents  Montant payé pour le premier abonnement.
+	 * @param string $source     Origine unique de la récompense sur abonnement (idempotence).
+	 */
+	public static function attach_purchase( int $user_id, int $order_id, string $raw_code, string $customer, int $sub_cents, string $source, bool $live ): void {
 		global $wpdb;
 		$s        = self::settings();
 		$referral = self::referral_for( $user_id );
 
 		if ( ! $referral ) {
-			$code = self::normalize_code( (string) ( $session['metadata']['ref'] ?? '' ) );
+			$code = self::normalize_code( $raw_code );
 			if ( '' === $code ) {
 				return;
 			}
@@ -274,7 +295,7 @@ final class Arvator_Referral {
 				Arvator_Repo::log_event( 'referral_unknown_code', $user_id, array( 'code' => $code ) );
 				return;
 			}
-			$reason = self::fraud_reason( (int) $ref['user_id'], $user_id, (string) ( $session['customer'] ?? '' ), $order_id );
+			$reason = self::fraud_reason( (int) $ref['user_id'], $user_id, $customer, $order_id );
 			$wpdb->query( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$wpdb->prepare(
 					'INSERT IGNORE INTO ' . Arvator_Repo::table( 'referrals' ) . ' (referee_user_id, referrer_user_id, order_id, status, note, created_at) VALUES (%d, %d, %d, %s, %s, %s)',
@@ -301,17 +322,20 @@ final class Arvator_Referral {
 		// Prime d'achat (une par achat du robot).
 		self::add_commission( $referrer, $user_id, $order_id, 'prime', 'prime:order:' . $order_id, $s['prime_cents'], $blocked, $live, (string) $referral['note'] );
 
-		// 10 % du premier abonnement, payé dans le même passage que le robot.
-		$sub_cents = 0;
-		foreach ( (array) ( $session['line_items']['data'] ?? array() ) as $line ) {
-			if ( '' !== Arvator_Stripe::plan_for_price( (string) ( $line['price']['id'] ?? '' ) ) ) {
-				$sub_cents += (int) ( $line['amount_total'] ?? 0 );
-			}
-		}
 		if ( $sub_cents > 0 ) {
-			$source = '' !== (string) ( $session['invoice'] ?? '' ) ? 'aff:inv:' . $session['invoice'] : 'aff:first:' . (string) ( $session['id'] ?? $order_id );
 			self::add_commission( $referrer, $user_id, $order_id, 'affiliation', $source, self::affiliation_cents( $sub_cents ), $blocked, $live, (string) $referral['note'] );
 		}
+	}
+
+	/**
+	 * Renouvellement payé par virement : 10 % au parrain du client (les renouvellements par carte passent par on_invoice_paid()).
+	 */
+	public static function on_bank_renewal( int $user_id, int $paid_cents, string $source, bool $live ): void {
+		$referral = self::referral_for( $user_id );
+		if ( ! $referral || $paid_cents <= 0 || ! Arvator_Repo::has_paid_order( $user_id ) ) {
+			return;
+		}
+		self::add_commission( (int) $referral['referrer_user_id'], $user_id, null, 'affiliation', $source, self::affiliation_cents( $paid_cents ), 'blocked' === $referral['status'], $live, (string) $referral['note'] );
 	}
 
 	/** 10 % arrondi au centime. */

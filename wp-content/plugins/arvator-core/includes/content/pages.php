@@ -37,7 +37,7 @@ TXT,
 	),
 
 	'faq'      => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'Questions fréquentes',
 		'text'  => <<<'TXT'
 ## Le robot
@@ -68,7 +68,7 @@ Ce n'est pas une obligation. Avec un petit capital, la taille minimale de positi
 
 ## Prix, licence et abonnement
 ?? Combien ça coûte ?
-Un achat unique de 1 500 € pour le robot, puis un abonnement obligatoire pour garder la licence active : 39,90 € par mois, ou 29,90 € par mois en formule annuelle (358,80 € payés d'avance pour l'année, soit 120 € d'économie par an). Au moment du paiement, vous réglez l'achat et le premier abonnement en une seule fois.
+Un achat unique de 1 500 € pour le robot, puis un abonnement obligatoire pour garder la licence active : 39,90 € par mois, ou 29,90 € par mois en formule annuelle (358,80 € payés d'avance pour l'année, soit 120 € d'économie par an). Au moment du paiement, vous réglez l'achat et le premier abonnement en une seule fois. Vous pouvez payer par carte bancaire (via Stripe) ou par virement bancaire (formule annuelle).
 
 ?? Que se passe-t-il si mon abonnement n'est plus payé ?
 Votre licence expire. Après 3 jours de grâce, le robot ne prend plus de nouvelles positions, mais continue de gérer celles qui sont déjà ouvertes.
@@ -85,10 +85,13 @@ Oui : un essai gratuit de 14 jours, uniquement sur un compte démo cTrader. Il v
 
 ## Paiement et remboursement
 ?? Comment le paiement est-il sécurisé ?
-Le paiement est traité par Stripe. Vos données de carte ne passent jamais par ce site.
+Le paiement par carte est traité par Stripe. Vos données de carte ne passent jamais par ce site. Pour un virement, c'est vous qui le faites depuis votre banque : nous ne voyons jamais vos identifiants bancaires.
+
+?? Puis-je payer par virement ?
+Oui, pour la formule annuelle : 1 500 € pour le robot + 358,80 € pour la première année d'abonnement, soit 1 858,80 € au premier paiement, puis 358,80 € par an. Après votre commande, vous recevez les coordonnées bancaires, le montant exact et une référence (par exemple ARV-123456) à recopier dans le libellé du virement. Votre licence est activée dans les 24 heures suivant la réception de votre virement. Le virement ne se reconduit pas tout seul : nous vous prévenons avant l'échéance et vous renouvelez en payant.
 
 ?? Puis-je être remboursé ?
-Si vous achetez sans avoir fait l'essai gratuit, vous disposez de 14 jours à compter de l'achat pour demander le remboursement du prix du robot (1 500 €). **L'abonnement de la première période n'est pas remboursé.** Le remboursement met fin à votre licence. Si vous avez fait l'essai gratuit avant d'acheter, vous avez renoncé à votre droit de rétractation : l'achat n'est pas remboursable. Pour demander un remboursement, écrivez à {{email}}.
+Si vous achetez sans avoir fait l'essai gratuit, vous disposez de 14 jours à compter de l'achat pour demander le remboursement du prix du robot (1 500 €). **L'abonnement de la première période n'est pas remboursé.** Le remboursement met fin à votre licence. Si vous avez fait l'essai gratuit avant d'acheter, vous avez renoncé à votre droit de rétractation : l'achat n'est pas remboursable. Pour demander un remboursement, écrivez à {{email}}. Si vous avez payé par virement, nous vous remboursons par virement.
 
 ## Compte et données
 ?? Comment accéder à mon espace membre ?
@@ -175,7 +178,7 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 6,
+		'rev'   => 7,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 ## 1. Éditeur et objet
@@ -190,7 +193,9 @@ Arvator est un logiciel (un robot cTrader) livré sous forme de fichier numériq
 Les prix sont en euros et ceux affichés au moment de la commande s'appliquent.
 
 ## 4. Commande et paiement
-Le paiement est traité par Stripe. Au moment de la commande, le client règle l'achat du robot et le premier abonnement en une seule fois. L'abonnement se renouvelle automatiquement chaque mois ou chaque année jusqu'à sa résiliation. En cas d'échec de paiement d'un abonnement, aucune nouvelle licence n'est délivrée.
+Le paiement par carte est traité par Stripe. Au moment de la commande, le client règle l'achat du robot et le premier abonnement en une seule fois. L'abonnement payé par carte se renouvelle automatiquement chaque mois ou chaque année jusqu'à sa résiliation. En cas d'échec de paiement d'un abonnement, aucune nouvelle licence n'est délivrée.
+
+Le client peut aussi payer par virement bancaire, pour la formule annuelle seulement (achat du robot et première année d'abonnement, puis chaque année). Après la commande, le client reçoit les coordonnées bancaires, le montant exact et une référence à indiquer dans le libellé du virement. La licence est activée dans les 24 heures suivant la réception du virement. Une commande non payée est annulée automatiquement après 30 jours. L'abonnement payé par virement ne se renouvelle pas automatiquement : le client est prévenu avant l'échéance et le renouvelle en effectuant un nouveau virement ; sans paiement, la période de grâce de 3 jours s'applique, puis le robot ne prend plus de nouvelles positions. Une facture est disponible dans l'espace membre. Le remboursement du prix du robot, lorsqu'il est dû, se fait par virement.
 
 ## 5. Licence et abonnement
 La licence est valable pour la période d'abonnement payée. À son expiration, une période de grâce de 3 jours s'applique ; ensuite le robot ne prend plus de nouvelles positions, mais continue de gérer celles déjà ouvertes. Le client s'interdit de copier, décompiler, modifier, revendre ou partager le robot ou sa licence.
@@ -220,7 +225,7 @@ TXT,
 	),
 
 	'confidentialite' => array(
-		'rev'   => 5,
+		'rev'   => 6,
 		'title' => 'Politique de confidentialité',
 		'text'  => <<<'TXT'
 ## Qui est responsable de vos données
@@ -228,7 +233,7 @@ Hamid DIBARH, entrepreneur individuel établi au {{adresse}} (SIRET 802 301 317 
 
 ## Les données que nous traitons
 - Votre compte : nom, adresse email, mot de passe (jamais en clair).
-- Vos achats et abonnements : produit, montant, dates, état de l'abonnement (le paiement lui-même est traité par Stripe : nous ne voyons jamais votre numéro de carte).
+- Vos achats et abonnements : produit, montant, dates, état de l'abonnement (le paiement par carte est traité par Stripe : nous ne voyons jamais votre numéro de carte ; pour un virement, nous gardons votre nom, votre email, le montant et la référence de la commande, et jamais vos coordonnées bancaires).
 - Votre licence : clé de licence et numéro de compte cTrader associé.
 - Vos messages : le contenu de ce que vous nous écrivez depuis la page Contact.
 - Si vous êtes parrain : votre code de recommandation, les achats faits avec votre lien (date et état, sans identité de l'acheteur), vos récompenses, et pour le virement le nom du titulaire, votre IBAN (conservé chiffré), votre statut et, pour une entreprise, votre SIRET.
@@ -245,7 +250,7 @@ Hamid DIBARH, entrepreneur individuel établi au {{adresse}} (SIRET 802 301 317 
 Les données de votre compte sont conservées tant que votre compte existe. Les pièces comptables (achats, factures) sont conservées 10 ans, comme la loi l'exige. Les messages de contact ne sont pas conservés sur le site : ils arrivent dans notre boîte email.
 
 ## Qui y a accès
-L'éditeur, ainsi que les prestataires strictement nécessaires : Stripe (paiement), Hostinger (hébergement du site) et notre fournisseur d'envoi d'emails. Nous ne vendons pas vos données.
+L'éditeur, ainsi que les prestataires strictement nécessaires : Stripe (paiement par carte), notre banque (réception des virements), Hostinger (hébergement du site) et notre fournisseur d'envoi d'emails. Nous ne vendons pas vos données.
 
 ## Vos droits
 Vous pouvez accéder à vos données, les rectifier, les exporter ou demander leur effacement. Depuis votre [espace membre](/espace-membre/), rubrique « Mes informations », vous pouvez demander l'export ou l'effacement de vos données. Vous pouvez aussi écrire à {{email}}. Vous pouvez enfin saisir la CNIL (cnil.fr) en cas de difficulté.

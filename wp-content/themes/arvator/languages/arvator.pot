@@ -2,14 +2,14 @@
 # This file is distributed under the Proprietary.
 msgid ""
 msgstr ""
-"Project-Id-Version: Arvator 0.7.0\n"
-"Report-Msgid-Bugs-To: support@arvator.com\n"
+"Project-Id-Version: Arvator 0.8.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/arvator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Arvator <support@arvator.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-23T17:06:15+00:00\n"
+"POT-Creation-Date: 2026-10-25T19:50:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: arvator\n"
@@ -121,260 +121,285 @@ msgstr ""
 msgid "Tout accepter"
 msgstr ""
 
-#: front-page.php:37
+#: front-page.php:28
 msgid "Recommandation"
 msgstr ""
 
-#: front-page.php:49
+#: front-page.php:40
 msgid "Les résultats présentés sont des <strong>performances simulées</strong> (backtest), pas des résultats réels : nous les montrons toujours avec les baisses qui vont avec."
 msgstr ""
 
 #. translators: %d: durée de l'essai en jours.
-#: front-page.php:53
+#: front-page.php:44
 #: inc/template-tags.php:96
 msgid "Essayer %d jours sur compte démo"
 msgstr ""
 
 #. translators: %d: durée de l'essai en jours.
-#: front-page.php:54
-#: front-page.php:56
+#: front-page.php:45
+#: front-page.php:47
 msgid "Voir les tarifs"
 msgstr ""
 
-#: front-page.php:59
+#: front-page.php:50
 msgid "Voir les résultats simulés"
 msgstr ""
 
-#: front-page.php:63
+#: front-page.php:54
 msgid "Exemple de performances simulées"
 msgstr ""
 
-#: front-page.php:64
+#: front-page.php:55
 msgid "Performances simulées · risque 1 %"
 msgstr ""
 
-#. translators: %s: capital de départ, ex. « 5 000 € ».
-#: front-page.php:65
-msgid "Capital de départ de %s"
+#. translators: 1: capital de départ, 2: solde final.
+#: front-page.php:56
+msgid "%1$s → %2$s"
 msgstr ""
 
-#: front-page.php:71
-#: template-parts/results-tabs.php:56
-msgid "2026 (au 7 oct.)"
+#: front-page.php:59
+#: template-parts/results-reference.php:38
+msgid "Évolution simulée"
 msgstr ""
 
-#: front-page.php:84
-msgid "Pire baisse sur la période"
+#: front-page.php:63
+#: template-parts/results-reference.php:42
+#: template-parts/results-reference.php:72
+#: template-parts/results-tabs.php:62
+msgid "Pire baisse"
 msgstr ""
 
-#: front-page.php:88
-#: template-parts/results-tabs.php:59
-msgid "Solde le plus bas"
+#: front-page.php:67
+msgid "Compte simulé du 1<sup>er</sup> janvier 2024 au 25 octobre 2026, frais d’un courtier inclus. Baisse en cours au 25/10/2026. Ne garantit pas les résultats futurs."
 msgstr ""
 
-#. translators: %s: capital de départ.
-#: front-page.php:92
-msgid "Solde simulé du compte en fin d’année, en repartant de %s chaque 1<sup>er</sup> janvier. Backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026. Ne préjuge pas des résultats futurs."
-msgstr ""
-
-#: front-page.php:100
+#: front-page.php:75
 msgid "Comment ça marche"
 msgstr ""
 
-#: front-page.php:101
+#: front-page.php:76
 msgid "Trois étapes, sans rien de compliqué"
 msgstr ""
 
-#: front-page.php:105
+#: front-page.php:80
 msgid "Vous choisissez votre formule"
 msgstr ""
 
-#: front-page.php:106
+#: front-page.php:81
 msgid "Un achat du robot, puis un abonnement mensuel ou annuel pour garder votre licence active. Vous pouvez d’abord l’essayer 14&nbsp;jours sur un compte démo."
 msgstr ""
 
-#: front-page.php:110
+#: front-page.php:85
 msgid "Vous l’installez sur votre compte cTrader"
 msgstr ""
 
-#: front-page.php:111
+#: front-page.php:86
 msgid "Vous recevez votre licence et un guide pas à pas. Le robot tourne dans le cloud cTrader, sans que votre ordinateur reste allumé."
 msgstr ""
 
-#: front-page.php:115
+#: front-page.php:90
 msgid "Vous gardez le contrôle du risque"
 msgstr ""
 
-#: front-page.php:116
+#: front-page.php:91
 msgid "Le robot est livré réglé à 1&nbsp;% de risque par trade. Vous pouvez le monter à 2&nbsp;% ou 3&nbsp;%, jamais au-delà. Vous restez seul responsable de votre compte."
 msgstr ""
 
-#: front-page.php:119
+#: front-page.php:94
 msgid "Nous ne touchons jamais à votre argent ni à votre compte : nous vendons un logiciel."
 msgstr ""
 
-#: front-page.php:120
+#: front-page.php:95
 msgid "Commencer par l’essai gratuit"
 msgstr ""
 
-#: front-page.php:126
+#: front-page.php:101
 #: inc/template-tags.php:180
 msgid "Résultats simulés"
 msgstr ""
 
-#: front-page.php:127
-msgid "Ce que le robot aurait fait entre 2024 et 2026, avec ses baisses"
+#: front-page.php:102
+msgid "Backtest avec les frais réels d’un courtier"
 msgstr ""
 
-#: front-page.php:129
-msgid "Un backtest rejoue le robot sur des prix passés. C’est utile pour comprendre son comportement, mais ce n’est pas une promesse : regardez toujours la pire baisse à côté de chaque gain."
+#: front-page.php:104
+msgid "Un backtest rejoue le robot sur des prix passés. Ce sont des performances simulées : elles ne garantissent pas les résultats futurs. Regardez toujours la pire baisse à côté de chaque gain."
 msgstr ""
 
-#: front-page.php:135
-msgid "Pourquoi nous conseillons au moins 5&nbsp;000&nbsp;€"
+#: front-page.php:109
+msgid "Tous les capitaux de départ"
 msgstr ""
 
-#: front-page.php:137
-msgid "Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. Plus le capital est élevé, moins il y a de trades refusés."
+#: front-page.php:113
+msgid "Comment ce backtest est calculé"
 msgstr ""
 
-#: front-page.php:142
+#: front-page.php:115
+msgid "Un seul compte, ouvert le 1er janvier 2024 et suivi jusqu’au 25 octobre 2026, sans retrait. Les gains s’accumulent d’une année sur l’autre, sans remise à zéro chaque année."
+msgstr ""
+
+#: front-page.php:116
+msgid "Réglage livré : 1 perte maximum par jour, 3 positions maximum en même temps."
+msgstr ""
+
+#: front-page.php:117
+msgid "Tous les frais d’un vrai courtier sont inclus, avec IC Markets (compte Raw Spread, cTrader) cité comme exemple de courtier : les écarts de prix (spreads), la commission, les frais pour garder une position ouverte la nuit (swaps) et la taille minimale de position."
+msgstr ""
+
+#: front-page.php:118
+msgid "Quand le capital est trop petit pour la taille minimale du courtier, le robot ne prend pas le trade : c’est compté dans les résultats (colonne « Trades refusés »)."
+msgstr ""
+
+#: front-page.php:120
+msgid "Objectif de cette section : vous donner une idée réaliste de ce que le robot coûte en frais et de ce qu’il pourrait rapporter, sans promesse."
+msgstr ""
+
+#: front-page.php:124
+msgid "Pourquoi nous conseillons au moins 2&nbsp;000&nbsp;€"
+msgstr ""
+
+#: front-page.php:126
+msgid "Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2&nbsp;000&nbsp;€, il ne reste que 20 trades refusés au risque 1&nbsp;%, et aucun aux risques 2&nbsp;% et 3&nbsp;% ; en dessous, une partie des trades est refusée."
+msgstr ""
+
+#: front-page.php:131
 msgid "Voir tous les résultats détaillés"
 msgstr ""
 
-#: front-page.php:143
+#: front-page.php:132
 msgid "Essayer sur compte démo"
 msgstr ""
 
-#: front-page.php:150
+#: front-page.php:139
 #: inc/template-tags.php:174
 #: inc/template-tags.php:181
 msgid "Tarifs"
 msgstr ""
 
-#: front-page.php:151
+#: front-page.php:140
 msgid "Ce que ça coûte, sans surprise"
 msgstr ""
 
-#: front-page.php:153
+#: front-page.php:142
 msgid "Deux éléments : un <strong>achat unique</strong> pour le robot, puis un <strong>abonnement</strong> qui garde votre licence active. Au moment du paiement, vous réglez l’achat et le premier abonnement en une seule fois."
 msgstr ""
 
-#: front-page.php:158
+#: front-page.php:147
 msgid "Abonnement mensuel"
 msgstr ""
 
-#: front-page.php:159
+#: front-page.php:148
 msgid "par mois"
 msgstr ""
 
-#: front-page.php:161
-#: front-page.php:174
+#: front-page.php:150
+#: front-page.php:163
 msgid "Achat du robot (une seule fois)"
 msgstr ""
 
-#: front-page.php:162
-#: front-page.php:175
+#: front-page.php:151
+#: front-page.php:164
 msgid "Premier paiement"
 msgstr ""
 
-#: front-page.php:163
+#: front-page.php:152
 msgid "Ensuite, chaque mois"
 msgstr ""
 
-#: front-page.php:164
-#: front-page.php:177
+#: front-page.php:153
+#: front-page.php:166
 msgid "Coût de la première année"
 msgstr ""
 
-#: front-page.php:166
+#: front-page.php:155
 msgid "Choisir le mensuel"
 msgstr ""
 
-#: front-page.php:170
+#: front-page.php:159
 msgid "Le plus avantageux"
 msgstr ""
 
 #. translators: %s: montant économisé par an.
-#: front-page.php:170
+#: front-page.php:159
 msgid "%s d’économie par an"
 msgstr ""
 
 #. translators: %s: montant économisé par an.
-#: front-page.php:171
+#: front-page.php:160
 msgid "Abonnement annuel"
 msgstr ""
 
-#: front-page.php:172
+#: front-page.php:161
 msgid "par mois, payés d’avance pour l’année"
 msgstr ""
 
-#: front-page.php:176
+#: front-page.php:165
 msgid "Ensuite, chaque année"
 msgstr ""
 
-#: front-page.php:179
+#: front-page.php:168
 msgid "Choisir l’annuel"
 msgstr ""
 
-#: front-page.php:185
+#: front-page.php:174
 msgid "Ce que vous recevez"
 msgstr ""
 
-#: front-page.php:187
+#: front-page.php:176
 msgid "Le robot Arvator, prêt à installer sur votre compte cTrader"
 msgstr ""
 
-#: front-page.php:188
+#: front-page.php:177
 msgid "Votre licence, renouvelée tant que votre abonnement est à jour"
 msgstr ""
 
-#: front-page.php:189
+#: front-page.php:178
 msgid "Un guide d’installation pas à pas"
 msgstr ""
 
-#: front-page.php:190
+#: front-page.php:179
 msgid "Votre espace client : téléchargement, licence, abonnement et factures"
 msgstr ""
 
-#: front-page.php:194
+#: front-page.php:183
 msgid "Bon à savoir avant d’acheter"
 msgstr ""
 
 #. translators: %d: jours de grâce.
-#: front-page.php:196
+#: front-page.php:185
 msgid "L’abonnement est obligatoire : sans abonnement à jour, la licence expire. Après %d jours de grâce, le robot ne prend plus de nouvelles positions."
 msgstr ""
 
 #. translators: %s: capital conseillé.
-#: front-page.php:197
+#: front-page.php:186
 msgid "Le capital que vous placez sur votre compte cTrader est à part du prix du robot, et reste chez votre courtier. Nous conseillons au moins %s (voir plus haut pourquoi)."
 msgstr ""
 
 #. translators: %s: capital conseillé.
-#: front-page.php:198
-msgid "Paiement sécurisé par Stripe : vos données de carte ne passent jamais par ce site."
+#: front-page.php:187
+msgid "Paiement par carte (sécurisé par Stripe : vos données de carte ne passent jamais par ce site) ou par virement bancaire pour la formule annuelle."
 msgstr ""
 
 #. translators: %d: durée de l'essai en jours.
-#: front-page.php:205
+#: front-page.php:194
 msgid "Essayer d’abord %d jours sur compte démo"
 msgstr ""
 
-#: front-page.php:214
+#: front-page.php:203
 msgid "Essayez avant d’acheter"
 msgstr ""
 
 #. translators: %d: durée de l'essai en jours.
-#: front-page.php:215
+#: front-page.php:204
 msgid "%d jours sur un compte démo, sans risquer votre argent. Il suffit d’une adresse email et du numéro de votre compte démo cTrader."
 msgstr ""
 
-#: front-page.php:218
+#: front-page.php:207
 msgid "Demander mon essai gratuit"
 msgstr ""
 
-#: front-page.php:219
+#: front-page.php:208
 #: inc/template-tags.php:72
 #: inc/template-tags.php:97
 msgid "Acheter Arvator"
@@ -532,71 +557,144 @@ msgstr ""
 msgid "Testez le robot pendant 14 jours sur un compte démo, ou passez directement à l’achat."
 msgstr ""
 
-#: template-parts/results-tabs.php:21
+#. translators: %d: niveau de risque.
+#: template-parts/results-reference.php:23
+msgid "Performances simulées · compte de référence · risque %d %%"
+msgstr ""
+
+#. translators: 1: capital de départ, 2: solde final.
+#: template-parts/results-reference.php:29
+msgid "%1$s au 1er janvier 2024 → %2$s au 25 octobre 2026"
+msgstr ""
+
+#: template-parts/results-reference.php:49
+msgid "Trades pris"
+msgstr ""
+
+#: template-parts/results-reference.php:50
+msgid "gagnants"
+msgstr ""
+
+#: template-parts/results-reference.php:53
+#: template-parts/results-tabs.php:63
+msgid "Trades refusés"
+msgstr ""
+
+#: template-parts/results-reference.php:58
+msgid "Baisse en cours au 25/10/2026 : le compte n’est pas encore revenu à son plus haut."
+msgstr ""
+
+#: template-parts/results-reference.php:63
+msgid "Le même compte, année par année"
+msgstr ""
+
+#: template-parts/results-reference.php:64
+msgid "Détail par année du compte de référence"
+msgstr ""
+
+#: template-parts/results-reference.php:66
+msgid "Compte de référence : solde, gain et pire baisse pour chaque année"
+msgstr ""
+
+#: template-parts/results-reference.php:69
+msgid "Année"
+msgstr ""
+
+#: template-parts/results-reference.php:70
+msgid "Solde début → fin"
+msgstr ""
+
+#: template-parts/results-reference.php:71
+#: template-parts/results-tabs.php:61
+msgid "Gain"
+msgstr ""
+
+#: template-parts/results-reference.php:73
+msgid "Période de la baisse"
+msgstr ""
+
+#: template-parts/results-reference.php:74
+msgid "Retour au plus haut"
+msgstr ""
+
+#: template-parts/results-reference.php:83
+msgid "au 25 octobre"
+msgstr ""
+
+#: template-parts/results-reference.php:89
+msgid "(baisse en cours au 25/10/2026)"
+msgstr ""
+
+#: template-parts/results-reference.php:90
+msgid "pas encore"
+msgstr ""
+
+#: template-parts/results-reference.php:96
+msgid "Les quelques euros d’écart entre la fin d’une année et le début de la suivante viennent des positions encore ouvertes le 31 décembre."
+msgstr ""
+
+#: template-parts/results-tabs.php:31
 msgid "Niveau de risque par trade"
 msgstr ""
 
 #. translators: %d: niveau de risque en pourcentage.
-#: template-parts/results-tabs.php:30
+#: template-parts/results-tabs.php:37
 msgid "Risque %d %%"
 msgstr ""
 
-#: template-parts/results-tabs.php:32
+#: template-parts/results-tabs.php:39
 msgid "livré par défaut"
 msgstr ""
 
 #. translators: %d: niveau de risque en pourcentage.
-#: template-parts/results-tabs.php:43
+#: template-parts/results-tabs.php:49
 msgid "Performances simulées au risque %d %% par trade"
 msgstr ""
 
-#: template-parts/results-tabs.php:45
+#: template-parts/results-tabs.php:51
 msgid "réglage livré avec le robot"
 msgstr ""
 
 #. translators: %d: niveau de risque en pourcentage.
-#: template-parts/results-tabs.php:48
+#: template-parts/results-tabs.php:54
 msgid "Résultats simulés au risque %d %%"
 msgstr ""
 
 #. translators: %d: niveau de risque en pourcentage.
-#: template-parts/results-tabs.php:50
-msgid "Solde du compte en fin de période (en euros et en pourcentage) et baisses, risque %d %%"
+#: template-parts/results-tabs.php:56
+msgid "Solde final, gain, pire baisse et trades refusés par capital de départ, risque %d %%"
 msgstr ""
 
-#: template-parts/results-tabs.php:53
+#: template-parts/results-tabs.php:59
 msgid "Capital de départ"
 msgstr ""
 
-#: template-parts/results-tabs.php:57
-msgid "2024 → 2026 enchaînés"
+#: template-parts/results-tabs.php:60
+msgid "Solde final"
 msgstr ""
 
-#: template-parts/results-tabs.php:58
-msgid "Pire baisse"
+#: template-parts/results-tabs.php:73
+msgid "minimum conseillé"
 msgstr ""
 
-#: template-parts/results-tabs.php:68
-msgid "conseillé"
+#: template-parts/results-tabs.php:75
+msgid "référence"
 msgstr ""
 
-#: template-parts/results-tabs.php:86
-msgid "Performances simulées (backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026), sans retrait. Chaque case donne le solde simulé du compte en fin de période, en euros, et l’évolution en pourcentage par rapport au capital de départ."
+#: template-parts/results-tabs.php:91
+msgid "À partir de 2 000 €, la pire baisse va du 2 septembre au 21 octobre 2026."
 msgstr ""
 
-#: template-parts/results-tabs.php:88
-msgid "Chaque année est simulée seule, en repartant du capital de départ ; la colonne « 2024 → 2026 enchaînés » montre le solde si l’on avait laissé tourner le robot sur toute la période, sans retrait."
-msgstr ""
-
-#: template-parts/results-tabs.php:90
-msgid "« Pire baisse » et « solde le plus bas » portent sur toute la période 2024 → 2026 (soldes de fin de mois)."
+#. translators: %d: niveau de risque.
+#: template-parts/results-tabs.php:93
+msgid "Au risque %d %%, la pire baisse a lieu du 2 septembre au 21 octobre 2026."
 msgstr ""
 
 #. translators: %d: risque maximum autorisé, en pourcentage.
-#: template-parts/results-tabs.php:94
+#: template-parts/results-tabs.php:103
 msgid "Le robot est livré réglé à 1 %% de risque par trade ; vous pouvez le monter jusqu’à %d %%, jamais au-delà."
 msgstr ""
 
-#: template-parts/results-tabs.php:97
-msgid "Ces chiffres sont des simulations : ils ne préjugent pas des résultats futurs, qui peuvent être très positifs, nuls ou négatifs."
+#: template-parts/results-tabs.php:106
+msgid "Ces chiffres sont des performances simulées : ils ne garantissent pas les résultats futurs, qui peuvent être très positifs, nuls ou négatifs."
 msgstr ""
