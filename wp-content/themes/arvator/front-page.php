@@ -123,7 +123,7 @@ get_header();
 		<div class="callout" role="note">
 			<h3><?php esc_html_e( 'Pourquoi nous conseillons au moins 2&nbsp;000&nbsp;€', 'arvator' ); ?></h3>
 			<p>
-				<?php esc_html_e( 'Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2&nbsp;000&nbsp;€, presque plus aucun trade n’est refusé (voir la colonne « Trades refusés ») ; en dessous, une partie des trades est refusée.', 'arvator' ); ?>
+				<?php esc_html_e( 'Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2&nbsp;000&nbsp;€, il ne reste que 20 trades refusés au risque 1&nbsp;%, et aucun aux risques 2&nbsp;% et 3&nbsp;% ; en dessous, une partie des trades est refusée.', 'arvator' ); ?>
 			</p>
 		</div>
 

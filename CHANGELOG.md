@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.1 — 25/10/2026
+- Explication du minimum conseillé de 2 000 € : « 20 trades refusés au risque 1 %, aucun aux risques 2 % et 3 % » (chiffres confirmés par Hamid).
+
 ### 0.8.0 — 25/10/2026
 - **Un seul backtest de référence** (décision Cowork + Hamid du 25/10/2026) : « Backtest avec les frais réels d'un courtier ». Bloc de référence 5 000 € au risque 1 % (15 202 €, +204 %, pire baisse −20,1 % / −3 771 € en cours au 25/10/2026), détail par année du même compte, puis onglets 1 % / 2 % / 3 % par capital (500 € à 20 000 €) avec pire baisse (% et €, dates) et trades refusés, note sur les petits capitaux, méthode expliquée (IC Markets cité comme exemple de courtier, sans lien).
 - Disparus : colonnes par année qui repartaient du capital de départ, colonne « 2024 → 2026 enchaînés », ancien rapport PDF.
@@ -75,6 +78,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.9.3 — 25/10/2026
+- FAQ : même explication chiffrée du minimum conseillé de 2 000 €.
 
 ### 0.9.2 — 25/10/2026
 - FAQ et page Risques : capital minimum conseillé **2 000 €** (au lieu de 5 000 €), avec la raison (presque plus de trades refusés dans le backtest à partir de 2 000 €).

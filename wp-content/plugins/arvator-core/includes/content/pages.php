@@ -64,7 +64,7 @@ Le robot est livré réglé à 1 % de risque par trade. Vous pouvez le monter à
 Dans votre cloud cTrader, arrêtez le robot, modifiez le réglage « risque » (1 %, 2 % ou 3 %), puis relancez-le.
 
 ?? Pourquoi conseillez-vous au moins 2 000 € ?
-Ce n'est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2 000 €, presque plus aucun trade n'est refusé dans notre backtest (qui inclut les frais d'un courtier, par exemple IC Markets).
+Ce n'est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2 000 €, notre backtest (qui inclut les frais d'un courtier, par exemple IC Markets) ne compte que 20 trades refusés au risque 1 %, et aucun aux risques 2 % et 3 %.
 
 ## Prix, licence et abonnement
 ?? Combien ça coûte ?

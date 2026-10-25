@@ -740,7 +740,7 @@ check( str_contains( $home['body'], 'Trades refusés' ) && str_contains( $home['
 check( str_contains( $home['body'], 'Backtest avec les frais réels d' ) && str_contains( $home['body'], 'IC Markets' ) && ! preg_match( '#href="[^"]*(icmarkets|ic-markets)#i', $home['body'] ), 'résultats : titre sur la méthode, courtier cité sans lien' );
 check( ! str_contains( $home['body'], '2024 → 2026 enchaînés' ) && ! str_contains( $home['body'], "23\u{202F}186" ) && ! str_contains( $home['body'], '7 oct' ) && ! str_contains( $home['body'], 'Backtest-cTrader' ), 'résultats : plus aucun ancien chiffre ni lien vers l\'ancien rapport' );
 check( 1 === preg_match( '/hero__card.*?15\x{202F}202\x{00A0}€.*?\+204\x{00A0}%/su', $home['body'] ), 'haut de page : carte de référence 5 000 € → 15 202 €' );
-check( str_contains( $anon->get( '/faq/' )['body'], 'au moins 2 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'au moins 5 000' ), 'FAQ : capital minimum conseillé 2 000 €' );
+check( str_contains( $anon->get( '/faq/' )['body'], '20 trades refusés au risque 1' ) && str_contains( $anon->get( '/faq/' )['body'], 'au moins 2 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'au moins 5 000' ), 'FAQ : capital minimum conseillé 2 000 €' );
 check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) ||1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
 

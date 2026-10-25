@@ -36,6 +36,7 @@ Décision de Hamid du 25/10/2026. **Ce n'est pas une obligation** : le client pe
 - À afficher sur l'accueil, la FAQ et la page Tarifs, sans promettre de gains. Ne jamais présenter le capital minimum comme une garantie de résultat.
 
 ## Résultats de backtest (décision Cowork + Hamid, 25/10/2026)
+- Réglage livré **1 perte maximum par jour** : le cBot est corrigé (confirmé par Hamid le 25/10/2026).
 - **Un seul backtest de référence**, qui remplace tout l'ancien (PDF du 21/10/2026, colonnes par année repartant du capital de départ, colonne chaînée) : compte unique ouvert le 01/01/2024 et suivi jusqu'au 25/10/2026, sans retrait, frais d'un vrai courtier inclus (IC Markets, compte Raw Spread cTrader, cité comme exemple, sans lien), trades refusés comptés. Réglage livré : **1 perte maximum par jour, 3 positions maximum** en même temps.
 - Référence mise en avant : **5 000 € au risque 1 %** (15 202 €, +204 %, pire baisse −20,1 % / −3 771 € du 2 septembre au 21 octobre 2026, en cours). Tableaux par capital (500 € à 20 000 €) en onglets 1 % / 2 % / 3 %.
 - Chiffres dans `config/resultats-backtest.json` (source unique).
