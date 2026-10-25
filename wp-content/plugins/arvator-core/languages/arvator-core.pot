@@ -2,14 +2,14 @@
 # This file is distributed under the Proprietary.
 msgid ""
 msgstr ""
-"Project-Id-Version: Arvator Core 0.9.0\n"
+"Project-Id-Version: Arvator Core 0.9.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/arvator-core\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-24T15:04:57+00:00\n"
+"POT-Creation-Date: 2026-10-25T00:20:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: arvator-core\n"
@@ -26,7 +26,7 @@ msgstr ""
 
 #. Description of the plugin
 #: arvator-core.php
-msgid "Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks. Parrainage (lien de recommandation, récompenses, virements). Licence : liaison avec le workflow n8n (paiement, résiliation, essai). Accueillera ensuite l'administration complète."
+msgid "Cœur du site Arvator : sécurité renforcée, pages du site (FAQ, À propos, Contact, Risques, textes légaux), formulaire de contact, espace membre sécurisé (compte client, achats, abonnement, licence, téléchargement du robot, données personnelles). Paiement Stripe (achat + abonnement) et webhooks. Parrainage (lien de recommandation, récompenses, virements). Licence : liaison avec le workflow n8n (paiement, résiliation, essai). Codes promo (robot, abonnement, mois offerts). Accueillera ensuite l'administration complète."
 msgstr ""
 
 #. Author of the plugin
@@ -889,18 +889,23 @@ msgid "Les pièces comptables (achats, abonnements, récompenses de recommandati
 msgstr ""
 
 #. translators: %d: pourcentage de réduction.
-#: includes/class-promo.php:94
+#: includes/class-promo.php:95
 msgid "robot offert"
 msgstr ""
 
 #. translators: %d: pourcentage de réduction.
-#: includes/class-promo.php:94
+#: includes/class-promo.php:95
 #, php-format
 msgid "-%d %% sur le prix du robot"
 msgstr ""
 
+#. translators: sépare deux avantages d'un même code promo (« robot offert + 6 mois d'abonnement offerts »).
+#: includes/class-promo.php:101
+msgid " + "
+msgstr ""
+
 #. translators: %d: nombre de mois.
-#: includes/class-promo.php:100
+#: includes/class-promo.php:110
 #, php-format
 msgid "%d mois d’abonnement offert"
 msgid_plural "%d mois d’abonnement offerts"
@@ -908,7 +913,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: pourcentage, 2: nombre de mois.
-#: includes/class-promo.php:102
+#: includes/class-promo.php:112
 #, php-format
 msgid "-%1$d %% sur l’abonnement pendant %2$d mois"
 msgid_plural "-%1$d %% sur l’abonnement pendant %2$d mois"
@@ -916,44 +921,44 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: pourcentage de réduction.
-#: includes/class-promo.php:106
+#: includes/class-promo.php:116
 msgid "abonnement offert tant qu’il n’est pas résilié"
 msgstr ""
 
 #. translators: %d: pourcentage de réduction.
-#: includes/class-promo.php:106
+#: includes/class-promo.php:116
 #, php-format
 msgid "-%d %% sur l’abonnement, à chaque paiement"
 msgstr ""
 
-#: includes/class-promo.php:109
+#: includes/class-promo.php:119
 msgid "1er mois d’abonnement offert"
 msgstr ""
 
 #. translators: %d: pourcentage.
-#: includes/class-promo.php:109
+#: includes/class-promo.php:119
 #, php-format
 msgid "-%d %% sur le 1er mois d’abonnement"
 msgstr ""
 
 #. translators: %d: pourcentage.
-#: includes/class-promo.php:110
+#: includes/class-promo.php:120
 msgid "1re année d’abonnement offerte"
 msgstr ""
 
 #. translators: %d: pourcentage.
-#: includes/class-promo.php:110
+#: includes/class-promo.php:120
 #, php-format
 msgid "-%d %% sur la 1re année d’abonnement"
 msgstr ""
 
 #. translators: %d: pourcentage.
-#: includes/class-promo.php:111
+#: includes/class-promo.php:121
 msgid "1re période d’abonnement offerte (1er mois ou 1re année)"
 msgstr ""
 
 #. translators: %d: pourcentage.
-#: includes/class-promo.php:111
+#: includes/class-promo.php:121
 #, php-format
 msgid "-%d %% sur la 1re période d’abonnement (1er mois ou 1re année)"
 msgstr ""

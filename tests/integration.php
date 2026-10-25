@@ -1414,18 +1414,32 @@ $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_uses' ) );
 
 // -- Unités : nom du code, réglages refusés, coupon Stripe, texte affiché
 check( 'NOEL30' === Arvator_Promo::normalize( ' noel30 ' ) && '' === Arvator_Promo::normalize( "AB'; DROP" ) && '' === Arvator_Promo::normalize( 'AB' ), 'code : majuscules, lettres/chiffres/tiret seulement, 3 caractères minimum' );
-$pbase = array( 'code' => "U$tag", 'target' => 'sub', 'percent' => '30', 'duration' => 'once', 'months' => '0', 'plans' => 'both', 'max_uses' => '0', 'expires' => '' );
-check( is_wp_error( Arvator_Promo::validate( array( 'percent' => '0' ) + $pbase ) ) && is_wp_error( Arvator_Promo::validate( array( 'percent' => '101' ) + $pbase ) ), 'réduction de 0 % ou de plus de 100 % refusée' );
+$pbase = array( 'code' => "U$tag", 'bot_percent' => '0', 'sub_percent' => '30', 'duration' => 'once', 'months' => '0', 'plans' => 'both', 'max_uses' => '0', 'expires' => '' );
+check( is_wp_error( Arvator_Promo::validate( array( 'sub_percent' => '0' ) + $pbase ) ) && is_wp_error( Arvator_Promo::validate( array( 'sub_percent' => '101' ) + $pbase ) ) && is_wp_error( Arvator_Promo::validate( array( 'bot_percent' => '-5' ) + $pbase ) ), 'aucune réduction (0 % partout), plus de 100 % ou négatif : refusé' );
 check( is_wp_error( Arvator_Promo::validate( array( 'duration' => 'repeating', 'months' => '6', 'plans' => 'annual' ) + $pbase ) ) && is_wp_error( Arvator_Promo::validate( array( 'duration' => 'repeating', 'months' => '6' ) + $pbase ) ), 'durée en mois refusée pour l’annuel (ou les deux formules)' );
 check( is_wp_error( Arvator_Promo::validate( array( 'duration' => 'repeating', 'months' => '0', 'plans' => 'monthly' ) + $pbase ) ), 'durée de 0 mois refusée' );
 check( is_wp_error( Arvator_Promo::validate( array( 'expires' => '2020-01-01' ) + $pbase ) ) && is_wp_error( Arvator_Promo::validate( array( 'expires' => 'demain' ) + $pbase ) ), 'date de fin passée ou illisible refusée' );
-check( is_wp_error( Arvator_Promo::validate( array( 'target' => 'tout' ) + $pbase ) ), 'cible inconnue refusée' );
-$v = Arvator_Promo::validate( array( 'target' => 'bot', 'duration' => 'forever', 'plans' => 'monthly' ) + $pbase );
-check( is_array( $v ) && 'once' === $v['duration'] && 'both' === $v['plans'], 'code « robot » : toujours une seule fois, toutes formules' );
-$cp = Arvator_Promo::coupon_params( array( 'code' => 'MOIS6', 'percent' => 100, 'duration' => 'repeating', 'months' => 6, 'max_uses' => 10, 'expires' => '2031-01-01 22:59:59' ), array( 'prod_sub' ) );
+check( is_wp_error( Arvator_Promo::validate( array( 'duration' => 'toujours' ) + $pbase ) ), 'durée inconnue refusée' );
+$v = Arvator_Promo::validate( array( 'bot_percent' => '30', 'sub_percent' => '0', 'duration' => 'forever', 'plans' => 'monthly' ) + $pbase );
+check( is_array( $v ) && 'once' === $v['duration'] && 'both' === $v['plans'], 'code « robot seul » : toutes formules' );
+$v = Arvator_Promo::validate( array( 'bot_percent' => '30', 'sub_percent' => '100', 'duration' => 'repeating', 'months' => '6', 'plans' => 'monthly' ) + $pbase );
+check( is_array( $v ) && 30 === $v['bot_percent'] && 100 === $v['sub_percent'] && 6 === $v['months'], 'code « robot + abonnement » accepté (-30 % robot + 6 mois offerts)' );
+check( 105000 === Arvator_Promo::reduced( 150000, 30 ) && 0 === Arvator_Promo::reduced( 150000, 100 ) && 149999 === Arvator_Promo::reduced( 149999, 0 ) && 104999 === Arvator_Promo::reduced( 149999, 30 ), 'prix réduit du robot : 1 500 € à -30 % = 1 050 €, offert = 0 €, arrondi en faveur du client' );
+$cp = Arvator_Promo::coupon_params( array( 'code' => 'MOIS6', 'sub_percent' => 100, 'duration' => 'repeating', 'months' => 6, 'max_uses' => 10, 'expires' => '2031-01-01 22:59:59' ), array( 'prod_sub' ) );
 check( 100 === $cp['percent_off'] && 'repeating' === $cp['duration'] && 6 === $cp['duration_in_months'] && array( 'prod_sub' ) === $cp['applies_to']['products'] && 10 === $cp['max_redemptions'] && 1925074799 === $cp['redeem_by'], 'coupon Stripe : 100 % pendant 6 mois, abonnement seulement, limite et date de fin' );
-$d = static fn( array $x ): string => Arvator_Promo::describe( $x + array( 'percent' => 30, 'target' => 'sub', 'duration' => 'once', 'months' => 0, 'plans' => 'both' ) );
-check( '-30 % sur le prix du robot' === $d( array( 'target' => 'bot' ) ) && '6 mois d’abonnement offerts' === $d( array( 'percent' => 100, 'duration' => 'repeating', 'months' => 6, 'plans' => 'monthly' ) ) && '1re année d’abonnement offerte' === $d( array( 'percent' => 100, 'plans' => 'annual' ) ) && '-30 % sur l’abonnement, à chaque paiement' === $d( array( 'duration' => 'forever' ) ), 'textes : robot -30 %, 6 mois offerts, 1re année offerte, -30 % à chaque paiement' );
+$d = static fn( array $x ): string => Arvator_Promo::describe( $x + array( 'bot_percent' => 0, 'sub_percent' => 30, 'duration' => 'once', 'months' => 0, 'plans' => 'both' ) );
+check( '-30 % sur le prix du robot' === $d( array( 'bot_percent' => 30, 'sub_percent' => 0 ) ) && '6 mois d’abonnement offerts' === $d( array( 'sub_percent' => 100, 'duration' => 'repeating', 'months' => 6, 'plans' => 'monthly' ) ) && '1re année d’abonnement offerte' === $d( array( 'sub_percent' => 100, 'plans' => 'annual' ) ) && '-30 % sur l’abonnement, à chaque paiement' === $d( array( 'duration' => 'forever' ) ), 'textes : robot -30 %, 6 mois offerts, 1re année offerte, -30 % à chaque paiement' );
+check( 'robot offert + 1re année d’abonnement offerte' === $d( array( 'bot_percent' => 100, 'sub_percent' => 100, 'plans' => 'annual' ) ), 'texte d’un code double : « robot offert + 1re année d’abonnement offerte »' );
+// Codes du plugin 0.9.0 (un seul avantage) : repris à la mise à jour.
+$now_p = gmdate( 'Y-m-d H:i:s' );
+$wpdb->insert( Arvator_Repo::table( 'promo_codes' ), array( 'code' => 'OLDBOT', 'target' => 'bot', 'percent' => 40, 'duration' => 'once', 'plans' => 'both', 'active' => 1, 'stripe_coupon' => 'coup_oldbot', 'is_test' => 1, 'created_at' => $now_p, 'updated_at' => $now_p ) );
+$wpdb->insert( Arvator_Repo::table( 'promo_codes' ), array( 'code' => 'OLDSUB', 'target' => 'sub', 'percent' => 100, 'duration' => 'repeating', 'months' => 3, 'plans' => 'monthly', 'active' => 1, 'stripe_coupon' => 'coup_oldsub', 'is_test' => 1, 'created_at' => $now_p, 'updated_at' => $now_p ) );
+Arvator_Promo::migrate();
+Arvator_Promo::migrate();
+$ob = $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'promo_codes' ) . " WHERE code = 'OLDBOT'", ARRAY_A );
+$os = $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'promo_codes' ) . " WHERE code = 'OLDSUB'", ARRAY_A );
+check( 40 === (int) $ob['bot_percent'] && 0 === (int) $ob['sub_percent'] && '' === $ob['stripe_coupon'] && 100 === (int) $os['sub_percent'] && 0 === (int) $os['bot_percent'] && 'coup_oldsub' === $os['stripe_coupon'], 'mise à jour : anciens codes repris (robot -40 % ; 3 mois offerts avec leur coupon)' );
+$wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_codes' ) );
 
 // -- Page d'achat sans aucun code : pas de champ (le client ne part pas chercher un code)
 check( ! str_contains( $anon->get( '/acheter/' )['body'], 'name="promo"' ), 'aucun code créé : pas de champ « code promo » sur la page d’achat' );
@@ -1434,14 +1448,14 @@ check( ! str_contains( $anon->get( '/acheter/' )['body'], 'name="promo"' ), 'auc
 $pa = $adm->get( '/wp-admin/admin.php?page=arvator-promo' );
 check( 200 === $pa['code'] && str_contains( $pa['body'], 'Créer un code' ) && str_contains( $pa['body'], 'bac à sable' ), 'administration : page Codes promo (mode bac à sable indiqué)' );
 $pn    = field_in_form( $pa['body'], 'arvator_promo_create', '_arv_nonce' );
-$pform = array( 'action' => 'arvator_promo_create', '_arv_nonce' => $pn, 'code' => 'bot30', 'target' => 'bot', 'percent' => '30', 'duration' => 'once', 'months' => '6', 'plans' => 'both', 'max_uses' => '0', 'expires' => '' );
+$pform = array( 'action' => 'arvator_promo_create', '_arv_nonce' => $pn, 'code' => 'bot30', 'bot_percent' => '30', 'sub_percent' => '0', 'duration' => 'once', 'months' => '6', 'plans' => 'both', 'max_uses' => '0', 'expires' => '' );
 $cli_p = "promocli_$tag";
 $cli   = wp_insert_user( array( 'user_login' => $cli_p, 'user_email' => "$cli_p@example.com", 'user_pass' => 'Mot-de-passe-client-1', 'role' => Arvator_Roles::CLIENT ) );
 $CB    = new Browser( $url );
 member_login( $CB, $cli_p, 'Mot-de-passe-client-1' );
 check( 403 === $CB->post( '/wp-admin/admin-post.php', $pform )['code'] && 0 === count( Arvator_Promo::all() ), 'un client ne peut pas créer de code (403)' );
 check( 403 === $adm->post( '/wp-admin/admin-post.php', array( '_arv_nonce' => 'faux' ) + $pform )['code'], 'création sans clé de sécurité valide refusée (403)' );
-$set_fix( array( 'GET prices/price_bot_test' => array( 'id' => 'price_bot_test', 'product' => 'prod_bot' ), 'POST coupons' => array( 'id' => 'coup_bot30' ) ) );
+$set_fix( array( 'POST coupons' => array( 'id' => 'coup_bot30' ) ) );
 @unlink( $stripe_log );
 $r     = $adm->post( '/wp-admin/admin-post.php', $pform );
 $pbody = array();
@@ -1451,29 +1465,36 @@ foreach ( $stripe_calls() as $c ) {
 	}
 }
 $bot30 = $wpdb->get_row( "SELECT * FROM " . Arvator_Repo::table( 'promo_codes' ) . " WHERE code = 'BOT30'", ARRAY_A );
-check( 302 === $r['code'] && is_array( $bot30 ) && 'coup_bot30' === $bot30['stripe_coupon'] && 1 === (int) $bot30['is_test'] && 1 === (int) $bot30['active'], 'code BOT30 créé (en majuscules), lié au coupon Stripe, marqué « test »' );
-check( '30' === ( $pbody['percent_off'] ?? '' ) && 'once' === ( $pbody['duration'] ?? '' ) && 'prod_bot' === ( $pbody['applies_to']['products'][0] ?? '' ) && 1 === count( (array) ( $pbody['applies_to']['products'] ?? array() ) ), 'coupon envoyé à Stripe : -30 %, une fois, sur le produit du robot seulement' );
+check( 302 === $r['code'] && is_array( $bot30 ) && 30 === (int) $bot30['bot_percent'] && 0 === (int) $bot30['sub_percent'] && 1 === (int) $bot30['is_test'] && 1 === (int) $bot30['active'], 'code BOT30 créé (en majuscules), -30 % sur le robot, marqué « test »' );
+check( array() === $pbody && '' === $bot30['stripe_coupon'], 'code « robot seul » : aucun coupon Stripe (le prix du robot est réduit au paiement)' );
 $set_fix( array( 'GET prices/price_monthly_test' => array( 'id' => 'price_monthly_test', 'product' => array( 'id' => 'prod_sub' ) ), 'POST coupons' => array( 'id' => 'coup_m6' ) ) );
-$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'MOIS6', 'target' => 'sub', 'percent' => '100', 'duration' => 'repeating', 'months' => '6', 'plans' => 'monthly' ) + $pform );
+$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'MOIS6', 'bot_percent' => '0', 'sub_percent' => '100', 'duration' => 'repeating', 'months' => '6', 'plans' => 'monthly' ) + $pform );
 $set_fix( array( 'GET prices/price_annual_test' => array( 'id' => 'price_annual_test', 'product' => 'prod_sub' ), 'POST coupons' => array( 'id' => 'coup_an1' ) ) );
-$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'AN1', 'target' => 'sub', 'percent' => '100', 'duration' => 'once', 'plans' => 'annual' ) + $pform );
+$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'AN1', 'bot_percent' => '0', 'sub_percent' => '100', 'duration' => 'once', 'plans' => 'annual' ) + $pform );
 $set_fix( array( 'GET prices/price_monthly_test' => array( 'product' => 'prod_sub' ), 'GET prices/price_annual_test' => array( 'product' => 'prod_sub' ), 'POST coupons' => array( 'id' => 'coup_abo30' ) ) );
 @unlink( $stripe_log );
-$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'ABO30', 'target' => 'sub', 'percent' => '30', 'duration' => 'forever', 'plans' => 'both' ) + $pform );
+$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'ABO30', 'bot_percent' => '0', 'sub_percent' => '30', 'duration' => 'forever', 'plans' => 'both' ) + $pform );
 $pbody = array();
 parse_str( (string) ( end( $stripe_calls() )['body'] ?? '' ), $pbody );
-check( 4 === count( Arvator_Promo::all() ) && array( 'prod_sub' ) === (array) ( $pbody['applies_to']['products'] ?? array() ) && 'forever' === ( $pbody['duration'] ?? '' ), 'codes MOIS6, AN1, ABO30 créés ; abonnement mensuel et annuel = un seul produit envoyé' );
+check( 4 === count( Arvator_Promo::all() ) && array( 'prod_sub' ) === (array) ( $pbody['applies_to']['products'] ?? array() ) && 'forever' === ( $pbody['duration'] ?? '' ) && '30' === ( $pbody['percent_off'] ?? '' ), 'codes MOIS6, AN1, ABO30 créés ; coupon sur l’abonnement seulement (mensuel et annuel = un seul produit)' );
+$set_fix( array( 'GET prices/price_monthly_test' => array( 'product' => 'prod_sub' ), 'POST coupons' => array( 'id' => 'coup_combo' ) ) );
 @unlink( $stripe_log );
-$r = $adm->post( '/wp-admin/admin-post.php', array( 'code' => 'FAUX', 'target' => 'sub', 'percent' => '100', 'duration' => 'repeating', 'months' => '6', 'plans' => 'annual' ) + $pform );
+$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'COMBO', 'bot_percent' => '30', 'sub_percent' => '100', 'duration' => 'repeating', 'months' => '6', 'plans' => 'monthly' ) + $pform );
+$pbody = array();
+parse_str( (string) ( end( $stripe_calls() )['body'] ?? '' ), $pbody );
+$combo = $wpdb->get_row( "SELECT * FROM " . Arvator_Repo::table( 'promo_codes' ) . " WHERE code = 'COMBO'", ARRAY_A );
+check( is_array( $combo ) && 30 === (int) $combo['bot_percent'] && 100 === (int) $combo['sub_percent'] && 'coup_combo' === $combo['stripe_coupon'] && '100' === ( $pbody['percent_off'] ?? '' ) && array( 'prod_sub' ) === (array) ( $pbody['applies_to']['products'] ?? array() ), 'code COMBO créé : -30 % robot + 6 mois offerts (coupon Stripe sur l’abonnement seulement)' );
+@unlink( $stripe_log );
+$r = $adm->post( '/wp-admin/admin-post.php', array( 'code' => 'FAUX', 'bot_percent' => '0', 'sub_percent' => '100', 'duration' => 'repeating', 'months' => '6', 'plans' => 'annual' ) + $pform );
 $pa = $adm->get( '/wp-admin/admin.php?page=arvator-promo' );
-check( 0 === count( $stripe_calls() ) && 4 === count( Arvator_Promo::all() ) && str_contains( $pa['body'], 'notice-error' ) && str_contains( $pa['body'], 'formule mensuelle' ), 'réglage impossible (6 mois sur l’annuel) : message clair, rien créé chez Stripe' );
+check( 0 === count( $stripe_calls() ) && 5 === count( Arvator_Promo::all() ) && str_contains( $pa['body'], 'notice-error' ) && str_contains( $pa['body'], 'formule mensuelle' ), 'réglage impossible (6 mois sur l’annuel) : message clair, rien créé chez Stripe' );
 $adm->post( '/wp-admin/admin-post.php', $pform );
-check( 4 === count( Arvator_Promo::all() ) && str_contains( $adm->get( '/wp-admin/admin.php?page=arvator-promo' )['body'], 'existe déjà' ), 'même code deux fois : refusé' );
-$set_fix( array( 'GET prices/price_bot_test' => array( 'product' => 'prod_bot' ) ) );
-$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'REFUS' ) + $pform );
-check( 4 === count( Arvator_Promo::all() ) && str_contains( $adm->get( '/wp-admin/admin.php?page=arvator-promo' )['body'], 'Coupons' ), 'Stripe refuse (droits de la clé) : rien enregistré, message qui dit quoi faire' );
+check( 5 === count( Arvator_Promo::all() ) && str_contains( $adm->get( '/wp-admin/admin.php?page=arvator-promo' )['body'], 'existe déjà' ), 'même code deux fois : refusé' );
+$set_fix( array( 'GET prices/price_monthly_test' => array( 'product' => 'prod_sub' ), 'GET prices/price_annual_test' => array( 'product' => 'prod_sub' ) ) );
+$adm->post( '/wp-admin/admin-post.php', array( 'code' => 'REFUS', 'sub_percent' => '20' ) + $pform );
+check( 5 === count( Arvator_Promo::all() ) && str_contains( $adm->get( '/wp-admin/admin.php?page=arvator-promo' )['body'], 'Coupons' ), 'Stripe refuse (droits de la clé) : rien enregistré, message qui dit quoi faire' );
 $pa = $adm->get( '/wp-admin/admin.php?page=arvator-promo' );
-check( str_contains( $pa['body'], '6 mois d’abonnement offerts' ) && str_contains( $pa['body'], '1re année d’abonnement offerte' ) && str_contains( $pa['body'], '-30 % sur le prix du robot' ) && str_contains( $pa['body'], 'Mensuel seulement' ), 'liste des codes : avantage écrit en clair, formule' );
+check( str_contains( $pa['body'], '6 mois d’abonnement offerts' ) && str_contains( $pa['body'], '1re année d’abonnement offerte' ) && str_contains( $pa['body'], '-30 % sur le prix du robot' ) && str_contains( $pa['body'], 'Mensuel seulement' ) && str_contains( $pa['body'], '-30 % sur le prix du robot + 6 mois d’abonnement offerts' ), 'liste des codes : avantage écrit en clair (code double compris), formule' );
 
 // -- Page d'achat : champ affiché, code prérempli depuis l'adresse
 $pb   = new Browser( $url );
@@ -1481,15 +1502,31 @@ $page = $pb->get( '/acheter/?promo=bot30' );
 check( str_contains( $page['body'], 'name="promo"' ) && str_contains( $page['body'], 'value="BOT30"' ), 'page d’achat : champ « code promo », prérempli avec /acheter/?promo=bot30' );
 check( ! str_contains( $pb->get( '/acheter/?promo=INCONNU' )['body'], 'value="INCONNU"' ), 'code inconnu dans l’adresse : pas prérempli' );
 $pgood = array( 'action' => 'arvator_checkout', '_arv_nonce' => field_in_form( $page['body'], 'arvator_checkout', '_arv_nonce' ), 'plan' => 'annual', 'email' => "promo1_$tag@example.org", 'cgv' => '1', 'risks' => '1' );
-$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_p', 'url' => 'https://checkout.stripe.com/c/pay/cs_p' ) ) );
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_p', 'url' => 'https://checkout.stripe.com/c/pay/cs_p' ), 'GET prices/price_bot_test' => array( 'id' => 'price_bot_test', 'product' => 'prod_bot', 'unit_amount' => 150000, 'currency' => 'eur' ) ) );
 @unlink( $stripe_log );
 check( 'achat_promo' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'INCONNU' ) + $pgood ) ), 'code inconnu : refusé avec un message clair' );
 check( 'achat_promo_formule' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'MOIS6' ) + $pgood ) ) && 'achat_promo_formule' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'AN1', 'plan' => 'monthly' ) + $pgood ) ), 'code d’une autre formule (6 mois sur l’annuel, 1re année sur le mensuel) : refusé, message clair' );
 check( 0 === count( $stripe_calls() ), 'aucun appel à Stripe pour ces refus' );
+$sess_body = static function () use ( $stripe_calls ): array {
+	$cb = array();
+	foreach ( $stripe_calls() as $c ) {
+		if ( 'POST checkout/sessions' === $c['key'] ) {
+			parse_str( (string) $c['body'], $cb );
+		}
+	}
+	return $cb;
+};
 $r  = $pb->post( '/wp-admin/admin-post.php', array( 'promo' => ' bot30 ' ) + $pgood );
-$cb = array();
-parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $cb );
-check( 303 === $r['code'] && 'coup_bot30' === ( $cb['discounts'][0]['coupon'] ?? '' ) && 'BOT30' === ( $cb['metadata']['promo'] ?? '' ), 'achat avec BOT30 : réduction transmise à Stripe (coupon) et code noté dans la commande' );
+$cb = $sess_body();
+check( 303 === $r['code'] && ! isset( $cb['discounts'] ) && '105000' === ( $cb['line_items'][1]['price_data']['unit_amount'] ?? '' ) && 'prod_bot' === ( $cb['line_items'][1]['price_data']['product'] ?? '' ) && 'eur' === ( $cb['line_items'][1]['price_data']['currency'] ?? '' ) && 'price_annual_test' === ( $cb['line_items'][0]['price'] ?? '' ) && 'BOT30' === ( $cb['metadata']['promo'] ?? '' ), 'achat avec BOT30 : robot à 1 050 € (même produit Stripe), abonnement au prix normal, code noté dans la commande' );
+@unlink( $stripe_log );
+$r  = $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'COMBO', 'plan' => 'monthly' ) + $pgood );
+$cb = $sess_body();
+check( 303 === $r['code'] && '105000' === ( $cb['line_items'][1]['price_data']['unit_amount'] ?? '' ) && 'coup_combo' === ( $cb['discounts'][0]['coupon'] ?? '' ) && 'price_monthly_test' === ( $cb['line_items'][0]['price'] ?? '' ), 'achat avec COMBO : robot à 1 050 € ET 6 mois offerts dans le même paiement' );
+check( 'achat_promo_formule' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'COMBO' ) + $pgood ) ), 'COMBO (réservé au mensuel) avec l’annuel : refusé, message clair' );
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_p', 'url' => 'https://checkout.stripe.com/c/pay/cs_p' ) ) );
+check( 'achat_erreur' === notice_of( $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'BOT30' ) + $pgood ) ), 'prix du robot illisible chez Stripe : pas de paiement au mauvais prix, message clair' );
+$set_fix( array( 'POST checkout/sessions' => array( 'id' => 'cs_p', 'url' => 'https://checkout.stripe.com/c/pay/cs_p' ), 'GET prices/price_bot_test' => array( 'id' => 'price_bot_test', 'product' => 'prod_bot', 'unit_amount' => 150000, 'currency' => 'eur' ) ) );
 @unlink( $stripe_log );
 $pb->post( '/wp-admin/admin-post.php', array( 'promo' => 'MOIS6', 'plan' => 'monthly' ) + $pgood );
 $cb = array();
@@ -1501,6 +1538,7 @@ $cb = array();
 parse_str( (string) ( $stripe_calls()[0]['body'] ?? '' ), $cb );
 check( ! isset( $cb['discounts'] ) && '' === ( $cb['metadata']['promo'] ?? '' ), 'sans code : aucune réduction envoyée' );
 $bot30_id = (int) $bot30['id'];
+clear_transients(); // limite de 10 départs vers le paiement par heure et par adresse IP
 $an = $adm->get( '/wp-admin/admin.php?page=arvator-promo' );
 foreach ( preg_split( '/<form\b/i', $an['body'] ) as $chunk ) {
 	if ( str_contains( $chunk, 'name="id" value="' . $bot30_id . '"' ) ) {
@@ -1533,10 +1571,10 @@ $psess = static function ( string $sid, string $email, string $promo, array $lin
 	$s['subscription']['items']['data'][0]['price']['id'] = 'annual' === $plan ? 'price_annual_test' : 'price_monthly_test';
 	return $s;
 };
-$r = $buy_hook( $ps1, $psess( $ps1, "promo1_$tag@example.org", 'BOT30', array( array( 'price' => array( 'id' => 'price_annual_test' ), 'amount_total' => 35880 ), array( 'price' => array( 'id' => 'price_bot_test' ), 'amount_total' => 105000 ) ), 'annual', $pr_c ), "evt_{$tag}_p1" );
+$r = $buy_hook( $ps1, $psess( $ps1, "promo1_$tag@example.org", 'BOT30', array( array( 'price' => array( 'id' => 'price_annual_test' ), 'amount_total' => 35880 ), array( 'price' => array( 'id' => 'price_1Adhoc' . $tag ), 'amount_total' => 105000 ) ), 'annual', $pr_c ), "evt_{$tag}_p1" );
 $p1u  = get_user_by( 'email', "promo1_$tag@example.org" );
 $p1o  = $p1u ? $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'orders' ) . ' WHERE stripe_session_id = %s', $ps1 ), ARRAY_A ) : null;
-check( 200 === $r['code'] && is_array( $p1o ) && 105000 === (int) $p1o['amount_cents'], 'achat avec BOT30 : commande enregistrée au prix payé (1 050 €)', $r['body'] );
+check( 200 === $r['code'] && is_array( $p1o ) && 105000 === (int) $p1o['amount_cents'], 'achat avec BOT30 : commande enregistrée au prix payé (1 050 €), robot reconnu malgré son prix calculé pour ce paiement', $r['body'] );
 check( 1 === Arvator_Promo::uses( $bot30_id ) && (int) Arvator_Promo::uses_of( $bot30_id )[0]['user_id'] === (int) $p1u->ID, 'utilisation du code notée, au bon client' );
 $pc = $coms( (int) $pr_u );
 check( 2 === count( $pc ) && 22500 === (int) $pc[0]['amount_cents'] && 3588 === (int) $pc[1]['amount_cents'], 'parrain : prime de 225 € entière + 10 % du 1er abonnement payé' );

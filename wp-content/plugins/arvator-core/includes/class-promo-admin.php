@@ -48,7 +48,7 @@ final class Arvator_Promo_Admin {
 			delete_transient( self::NOTICE_KEY . get_current_user_id() );
 			printf( '<div class="notice notice-%s"><p>%s</p></div>', 'ok' === $notice[0] ? 'success' : 'error', esc_html( (string) $notice[1] ) );
 		}
-		echo '<p>Le client tape le code sur la page « Acheter Arvator » ; la réduction apparaît ensuite sur la page de paiement Stripe, avant qu’il paie. Un code donne <strong>un seul avantage</strong> (Stripe n’accepte qu’une réduction par paiement) et ne sert qu’une fois par client (le robot ne s’achète qu’une fois). Le parrain garde sa prime d’achat entière ; ses 10&nbsp;% sur l’abonnement sont calculés sur ce que le client paie vraiment.</p>';
+		echo '<p>Le client tape le code sur la page « Acheter Arvator » ; la réduction apparaît ensuite sur la page de paiement Stripe, avant qu’il paie. Un code peut réduire <strong>le robot, l’abonnement, ou les deux à la fois</strong>, et ne sert qu’une fois par client (le robot ne s’achète qu’une fois). Le parrain garde sa prime d’achat entière ; ses 10&nbsp;% sur l’abonnement sont calculés sur ce que le client paie vraiment.</p>';
 		if ( '' === Arvator_Stripe::secret() ) {
 			echo '<div class="notice notice-warning inline"><p><strong>Stripe n’est pas configuré</strong> : aucun code ne peut être créé.</p></div>';
 		} else {
@@ -69,12 +69,12 @@ final class Arvator_Promo_Admin {
 				<tr><th scope="row"><label for="arv-p-code">Code</label></th>
 					<td><input id="arv-p-code" name="code" type="text" required maxlength="30" pattern="[A-Za-z0-9_\-]{3,30}" class="regular-text" style="text-transform:uppercase" placeholder="NOEL30">
 					<p class="description">3 à 30 caractères : lettres, chiffres, tiret. Majuscules et minuscules sont équivalentes.</p></td></tr>
-				<tr><th scope="row">Ce que le code réduit</th>
-					<td><label><input type="radio" name="target" value="bot" checked> Le prix du robot (paiement unique)</label><br>
-					<label><input type="radio" name="target" value="sub"> L’abonnement</label></td></tr>
-				<tr><th scope="row"><label for="arv-p-pct">Réduction</label></th>
-					<td><input id="arv-p-pct" name="percent" type="number" min="1" max="100" step="1" required value="30" class="small-text"> %
-					<p class="description">100&nbsp;% = offert. Exemples : 30 sur le robot = robot à -30&nbsp;% ; 100 sur l’abonnement pendant 6 mois = 6 mois offerts.</p></td></tr>
+				<tr><th scope="row"><label for="arv-p-bot">Réduction sur le robot</label></th>
+					<td><input id="arv-p-bot" name="bot_percent" type="number" min="0" max="100" step="1" required value="30" class="small-text"> %
+					<p class="description">Paiement unique du robot. 0 = pas de réduction sur le robot, 100 = robot offert.</p></td></tr>
+				<tr><th scope="row"><label for="arv-p-sub">Réduction sur l’abonnement</label></th>
+					<td><input id="arv-p-sub" name="sub_percent" type="number" min="0" max="100" step="1" required value="0" class="small-text"> %
+					<p class="description">0 = pas de réduction sur l’abonnement, 100 = offert. Vous pouvez remplir les deux cases : par exemple 30 sur le robot et 100 sur l’abonnement pendant 6 mois = robot à -30&nbsp;% + 6 mois offerts.</p></td></tr>
 				<tr class="arv-p-sub"><th scope="row"><label for="arv-p-plans">Formule concernée</label></th>
 					<td><select id="arv-p-plans" name="plans">
 						<option value="both">Mensuel et annuel</option>
@@ -100,10 +100,10 @@ final class Arvator_Promo_Admin {
 		( function () {
 			var f = document.getElementById( 'arv-promo-form' );
 			function sync() {
-				var sub = f.querySelector( 'input[name="target"]:checked' ).value === 'sub';
+				var sub = parseInt( f.querySelector( 'input[name="sub_percent"]' ).value, 10 ) > 0;
 				f.querySelectorAll( '.arv-p-sub' ).forEach( function ( tr ) { tr.style.display = sub ? '' : 'none'; } );
 			}
-			f.querySelectorAll( 'input[name="target"]' ).forEach( function ( r ) { r.addEventListener( 'change', sync ); } );
+			f.querySelector( 'input[name="sub_percent"]' ).addEventListener( 'input', sync );
 			sync();
 		} )();
 		</script>
@@ -140,7 +140,7 @@ final class Arvator_Promo_Admin {
 				$who[] = $user instanceof WP_User ? $user->user_email : '#' . $u['user_id'];
 			}
 			echo '<tr>';
-			foreach ( array( (string) $r['code'], Arvator_Promo::describe( $r ), 'bot' === $r['target'] ? 'Toutes' : self::plan_label( (string) $r['plans'] ), $uses . ( (int) $r['max_uses'] > 0 ? ' / ' . (int) $r['max_uses'] : '' ), $until, $state, implode( ', ', $who ) ) as $cell ) {
+			foreach ( array( (string) $r['code'], Arvator_Promo::describe( $r ), (int) $r['sub_percent'] > 0 ? self::plan_label( (string) $r['plans'] ) : 'Toutes', $uses . ( (int) $r['max_uses'] > 0 ? ' / ' . (int) $r['max_uses'] : '' ), $until, $state, implode( ', ', $who ) ) as $cell ) {
 				echo '<td>' . esc_html( $cell ) . '</td>';
 			}
 			echo '<td>';
@@ -158,7 +158,7 @@ final class Arvator_Promo_Admin {
 		}
 		check_admin_referer( 'arvator_promo_create', '_arv_nonce' );
 		$in = array();
-		foreach ( array( 'code', 'target', 'percent', 'duration', 'months', 'plans', 'max_uses', 'expires' ) as $k ) {
+		foreach ( array( 'code', 'bot_percent', 'sub_percent', 'duration', 'months', 'plans', 'max_uses', 'expires' ) as $k ) {
 			$in[ $k ] = isset( $_POST[ $k ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $k ] ) ) : '';
 		}
 		$res = Arvator_Promo::create( $in );

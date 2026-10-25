@@ -118,11 +118,11 @@ final class Arvator_Webhook {
 
 		[ $user_id, $created ] = self::find_or_create_user( $email, (int) ( $full['client_reference_id'] ?? 0 ) );
 
-		// Montant du robot = la ligne « robot » de la commande, réduction comprise (0 si un code promo l'offre).
-		$bot_price = Arvator_Stripe::price( 'bot' );
-		$amount    = -1;
+		// Montant du robot = la ligne « robot » de la commande, réduction comprise (0 si un code promo l'offre). Avec un
+		// code promo, le robot a un prix calculé pour ce paiement : c'est alors la ligne qui n'est pas un abonnement.
+		$amount = -1;
 		foreach ( (array) ( $full['line_items']['data'] ?? array() ) as $line ) {
-			if ( ( $line['price']['id'] ?? '' ) === $bot_price ) {
+			if ( '' === Arvator_Stripe::plan_for_price( (string) ( $line['price']['id'] ?? '' ) ) ) {
 				$amount = max( 0, (int) ( $line['amount_total'] ?? 0 ) );
 			}
 		}

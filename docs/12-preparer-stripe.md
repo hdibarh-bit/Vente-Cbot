@@ -120,12 +120,14 @@ Stripe → Développeurs → Clés API → votre clé restreinte `rk_test_…` �
 ### 9.2 Créer un code
 WordPress → **Arvator > Codes promo** → « Créer un code » :
 - **Code** : le mot que le client tape (ex. `NOEL30`), 3 à 30 lettres, chiffres ou tirets.
-- **Ce que le code réduit** : le prix du robot, OU l'abonnement (un seul des deux : Stripe n'accepte qu'une réduction par paiement).
-- **Réduction** en % (100 % = offert).
-- Pour l'abonnement : **formule** (mensuel, annuel ou les deux) et **durée** : 1re période (1er mois ou 1re année), pendant N mois (mensuel seulement), ou à chaque paiement.
+- **Réduction sur le robot** en % (0 = aucune, 100 = robot offert).
+- **Réduction sur l'abonnement** en % (0 = aucune, 100 = offert). Les deux cases peuvent être remplies en même temps.
+- Si l'abonnement est réduit : **formule** (mensuel, annuel ou les deux) et **durée** : 1re période (1er mois ou 1re année), pendant N mois (mensuel seulement), ou à chaque paiement.
 - Facultatif : nombre d'utilisations maximum, date de fin.
 
-Exemples : robot à -30 % → « Le prix du robot », 30. Six mois offerts → « L'abonnement », 100, « Mensuel seulement », « Pendant 6 mois ». Un an offert → « L'abonnement », 100, « Annuel seulement », « La 1re période ». -30 % sur l'abonnement → « L'abonnement », 30, durée au choix.
+Exemples : robot à -30 % → robot 30, abonnement 0. Six mois offerts → robot 0, abonnement 100, « Mensuel seulement », « Pendant 6 mois ». Un an offert → robot 0, abonnement 100, « Annuel seulement », « La 1re période ». **Les deux à la fois** : robot à -30 % + 6 mois offerts → robot 30, abonnement 100, « Mensuel seulement », « Pendant 6 mois ».
+
+Comment Stripe l'applique : la réduction de l'abonnement est un coupon Stripe (créé avec le code) ; celle du robot est un prix du robot recalculé pour ce paiement (même produit, montant réduit), car Stripe n'accepte qu'un coupon par paiement.
 
 Un lien tout prêt pour vos messages : `https://arvator.com/acheter/?promo=NOEL30` (le code est déjà rempli).
 
@@ -140,4 +142,5 @@ Un lien tout prêt pour vos messages : `https://arvator.com/acheter/?promo=NOEL3
 ### 9.4 Essai de bout en bout (bac à sable, 5 minutes)
 1. Créer `TEST30` (robot, 30 %) puis acheter avec la carte `4242 4242 4242 4242` en tapant `TEST30` : la page Stripe montre le robot à 1 050 €.
 2. Arvator > Codes promo : 1 utilisation, avec l'email du client.
-3. Créer `MOIS2` (abonnement, 100 %, mensuel, 2 mois) et acheter en mensuel : la page Stripe montre l'abonnement à 0 € les 2 premiers mois.
+3. Créer `MOIS2` (robot 0, abonnement 100 %, mensuel, 2 mois) et acheter en mensuel : la page Stripe montre l'abonnement à 0 € les 2 premiers mois.
+4. Créer `DUO` (robot 30, abonnement 100 %, mensuel, 2 mois) et acheter en mensuel : robot à 1 050 € et abonnement à 0 € les 2 premiers mois.

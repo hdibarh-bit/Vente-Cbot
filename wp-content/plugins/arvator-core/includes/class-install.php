@@ -31,6 +31,7 @@ final class Arvator_Install {
 
 	private static function upgrade(): void {
 		self::create_tables();
+		Arvator_Promo::migrate();
 		Arvator_Roles::register_role();
 		Arvator_Downloads::ensure_private_dir();
 		Arvator_Pages::create_missing();
@@ -211,15 +212,17 @@ final class Arvator_Install {
 			"CREATE TABLE {$p}promo_codes (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   code VARCHAR(30) NOT NULL,
-  target VARCHAR(10) NOT NULL,
-  percent TINYINT UNSIGNED NOT NULL,
+  target VARCHAR(10) NOT NULL DEFAULT '',
+  percent TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  bot_percent TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  sub_percent TINYINT UNSIGNED NOT NULL DEFAULT 0,
   duration VARCHAR(10) NOT NULL,
   months SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   plans VARCHAR(10) NOT NULL DEFAULT 'both',
   max_uses INT UNSIGNED NOT NULL DEFAULT 0,
   expires_at DATETIME NULL,
   active TINYINT(1) NOT NULL DEFAULT 1,
-  stripe_coupon VARCHAR(190) NOT NULL,
+  stripe_coupon VARCHAR(190) NOT NULL DEFAULT '',
   is_test TINYINT(1) NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,

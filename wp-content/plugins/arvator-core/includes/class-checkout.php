@@ -213,6 +213,13 @@ final class Arvator_Checkout {
 			}
 		}
 
+		// Robot : prix normal, ou prix réduit si le code promo réduit le robot.
+		$bot_line = Arvator_Promo::bot_line( is_array( $promo ) ? $promo : null );
+		if ( is_wp_error( $bot_line ) ) {
+			Arvator_Repo::log_event( 'stripe_error', $user_id ?: null, array( 'where' => 'promo_bot', 'error' => $bot_line->get_error_message() ) );
+			Arvator_Support::redirect( $back, 'achat_erreur' );
+		}
+
 		$waiver = ! empty( $_POST['waiver'] );
 		if ( Arvator_Trial::has_trial( $email ) && ! $waiver ) {
 			Arvator_Support::redirect( $back, 'achat_renonciation' );
@@ -225,10 +232,7 @@ final class Arvator_Checkout {
 					'price'    => Arvator_Stripe::price( $plan ),
 					'quantity' => 1,
 				),
-				array(
-					'price'    => Arvator_Stripe::price( 'bot' ),
-					'quantity' => 1,
-				),
+				$bot_line,
 			),
 			'customer_email'        => $email,
 			'success_url'           => add_query_arg( 'arv_notice', 'achat_ok', Arvator_Member::url() ),
@@ -253,7 +257,7 @@ final class Arvator_Checkout {
 		if ( $user_id ) {
 			$params['client_reference_id'] = (string) $user_id;
 		}
-		if ( $promo ) {
+		if ( $promo && (int) $promo['sub_percent'] > 0 ) {
 			$params['discounts'] = array( array( 'coupon' => (string) $promo['stripe_coupon'] ) );
 		}
 

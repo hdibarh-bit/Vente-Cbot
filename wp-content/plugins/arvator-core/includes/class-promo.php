@@ -2,14 +2,15 @@
 /**
  * Codes promo, créés par Hamid dans Arvator > Codes promo et saisis par le client sur la page d'achat.
  *
- * Un code donne UN avantage (Stripe n'accepte qu'une réduction par paiement) :
- * - « robot » : x % sur le prix du robot (paiement unique) ;
- * - « abonnement » : x % sur l'abonnement (100 % = offert), pour la 1re période, pendant N mois (formule mensuelle)
- *   ou à chaque paiement. Le code peut être réservé à la formule mensuelle ou annuelle.
+ * Un code réduit le robot, l'abonnement, ou les deux à la fois (chacun avec son propre pourcentage) :
+ * - robot : x % sur le prix du robot (paiement unique, 100 % = offert) ;
+ * - abonnement : y % (100 % = offert), pour la 1re période, pendant N mois (formule mensuelle) ou à chaque paiement.
+ *   Le code peut être réservé à la formule mensuelle ou annuelle.
  *
- * À la création, le site crée le « coupon » correspondant chez Stripe (réduction appliquée par Stripe, jamais calculée
- * ici). Le code lui-même n'existe que sur ce site : il est vérifié au moment de l'achat (actif, date, nombre
- * d'utilisations, formule), puis le coupon est transmis à Stripe. Chaque client n'achète le robot qu'une fois : un code
+ * Stripe n'accepte qu'un coupon par paiement : la réduction de l'abonnement est un « coupon » Stripe (créé avec le
+ * code), celle du robot un prix du robot recalculé pour ce paiement (même produit Stripe, montant réduit). Le code
+ * lui-même n'existe que sur ce site : il est vérifié au moment de l'achat (actif, date, nombre d'utilisations,
+ * formule), puis transmis à Stripe. Chaque client n'achète le robot qu'une fois : un code
  * ne sert donc qu'une fois par client. Un coupon Stripe ne se modifie pas : pour changer un code, on le désactive et on
  * en crée un nouveau. Les codes du bac à sable (test) ne marchent pas avec la clé réelle, et inversement.
  */
@@ -22,7 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Arvator_Promo {
 
-	public const TARGETS   = array( 'bot', 'sub' );
 	public const DURATIONS = array( 'once', 'repeating', 'forever' );
 	public const PLANS     = array( 'both', 'monthly', 'annual' );
 
@@ -71,7 +71,7 @@ final class Arvator_Promo {
 		}
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Arvator_Repo::table( 'promo_codes' ) . ' WHERE code = %s AND is_test = %d', $code, self::mode_is_test() ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		if ( ! is_array( $row ) || 1 !== (int) $row['active'] || '' === (string) $row['stripe_coupon'] ) {
+		if ( ! is_array( $row ) || 1 !== (int) $row['active'] || ( (int) $row['sub_percent'] > 0 && '' === (string) $row['stripe_coupon'] ) || ( (int) $row['bot_percent'] + (int) $row['sub_percent'] ) <= 0 ) {
 			return 'promo';
 		}
 		if ( ! empty( $row['expires_at'] ) && (string) $row['expires_at'] <= gmdate( 'Y-m-d H:i:s' ) ) {
@@ -88,11 +88,21 @@ final class Arvator_Promo {
 
 	/** Ce que donne le code, en clair (page d'achat, administration). */
 	public static function describe( array $row ): string {
-		$pct = (int) $row['percent'];
-		if ( 'bot' === $row['target'] ) {
+		$parts = array();
+		$bot   = (int) ( $row['bot_percent'] ?? 0 );
+		if ( $bot > 0 ) {
 			/* translators: %d: pourcentage de réduction. */
-			return 100 === $pct ? __( 'robot offert', 'arvator-core' ) : sprintf( __( '-%d %% sur le prix du robot', 'arvator-core' ), $pct );
+			$parts[] = 100 === $bot ? __( 'robot offert', 'arvator-core' ) : sprintf( __( '-%d %% sur le prix du robot', 'arvator-core' ), $bot );
 		}
+		if ( (int) ( $row['sub_percent'] ?? 0 ) > 0 ) {
+			$parts[] = self::describe_sub( $row );
+		}
+		/* translators: sépare deux avantages d'un même code promo (« robot offert + 6 mois d'abonnement offerts »). */
+		return implode( __( ' + ', 'arvator-core' ), $parts );
+	}
+
+	private static function describe_sub( array $row ): string {
+		$pct    = (int) $row['sub_percent'];
 		$months = (int) $row['months'];
 		if ( 'repeating' === $row['duration'] ) {
 			return 100 === $pct
@@ -121,22 +131,25 @@ final class Arvator_Promo {
 	 */
 	public static function validate( array $in ) {
 		$code     = self::normalize( (string) ( $in['code'] ?? '' ) );
-		$target   = (string) ( $in['target'] ?? '' );
-		$percent  = (int) ( $in['percent'] ?? 0 );
-		$duration = 'bot' === $target ? 'once' : (string) ( $in['duration'] ?? '' );
+		$bot_pct  = (int) ( $in['bot_percent'] ?? 0 );
+		$sub_pct  = (int) ( $in['sub_percent'] ?? 0 );
+		$duration = $sub_pct > 0 ? (string) ( $in['duration'] ?? '' ) : 'once';
 		$months   = 'repeating' === $duration ? (int) ( $in['months'] ?? 0 ) : 0;
-		$plans    = 'bot' === $target ? 'both' : (string) ( $in['plans'] ?? 'both' );
+		$plans    = $sub_pct > 0 ? (string) ( $in['plans'] ?? 'both' ) : 'both';
 		$max_uses = max( 0, (int) ( $in['max_uses'] ?? 0 ) );
 		$until    = trim( (string) ( $in['expires'] ?? '' ) );
 
 		if ( '' === $code ) {
 			return new WP_Error( 'promo', 'Code non valable : 3 à 30 caractères, lettres, chiffres, tiret ou tiret bas (par exemple NOEL30).' );
 		}
-		if ( ! in_array( $target, self::TARGETS, true ) || ! in_array( $duration, self::DURATIONS, true ) || ! in_array( $plans, self::PLANS, true ) ) {
-			return new WP_Error( 'promo', 'Choisissez ce que le code réduit (robot ou abonnement) et pour combien de temps.' );
+		if ( $bot_pct < 0 || $bot_pct > 100 || $sub_pct < 0 || $sub_pct > 100 ) {
+			return new WP_Error( 'promo', 'Chaque réduction doit être comprise entre 0 et 100 % (0 = rien, 100 = offert).' );
 		}
-		if ( $percent < 1 || $percent > 100 ) {
-			return new WP_Error( 'promo', 'Le pourcentage doit être compris entre 1 et 100 (100 = offert).' );
+		if ( 0 === $bot_pct + $sub_pct ) {
+			return new WP_Error( 'promo', 'Indiquez une réduction sur le robot, sur l’abonnement, ou les deux.' );
+		}
+		if ( ! in_array( $duration, self::DURATIONS, true ) || ! in_array( $plans, self::PLANS, true ) ) {
+			return new WP_Error( 'promo', 'Choisissez la formule concernée et la durée de la réduction sur l’abonnement.' );
 		}
 		if ( 'repeating' === $duration && ( $months < 1 || $months > 36 ) ) {
 			return new WP_Error( 'promo', 'Indiquez un nombre de mois entre 1 et 36.' );
@@ -161,7 +174,16 @@ final class Arvator_Promo {
 		if ( $exists ) {
 			return new WP_Error( 'promo', 'Ce code existe déjà. Choisissez un autre nom.' );
 		}
-		return compact( 'code', 'target', 'percent', 'duration', 'months', 'plans', 'max_uses', 'expires' );
+		return array(
+			'code'        => $code,
+			'bot_percent' => $bot_pct,
+			'sub_percent' => $sub_pct,
+			'duration'    => $duration,
+			'months'      => $months,
+			'plans'       => $plans,
+			'max_uses'    => $max_uses,
+			'expires'     => $expires,
+		);
 	}
 
 	/**
@@ -174,7 +196,7 @@ final class Arvator_Promo {
 	public static function coupon_params( array $c, array $products ): array {
 		$params = array(
 			'name'        => substr( 'Arvator ' . $c['code'], 0, 40 ),
-			'percent_off' => (int) $c['percent'],
+			'percent_off' => (int) $c['sub_percent'],
 			'duration'    => (string) $c['duration'],
 			'applies_to'  => array( 'products' => array_values( $products ) ),
 			'metadata'    => array(
@@ -209,8 +231,52 @@ final class Arvator_Promo {
 			return new WP_Error( 'promo', 'Stripe n’est pas configuré (clé absente du wp-config.php).' );
 		}
 
-		// Produits Stripe visés : celui du robot, ou ceux des abonnements de la formule choisie.
-		$kinds    = 'bot' === $c['target'] ? array( 'bot' ) : ( 'both' === $c['plans'] ? array( 'monthly', 'annual' ) : array( (string) $c['plans'] ) );
+		// Réduction de l'abonnement : coupon Stripe limité aux produits des abonnements de la formule choisie.
+		// (Celle du robot est appliquée au moment du paiement, voir bot_line().)
+		$id = '';
+		if ( (int) $c['sub_percent'] > 0 ) {
+			$id = self::create_coupon( $c );
+			if ( is_wp_error( $id ) ) {
+				return $id;
+			}
+		}
+
+		global $wpdb;
+		$now = gmdate( 'Y-m-d H:i:s' );
+		$ok  = $wpdb->insert(
+			Arvator_Repo::table( 'promo_codes' ),
+			array(
+				'code'          => $c['code'],
+				'target'        => $c['bot_percent'] > 0 && $c['sub_percent'] > 0 ? 'both' : ( $c['bot_percent'] > 0 ? 'bot' : 'sub' ),
+				'percent'       => max( $c['bot_percent'], $c['sub_percent'] ),
+				'bot_percent'   => $c['bot_percent'],
+				'sub_percent'   => $c['sub_percent'],
+				'duration'      => $c['duration'],
+				'months'        => $c['months'],
+				'plans'         => $c['plans'],
+				'max_uses'      => $c['max_uses'],
+				'expires_at'    => $c['expires'],
+				'active'        => 1,
+				'stripe_coupon' => $id,
+				'is_test'       => self::mode_is_test(),
+				'created_at'    => $now,
+				'updated_at'    => $now,
+			),
+			array( '%s', '%s', '%d', '%d', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%s' )
+		);
+		if ( ! $ok ) {
+			return new WP_Error( 'promo', 'Le code n’a pas pu être enregistré.' );
+		}
+		Arvator_Repo::log_event( 'promo_created', get_current_user_id(), array( 'code' => $c['code'], 'coupon' => $id ) );
+		return (int) $wpdb->insert_id;
+	}
+
+	/**
+	 * @param array<string, mixed> $c  code validé
+	 * @return string|WP_Error  identifiant du coupon Stripe
+	 */
+	private static function create_coupon( array $c ) {
+		$kinds    = 'both' === $c['plans'] ? array( 'monthly', 'annual' ) : array( (string) $c['plans'] );
 		$products = array();
 		foreach ( $kinds as $kind ) {
 			$price_id = Arvator_Stripe::price( $kind );
@@ -227,33 +293,54 @@ final class Arvator_Promo {
 		if ( '' === $id ) {
 			return new WP_Error( 'promo', 'Stripe a refusé de créer la réduction (' . ( is_wp_error( $coupon ) ? $coupon->get_error_message() : 'réponse illisible' ) . '). Si le message parle de droits (permission), ajoutez le droit d’écriture sur « Coupons » à la clé restreinte.' );
 		}
+		return $id;
+	}
 
-		global $wpdb;
-		$now = gmdate( 'Y-m-d H:i:s' );
-		$ok  = $wpdb->insert(
-			Arvator_Repo::table( 'promo_codes' ),
-			array(
-				'code'          => $c['code'],
-				'target'        => $c['target'],
-				'percent'       => $c['percent'],
-				'duration'      => $c['duration'],
-				'months'        => $c['months'],
-				'plans'         => $c['plans'],
-				'max_uses'      => $c['max_uses'],
-				'expires_at'    => $c['expires'],
-				'active'        => 1,
-				'stripe_coupon' => $id,
-				'is_test'       => self::mode_is_test(),
-				'created_at'    => $now,
-				'updated_at'    => $now,
-			),
-			array( '%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%s' )
-		);
-		if ( ! $ok ) {
-			return new WP_Error( 'promo', 'Le code n’a pas pu être enregistré.' );
+	/**
+	 * Ligne « robot » du paiement Stripe : le prix normal, ou, si le code réduit le robot, le même produit Stripe à un
+	 * montant réduit (Stripe n'acceptant qu'un coupon par paiement, celui de l'abonnement).
+	 *
+	 * @param array<string, mixed>|null $promo
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function bot_line( ?array $promo ) {
+		$pct = $promo ? (int) $promo['bot_percent'] : 0;
+		if ( $pct <= 0 ) {
+			return array(
+				'price'    => Arvator_Stripe::price( 'bot' ),
+				'quantity' => 1,
+			);
 		}
-		Arvator_Repo::log_event( 'promo_created', get_current_user_id(), array( 'code' => $c['code'], 'coupon' => $id ) );
-		return (int) $wpdb->insert_id;
+		$price   = Arvator_Stripe::request( 'GET', 'prices/' . rawurlencode( Arvator_Stripe::price( 'bot' ) ) );
+		$product = is_array( $price ) ? ( is_array( $price['product'] ?? null ) ? (string) ( $price['product']['id'] ?? '' ) : (string) ( $price['product'] ?? '' ) ) : '';
+		$amount  = is_array( $price ) ? (int) ( $price['unit_amount'] ?? 0 ) : 0;
+		if ( '' === $product || $amount <= 0 ) {
+			return new WP_Error( 'promo', is_wp_error( $price ) ? $price->get_error_message() : 'prix du robot illisible' );
+		}
+		return array(
+			'price_data' => array(
+				'currency'    => strtolower( (string) ( $price['currency'] ?? 'eur' ) ),
+				'product'     => $product,
+				'unit_amount' => self::reduced( $amount, $pct ),
+			),
+			'quantity'   => 1,
+		);
+	}
+
+	/** Montant après réduction, arrondi au centime (le client ne paie jamais plus que le calcul exact). */
+	public static function reduced( int $cents, int $pct ): int {
+		return max( 0, (int) floor( $cents * ( 100 - $pct ) / 100 ) );
+	}
+
+	/** Codes créés avec le plugin 0.9.0 (un seul avantage, colonnes target/percent) : repris dans bot_percent/sub_percent. */
+	public static function migrate(): void {
+		global $wpdb;
+		$t = Arvator_Repo::table( 'promo_codes' );
+		$wpdb->query( "UPDATE $t SET bot_percent = percent WHERE target = 'bot' AND bot_percent = 0 AND sub_percent = 0" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "UPDATE $t SET sub_percent = percent WHERE target = 'sub' AND bot_percent = 0 AND sub_percent = 0" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// Un ancien code « robot » portait un coupon Stripe sur le produit du robot : il n'est plus envoyé (la réduction du
+		// robot passe par le prix recalculé) ; on l'efface pour ne jamais l'appliquer à l'abonnement.
+		$wpdb->query( "UPDATE $t SET stripe_coupon = '' WHERE target = 'bot' AND sub_percent = 0" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	public static function set_active( int $id, bool $active ): void {

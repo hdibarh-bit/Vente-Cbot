@@ -71,6 +71,12 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.9.1 — 25/10/2026
+- **Un code promo peut réduire le robot, l'abonnement, ou les deux en même temps**, chacun avec son pourcentage (ex. robot à -30 % + 6 mois d'abonnement offerts). Arvator > Codes promo : deux cases « Réduction sur le robot » et « Réduction sur l'abonnement » (0 = rien, 100 = offert).
+- Le robot réduit garde le même produit Stripe, à un prix recalculé pour ce paiement ; l'abonnement réduit passe par un coupon Stripe.
+- Les codes déjà créés avec la 0.9.0 sont repris automatiquement.
+- Tests automatiques : 476 contrôles.
+
 ### 0.9.0 — 24/10/2026
 - **Codes promo** (Arvator > Codes promo) : vous créez vos codes vous-même. Un code donne un avantage : un pourcentage sur le prix du robot, OU sur l'abonnement (100 % = offert) pour la 1re période, pendant un nombre de mois (formule mensuelle) ou à chaque paiement. Formule au choix (mensuel, annuel ou les deux), nombre d'utilisations maximum et date de fin facultatifs. Désactiver / réactiver en un clic ; liste des clients qui ont utilisé chaque code.
 - **Page d'achat** : champ « Code promo » (affiché seulement s'il existe un code actif), prérempli par un lien `/acheter/?promo=CODE`. Code faux, terminé ou d'une autre formule : message clair. La réduction est appliquée par Stripe et visible sur sa page de paiement.
