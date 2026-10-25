@@ -63,8 +63,8 @@ Le robot est livré réglé à 1 % de risque par trade. Vous pouvez le monter à
 ?? Comment changer le niveau de risque ?
 Dans votre cloud cTrader, arrêtez le robot, modifiez le réglage « risque » (1 %, 2 % ou 3 %), puis relancez-le.
 
-?? Pourquoi conseillez-vous au moins 5 000 € ?
-Ce n'est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. Plus le capital est élevé, moins il y a de trades refusés.
+?? Pourquoi conseillez-vous au moins 2 000 € ?
+Ce n'est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2 000 €, presque plus aucun trade n'est refusé dans notre backtest (qui inclut les frais d'un courtier, par exemple IC Markets).
 
 ## Prix, licence et abonnement
 ?? Combien ça coûte ?
@@ -133,7 +133,7 @@ Investir sur les marchés financiers, en particulier avec un effet de levier, pe
 Chaque simulation affichée montre la pire baisse et le solde le plus bas. Plus le niveau de risque est élevé (1 %, 2 % ou 3 % par trade), plus les gains simulés comme les baisses peuvent être importants. Le robot est livré à 1 % ; vous pouvez le monter jusqu'à 3 %, jamais au-delà.
 
 ## Le capital compte
-Avec un petit capital, beaucoup de trades sont refusés (taille minimale de position imposée par le courtier) : le robot en prend moins et les résultats sont plus irréguliers. Nous conseillons au moins 5 000 €, sans que ce soit une garantie de résultat.
+Avec un petit capital, beaucoup de trades sont refusés (taille minimale de position imposée par le courtier) : le robot en prend moins et les résultats sont plus irréguliers. Nous conseillons au moins 2 000 €, sans que ce soit une garantie de résultat.
 
 ## Vous restez responsable
 - Vous êtes seul responsable de votre compte, de votre courtier, de vos réglages et de vos décisions.

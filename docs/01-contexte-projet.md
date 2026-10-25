@@ -30,7 +30,7 @@ Hamid vend son bot de trading ICT/SMC sous forme de **cBot cTrader**, avec un **
 ## Autres ressources (Drive)
 - Dossier « Trading Bot - Données backtest 2019-2026 » (CSV M15, 14 actifs) — propriétaire abbadibouchra77@gmail.com. Ce sont les données brutes disponibles : **la période de test présentée au public est 2024-2026**, jamais « 7 ans » (formule erronée venue du document Cowork, corrigée par Hamid le 21/10/2026).
 - Logos : « Logo de robot trader en or noir-1.png », « Logo doré futuriste BOT.COSMARTIS.COM.png » (dossier Drive du projet).
-- Rapports PDF de backtest : **à utiliser** : `assets/rapports/Backtest-cTrader-risque-1-2-3-pourcent.pdf` (1 %, 2 %, 3 %, 2024-2026, reçu le 21/10/2026, sans détail de stratégie). **Archivé, ne pas diffuser** : `docs/sources/ARCHIVE-NE-PAS-DIFFUSER-Simulation-bots-cTrader-2024-2026.pdf` (3 %/3 % seulement, contient des détails de stratégie). Brief reçu de Hamid le 21/10/2026 : `docs/sources/prompt-claude-code-recu-le-2026-10-21.md` (identique au brief d'origine Cowork, dépassé sur plusieurs points).
+- Backtest : **plus de PDF diffusé** (supprimé le 25/10/2026) ; chiffres dans `config/resultats-backtest.json`. **Archivé, ne pas diffuser** : `docs/sources/ARCHIVE-NE-PAS-DIFFUSER-Simulation-bots-cTrader-2024-2026.pdf` (3 %/3 % seulement, contient des détails de stratégie). Brief reçu de Hamid le 21/10/2026 : `docs/sources/prompt-claude-code-recu-le-2026-10-21.md` (identique au brief d'origine Cowork, dépassé sur plusieurs points).
 - Instance n8n : n8n.cosmartis.com. Alertes via Telegram.
 
 ## Ordre de lancement

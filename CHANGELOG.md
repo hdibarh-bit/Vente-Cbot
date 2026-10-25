@@ -4,6 +4,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.0 — 25/10/2026
+- **Un seul backtest de référence** (décision Cowork + Hamid du 25/10/2026) : « Backtest avec les frais réels d'un courtier ». Bloc de référence 5 000 € au risque 1 % (15 202 €, +204 %, pire baisse −20,1 % / −3 771 € en cours au 25/10/2026), détail par année du même compte, puis onglets 1 % / 2 % / 3 % par capital (500 € à 20 000 €) avec pire baisse (% et €, dates) et trades refusés, note sur les petits capitaux, méthode expliquée (IC Markets cité comme exemple de courtier, sans lien).
+- Disparus : colonnes par année qui repartaient du capital de départ, colonne « 2024 → 2026 enchaînés », ancien rapport PDF.
+- Capital minimum conseillé : **2 000 €** (au lieu de 5 000 €).
+
 ### 0.7.0 — 23/10/2026
 - **Prêt pour une version anglaise, rien ne change à l'écran** (décision de Hamid : préparer seulement). Tous les textes du thème sont traduisibles (accueil, en-tête, pied de page, bandeau cookies, bandeau de recommandation, résultats, tarifs, menus par défaut, avertissement sur les risques). Fichier modèle : `languages/arvator.pot`. Voir `docs/13-version-anglaise.md`.
 - Textes de l'accueil (Apparence > Personnaliser) : un texte laissé tel qu'à l'origine sera traduit ; un texte modifié par vous reste tel que vous l'avez écrit.
@@ -70,6 +75,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.9.2 — 25/10/2026
+- FAQ et page Risques : capital minimum conseillé **2 000 €** (au lieu de 5 000 €), avec la raison (presque plus de trades refusés dans le backtest à partir de 2 000 €).
 
 ### 0.9.1 — 25/10/2026
 - **Un code promo peut réduire le robot, l'abonnement, ou les deux en même temps**, chacun avec son pourcentage (ex. robot à -30 % + 6 mois d'abonnement offerts). Arvator > Codes promo : deux cases « Réduction sur le robot » et « Réduction sur l'abonnement » (0 = rien, 100 = offert).

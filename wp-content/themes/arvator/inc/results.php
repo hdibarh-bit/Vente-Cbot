@@ -63,18 +63,45 @@ function arvator_fmt_capital( int|float $n ): string {
 	return arvator_fmt_eur( $n );
 }
 
-/**
- * Case de résultat : solde simulé en euros (« 9 013 € ») et, dessous, l'évolution en pourcentage (« +80 % »).
- *
- * @param array<string, mixed> $cell  « soldeFinal » et « gainPct ».
- */
-function arvator_result_cell( array $cell ): void {
-	$gain  = (int) ( $cell['gainPct'] ?? 0 );
-	$class = $gain < 0 ? ' class="is-neg"' : '';
-	printf(
-		'<td%1$s><span class="results__amount">%2$s</span><span class="results__pct">%3$s</span></td>',
-		$class, // Valeur fixe ci-dessus.
-		esc_html( arvator_fmt_eur( (int) ( $cell['soldeFinal'] ?? 0 ) ) ),
-		esc_html( arvator_fmt_pct( $gain ) )
-	);
+/** Pourcentage avec une décimale si besoin, signé : « +60,7 % », « −20,1 % », « +204 % ». */
+function arvator_fmt_pct1( int|float $n, bool $signed = true, bool $force = false ): string {
+	$decimals = ( ! $force && abs( $n - round( $n ) ) < 0.05 ) ? 0 : 1;
+	$abs      = number_format( abs( (float) $n ), $decimals, ',', "\u{202F}" );
+	if ( 0.0 === (float) $n ) {
+		return "0\u{00A0}%";
+	}
+	if ( $n < 0 ) {
+		return "\u{2212}" . $abs . "\u{00A0}%";
+	}
+	return ( $signed ? '+' : '' ) . $abs . "\u{00A0}%";
+}
+
+/** Montant signé en euros : « +3 036 € », « −1 022 € ». */
+function arvator_fmt_eur_signed( int|float $n ): string {
+	$abs = arvator_fmt_eur( abs( $n ) );
+	if ( $n < 0 ) {
+		return "\u{2212}" . $abs;
+	}
+	return ( $n > 0 ? '+' : '' ) . $abs;
+}
+
+/** Date « 2026-09-02 » → « 2 septembre 2026 » (« 1er » le premier du mois). */
+function arvator_fmt_date( string $iso, bool $with_year = true ): string {
+	$months = array( '', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre' );
+	$parts  = explode( '-', $iso );
+	if ( 3 !== count( $parts ) ) {
+		return '';
+	}
+	$day = (int) $parts[2];
+	$out = ( 1 === $day ? '1er' : (string) $day ) . ' ' . ( $months[ (int) $parts[1] ] ?? '' );
+	return $with_year ? $out . ' ' . $parts[0] : $out;
+}
+
+/** Période de baisse : « 2 septembre → 21 octobre 2026 » (année une seule fois si elle est commune). */
+function arvator_fmt_span( string $from, string $to ): string {
+	if ( '' === $from || '' === $to ) {
+		return '';
+	}
+	$same_year = substr( $from, 0, 4 ) === substr( $to, 0, 4 );
+	return arvator_fmt_date( $from, ! $same_year ) . ' → ' . arvator_fmt_date( $to );
 }

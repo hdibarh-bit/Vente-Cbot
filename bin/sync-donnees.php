@@ -30,38 +30,20 @@ function ecrire( string $file, string $label, array $data ): void {
 	echo "Écrit : $file\n";
 }
 
-// Résultats de backtest.
-$r      = lire( $root . '/config/resultats-backtest.json' );
-$risques = array();
-foreach ( $r['risques'] as $risque ) {
-	$lignes = array();
-	foreach ( $risque['lignes'] as $l ) {
-		$lignes[] = array(
-			'capital'       => $l['capital'],
-			'troisAns'      => $l['troisAns'],
-			'parAnnee'      => $l['parAnnee'],
-			'tradesRefuses' => $l['tradesRefuses'],
-			'tradesPris'    => $l['tradesPris'],
-			'pireMois'      => $l['pireMois'],
-		);
-	}
-	$risques[] = array(
-		'risquePct'      => $risque['risquePct'],
-		'livreParDefaut' => $risque['livreParDefaut'],
-		'lignes'         => $lignes,
-	);
-}
+// Résultats de backtest (un seul backtest de référence, frais de courtier inclus).
+$r = lire( $root . '/config/resultats-backtest.json' );
 ecrire(
 	$theme . '/resultats.php',
 	'Résultats de backtest (performances simulées)',
 	array(
-		'periode'        => $r['periode'],
-		'devise'         => $r['devise'],
-		'livraison'      => $r['livraison'],
-		'noteMethode'    => $r['noteMethode'],
-		'capitaux'       => $r['capitaux'],
-		'risques'        => $risques,
-		'limitesCommunes' => $r['limitesCommunes'],
+		'periode'          => $r['periode'],
+		'devise'           => $r['devise'],
+		'livraison'        => $r['livraison'],
+		'methode'          => $r['methode'],
+		'reference'        => $r['reference'],
+		'tableaux'         => $r['tableaux'],
+		'noteSmallCapital' => $r['noteSmallCapital'],
+		'limitesCommunes'  => $r['limitesCommunes'],
 		'capitalConseille' => array(
 			'montant'     => $r['capitalConseille']['montant'],
 			'obligatoire' => $r['capitalConseille']['obligatoire'],

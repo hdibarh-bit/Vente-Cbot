@@ -156,6 +156,16 @@ p { margin: 0 0 1em; }
 .callout { margin-top: 2.2rem; padding: 1.4rem 1.6rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: var(--radius); background: var(--bg); }
 .callout h3 { margin-bottom: .5rem; font-size: 1.15rem; }
 .callout p { margin: 0; color: var(--muted); }
+.callout__list { margin: 0 0 .8rem; padding-left: 1.2rem; color: var(--muted); }
+.callout__list li { margin-bottom: .45rem; }
+.reference { margin-bottom: 2rem; }
+.reference__main { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem 1.6rem; background: linear-gradient(180deg, var(--surface-2), var(--surface)); margin-bottom: 1.6rem; }
+.reference__kicker { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: .5rem; }
+.reference__line { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 1rem; }
+.reference__alert { margin: 1rem 0 0; padding: .6rem .9rem; border-left: 3px solid var(--neg); color: var(--neg); font-size: .92rem; }
+.results__title--spaced { margin-top: 2rem; }
+.results__table--years { min-width: 760px; }
+.results__table--years td, .results__table--years th { white-space: normal; }
 
 
 /* Tarifs */

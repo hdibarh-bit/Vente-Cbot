@@ -732,11 +732,15 @@ check( str_contains( $anon->get( '/faq/' )['body'], 'Prêt à essayer' ) && str_
 foreach ( array( 'risques', 'cgv', 'mentions-legales', 'confidentialite', 'cookies', 'acheter', 'espace-membre', 'essai-gratuit', 'contact' ) as $s ) {
 	check( ! str_contains( $anon->get( '/' . $s . '/' )['body'], 'Prêt à essayer' ), "page « $s » : pas de bandeau d'appel à l'action" );
 }
-// Résultats : solde en euros + pourcentage (5 000 € au risque 1 % : 9 013 € en 2024, +80 % ; 23 186 € sur 2024 → 2026).
-check( 1 === preg_match( '/results__amount">9\x{202F}013\x{00A0}€<\/span><span class="results__pct">\+80\x{00A0}%/u', $home['body'] ), 'résultats : solde en euros et pourcentage dans chaque case' );
-check( str_contains( $home['body'], '2024 → 2026 enchaînés' ) && str_contains( $home['body'], "23\u{202F}186\u{00A0}€" ), 'résultats : colonne 2024 → 2026 enchaînés' );
-check( 1 === preg_match( '/hero__card.*?9\x{202F}013\x{00A0}€.*?\+80\x{00A0}%/su', $home['body'] ), 'haut de page : solde en euros à côté du pourcentage' );
-check( 1 === preg_match( '/class="is-neg"><span class="results__amount">491\x{00A0}€/u', $home['body'] ), 'résultats : année négative en rouge (500 €, 2026)' );
+// Résultats : un seul backtest de référence (5 000 € au risque 1 % : 15 202 €, +204 %, pire baisse −20,1 % / −3 771 €), plus aucun ancien chiffre.
+check( str_contains( $home['body'], "15\u{202F}202\u{00A0}€" ) && str_contains( $home['body'], "+204\u{00A0}%" ), 'résultats : bloc de référence 5 000 € → 15 202 €, +204 %' );
+check( str_contains( $home['body'], "\u{2212}20,1\u{00A0}%" ) && str_contains( $home['body'], "\u{2212}3\u{202F}771\u{00A0}€" ) && str_contains( $home['body'], 'Baisse en cours au 25/10/2026' ), 'résultats : pire baisse (en % et en €) et baisse en cours' );
+check( str_contains( $home['body'], "8\u{202F}036\u{00A0}€" ) && str_contains( $home['body'], '19 septembre 2024' ) && str_contains( $home['body'], 'pas encore' ), 'résultats : détail par année du même compte' );
+check( str_contains( $home['body'], 'Trades refusés' ) && str_contains( $home['body'], 'panneau-risque-2' ) && str_contains( $home['body'], 'panneau-risque-3' ) && str_contains( $home['body'], 'En dessous de 2' ), 'résultats : onglets 1 %, 2 %, 3 %, trades refusés et note petits capitaux' );
+check( str_contains( $home['body'], 'Backtest avec les frais réels d' ) && str_contains( $home['body'], 'IC Markets' ) && ! preg_match( '#href="[^"]*(icmarkets|ic-markets)#i', $home['body'] ), 'résultats : titre sur la méthode, courtier cité sans lien' );
+check( ! str_contains( $home['body'], '2024 → 2026 enchaînés' ) && ! str_contains( $home['body'], "23\u{202F}186" ) && ! str_contains( $home['body'], '7 oct' ) && ! str_contains( $home['body'], 'Backtest-cTrader' ), 'résultats : plus aucun ancien chiffre ni lien vers l\'ancien rapport' );
+check( 1 === preg_match( '/hero__card.*?15\x{202F}202\x{00A0}€.*?\+204\x{00A0}%/su', $home['body'] ), 'haut de page : carte de référence 5 000 € → 15 202 €' );
+check( str_contains( $anon->get( '/faq/' )['body'], 'au moins 2 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'au moins 5 000' ), 'FAQ : capital minimum conseillé 2 000 €' );
 check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) ||1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
 

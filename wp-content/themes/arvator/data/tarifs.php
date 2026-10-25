@@ -19,7 +19,7 @@ return array (
     'devise' => 'EUR',
     'mentionTvaAffichee' => false,
   ),
-  'capitalConseille' => 5000,
+  'capitalConseille' => 2000,
   'risque' => 
   array (
     'defaut' => 1,

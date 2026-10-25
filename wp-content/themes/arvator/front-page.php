@@ -15,19 +15,10 @@ $price = arvator_pricing();
 $cfg   = arvator_settings();
 $grace = (int) ( $cfg['graceJours'] ?? 3 );
 $trial = (int) ( $cfg['essaiJours'] ?? 14 );
-$cap   = (int) ( $cfg['capitalConseille'] ?? 5000 );
+$cap   = (int) ( $cfg['capitalConseille'] ?? 2000 );
 
-// Ligne « capital conseillé » du réglage livré (1 %), pour la carte du haut de page.
-$hero_row = null;
-foreach ( $data['risques'] ?? array() as $risk ) {
-	if ( 1 === (int) $risk['risquePct'] ) {
-		foreach ( $risk['lignes'] as $row ) {
-			if ( 5000 === (int) $row['capital'] ) {
-				$hero_row = $row;
-			}
-		}
-	}
-}
+// Compte de référence (5 000 € au risque 1 %) pour la carte du haut de page.
+$ref = is_array( $data['reference'] ?? null ) ? $data['reference'] : array();
 
 get_header();
 ?>
@@ -59,37 +50,21 @@ get_header();
 			<p class="hero__note muted"><a href="#resultats"><?php esc_html_e( 'Voir les résultats simulés', 'arvator' ); ?></a></p>
 		</div>
 
-		<?php if ( $hero_row ) : ?>
+		<?php if ( $ref ) : ?>
 			<aside class="hero__card" aria-label="<?php esc_attr_e( 'Exemple de performances simulées', 'arvator' ); ?>">
 				<p class="hero__card-kicker"><?php esc_html_e( 'Performances simulées · risque 1 %', 'arvator' ); ?></p>
-				<p class="hero__card-title"><?php /* translators: %s: capital de départ, ex. « 5 000 € ». */ echo esc_html( sprintf( __( 'Capital de départ de %s', 'arvator' ), arvator_fmt_capital( $hero_row['capital'] ) ) ); ?></p>
+				<p class="hero__card-title"><?php /* translators: 1: capital de départ, 2: solde final. */ echo esc_html( sprintf( __( '%1$s → %2$s', 'arvator' ), arvator_fmt_capital( $ref['capital'] ), arvator_fmt_eur( $ref['soldeFinal'] ) ) ); ?></p>
 				<dl class="stat-list">
-					<?php
-					$labels = array(
-						'2024'          => '2024',
-						'2025'          => '2025',
-						'2026_au_7_oct' => __( '2026 (au 7 oct.)', 'arvator' ),
-					);
-					foreach ( $labels as $key => $label ) :
-						?>
-						<div class="stat-list__row">
-							<dt><?php echo esc_html( $label ); ?></dt>
-							<dd>
-								<?php echo esc_html( arvator_fmt_eur( $hero_row['parAnnee'][ $key ]['soldeFinal'] ) ); ?>
-								<span class="stat-list__pct"><?php echo esc_html( arvator_fmt_pct( $hero_row['parAnnee'][ $key ]['gainPct'] ) ); ?></span>
-							</dd>
-						</div>
-					<?php endforeach; ?>
-					<div class="stat-list__row stat-list__row--neg">
-						<dt><?php esc_html_e( 'Pire baisse sur la période', 'arvator' ); ?></dt>
-						<dd><?php echo esc_html( arvator_fmt_pct( $hero_row['troisAns']['pireBaissePct'] ) ); ?></dd>
+					<div class="stat-list__row">
+						<dt><?php esc_html_e( 'Évolution simulée', 'arvator' ); ?></dt>
+						<dd><?php echo esc_html( arvator_fmt_pct1( $ref['gainPct'] ) ); ?> <span class="stat-list__pct"><?php echo esc_html( arvator_fmt_eur_signed( $ref['gainEur'] ) ); ?></span></dd>
 					</div>
 					<div class="stat-list__row stat-list__row--neg">
-						<dt><?php esc_html_e( 'Solde le plus bas', 'arvator' ); ?></dt>
-						<dd><?php echo esc_html( arvator_fmt_eur( $hero_row['troisAns']['plusBasDuCompte'] ) ); ?></dd>
+						<dt><?php esc_html_e( 'Pire baisse', 'arvator' ); ?></dt>
+						<dd><?php echo esc_html( arvator_fmt_pct1( $ref['pireBaissePct'], true, true ) ); ?> <span class="stat-list__pct"><?php echo esc_html( arvator_fmt_eur_signed( $ref['pireBaisseEur'] ) ); ?></span></dd>
 					</div>
 				</dl>
-				<p class="hero__card-note muted"><?php /* translators: %s: capital de départ. */ echo wp_kses_post( sprintf( __( 'Solde simulé du compte en fin d’année, en repartant de %s chaque 1<sup>er</sup> janvier. Backtest du 1<sup>er</sup> janvier 2024 au 7 octobre 2026. Ne préjuge pas des résultats futurs.', 'arvator' ), esc_html( arvator_fmt_capital( $hero_row['capital'] ) ) ) ); ?></p>
+				<p class="hero__card-note muted"><?php echo wp_kses_post( __( 'Compte simulé du 1<sup>er</sup> janvier 2024 au 25 octobre 2026, frais d’un courtier inclus. Baisse en cours au 25/10/2026. Ne garantit pas les résultats futurs.', 'arvator' ) ); ?></p>
 			</aside>
 		<?php endif; ?>
 	</div>
@@ -124,17 +99,31 @@ get_header();
 <section class="section section--surface" id="resultats" aria-labelledby="titre-resultats">
 	<div class="container">
 		<p class="eyebrow"><?php esc_html_e( 'Résultats simulés', 'arvator' ); ?></p>
-		<h2 id="titre-resultats"><?php esc_html_e( 'Ce que le robot aurait fait entre 2024 et 2026, avec ses baisses', 'arvator' ); ?></h2>
+		<h2 id="titre-resultats"><?php esc_html_e( 'Backtest avec les frais réels d’un courtier', 'arvator' ); ?></h2>
 		<p class="section__intro">
-			<?php esc_html_e( 'Un backtest rejoue le robot sur des prix passés. C’est utile pour comprendre son comportement, mais ce n’est pas une promesse : regardez toujours la pire baisse à côté de chaque gain.', 'arvator' ); ?>
+			<?php esc_html_e( 'Un backtest rejoue le robot sur des prix passés. Ce sont des performances simulées : elles ne garantissent pas les résultats futurs. Regardez toujours la pire baisse à côté de chaque gain.', 'arvator' ); ?>
 		</p>
 
+		<?php get_template_part( 'template-parts/results', 'reference', array( 'data' => $data ) ); ?>
+
+		<h3 class="results__title results__title--spaced"><?php esc_html_e( 'Tous les capitaux de départ', 'arvator' ); ?></h3>
 		<?php get_template_part( 'template-parts/results', 'tabs', array( 'data' => $data ) ); ?>
 
 		<div class="callout" role="note">
-			<h3><?php esc_html_e( 'Pourquoi nous conseillons au moins 5&nbsp;000&nbsp;€', 'arvator' ); ?></h3>
+			<h3><?php esc_html_e( 'Comment ce backtest est calculé', 'arvator' ); ?></h3>
+			<ul class="callout__list">
+				<li><?php esc_html_e( 'Un seul compte, ouvert le 1er janvier 2024 et suivi jusqu’au 25 octobre 2026, sans retrait. Les gains s’accumulent d’une année sur l’autre, sans remise à zéro chaque année.', 'arvator' ); ?></li>
+				<li><?php esc_html_e( 'Réglage livré : 1 perte maximum par jour, 3 positions maximum en même temps.', 'arvator' ); ?></li>
+				<li><?php esc_html_e( 'Tous les frais d’un vrai courtier sont inclus, avec IC Markets (compte Raw Spread, cTrader) cité comme exemple de courtier : les écarts de prix (spreads), la commission, les frais pour garder une position ouverte la nuit (swaps) et la taille minimale de position.', 'arvator' ); ?></li>
+				<li><?php esc_html_e( 'Quand le capital est trop petit pour la taille minimale du courtier, le robot ne prend pas le trade : c’est compté dans les résultats (colonne « Trades refusés »).', 'arvator' ); ?></li>
+			</ul>
+			<p class="muted"><?php esc_html_e( 'Objectif de cette section : vous donner une idée réaliste de ce que le robot coûte en frais et de ce qu’il pourrait rapporter, sans promesse.', 'arvator' ); ?></p>
+		</div>
+
+		<div class="callout" role="note">
+			<h3><?php esc_html_e( 'Pourquoi nous conseillons au moins 2&nbsp;000&nbsp;€', 'arvator' ); ?></h3>
 			<p>
-				<?php esc_html_e( 'Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. Plus le capital est élevé, moins il y a de trades refusés.', 'arvator' ); ?>
+				<?php esc_html_e( 'Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2&nbsp;000&nbsp;€, presque plus aucun trade n’est refusé (voir la colonne « Trades refusés ») ; en dessous, une partie des trades est refusée.', 'arvator' ); ?>
 			</p>
 		</div>
 
