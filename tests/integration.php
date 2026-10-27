@@ -115,17 +115,34 @@ if ( '/%postname%/' !== get_option( 'permalink_structure' ) ) {
 	flush_rewrite_rules();
 }
 // Départ propre : on supprime les pages du plugin et on les recrée comme à la première installation.
-foreach ( array( 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'essai-gratuit', 'acheter', 'espace-membre' ) as $arv_slug ) {
+foreach ( array( 'accueil', 'a-propos', 'faq', 'contact', 'risques', 'mentions-legales', 'cgv', 'confidentialite', 'cookies', 'essai-gratuit', 'acheter', 'espace-membre' ) as $arv_slug ) {
 	$arv_old = get_page_by_path( $arv_slug, OBJECT, 'page' );
 	if ( $arv_old ) {
 		wp_delete_post( $arv_old->ID, true );
 	}
 }
 delete_option( 'arvator_pages_created' );
+delete_option( 'arvator_front_set' );
+update_option( 'show_on_front', 'page' );
+update_option( 'page_on_front', 0 );
 Arvator_Pages::create_missing();
 @unlink( $log );
 clear_transients();
 $tag = substr( md5( (string) microtime( true ) ), 0, 6 );
+
+/* ======================================================================== A0. Page « Accueil » */
+title( 'A0. Page « Accueil » (choisie comme page d\'accueil)' );
+$arv_home = get_page_by_path( 'accueil', OBJECT, 'page' );
+check( $arv_home instanceof WP_Post && 'Accueil' === $arv_home->post_title && 'publish' === $arv_home->post_status, 'la page « Accueil » existe (choix possible dans Réglages > Lecture)' );
+check( $arv_home && 'page' === get_option( 'show_on_front' ) && (int) $arv_home->ID === (int) get_option( 'page_on_front' ), 'elle est choisie comme page d\'accueil du site' );
+$arv_h = ( new Browser( $url ) )->get( '/' );
+check( 200 === $arv_h['code'] && str_contains( $arv_h['body'], 'hero__card' ) && ! str_contains( $arv_h['body'], 'ne pas le modifier ici' ), 'l\'accueil affiche bien le contenu du thème (pas le texte de la page)' );
+$arv_other = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => "Autre $tag", 'post_content' => 'x' ) );
+update_option( 'page_on_front', $arv_other );
+Arvator_Pages::create_missing();
+check( (int) $arv_other === (int) get_option( 'page_on_front' ), 'un autre choix fait dans le tableau de bord est respecté (jamais écrasé)' );
+update_option( 'page_on_front', (int) $arv_home->ID );
+wp_delete_post( $arv_other, true );
 
 /* ======================================================================== A. Pages */
 title( 'A. Pages créées' );

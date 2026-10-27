@@ -77,9 +77,30 @@ final class Arvator_Pages {
 			$done[] = $slug;
 		}
 
+		self::set_front_page();
 		update_option( self::OPT_CREATED, array_values( array_unique( $done ) ), false );
 		update_option( self::OPT_REV, $revs, false );
 		update_option( self::OPT_REVIEW, $review, false );
+	}
+
+	/**
+	 * Page « Accueil » choisie comme page d'accueil du site (Réglages > Lecture), une seule fois et seulement si aucune
+	 * autre page d'accueil n'est déjà choisie : un choix fait ensuite dans le tableau de bord est respecté.
+	 */
+	private static function set_front_page(): void {
+		if ( get_option( 'arvator_front_set' ) ) {
+			return;
+		}
+		$home = get_page_by_path( 'accueil', OBJECT, 'page' );
+		if ( ! $home instanceof WP_Post || 'publish' !== $home->post_status ) {
+			return;
+		}
+		$current = (int) get_option( 'page_on_front', 0 );
+		if ( 'page' !== get_option( 'show_on_front' ) || 0 === $current || ! get_post( $current ) ) {
+			update_option( 'show_on_front', 'page' );
+			update_option( 'page_on_front', (int) $home->ID );
+		}
+		update_option( 'arvator_front_set', 1, false );
 	}
 
 	/** Une page « jamais touchée » a la même date de création et de dernière modification. */

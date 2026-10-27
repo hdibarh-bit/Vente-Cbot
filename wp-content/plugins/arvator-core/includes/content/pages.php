@@ -10,6 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 
+	// Page d'accueil : le thème affiche lui-même le contenu de l'accueil (front-page.php) ; cette page sert à la choisir dans
+	// Réglages > Lecture. Le texte ci-dessous n'apparaît pas sur le site.
+	'accueil'  => array(
+		'rev'   => 1,
+		'title' => 'Accueil',
+		'text'  => <<<'TXT'
+Page d'accueil du site. Son contenu est géré par le thème Arvator : ne pas le modifier ici.
+TXT,
+	),
+
 	'a-propos' => array(
 		'rev'   => 3,
 		'title' => 'À propos',

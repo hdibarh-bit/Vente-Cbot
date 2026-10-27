@@ -85,6 +85,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.10.1 — 27/10/2026
+- **Page « Accueil » créée** (elle manquait dans Réglages > Lecture) et choisie automatiquement comme page d'accueil du site. L'affichage reste celui du thème. Le choix n'est fait qu'une fois, et seulement si aucune autre page d'accueil n'est déjà choisie : un choix ultérieur de votre part est respecté.
+
 ### 0.10.0 — 25/10/2026
 - **Paiement par virement SEPA** (formule annuelle : robot + abonnement, puis renouvellement annuel). Voir `docs/14-paiement-virement.md`.
   - Page d'achat : choix « Virement bancaire (SEPA) » / « Carte bancaire », nom pour la facture ; le mensuel est masqué en mode virement.
