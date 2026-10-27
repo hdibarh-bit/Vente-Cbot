@@ -37,6 +37,9 @@ function arvator_page_url( string $slug ): string {
  * sinon (pour « résultats » et « tarifs ») la section correspondante de l'accueil, sinon rien.
  */
 function arvator_menu_target( string $slug ): string {
+	if ( '' === $slug ) {
+		return home_url( '/' ); // « Accueil »
+	}
 	$url = arvator_page_url( $slug );
 	if ( '' !== $url ) {
 		return $url;
@@ -170,6 +173,7 @@ function arvator_button_or_anchor( string $slug, string $label, string $classes,
 function arvator_default_links( string $location ): array {
 	$links = array(
 		'primary' => array(
+			array( __( 'Accueil', 'arvator' ), '' ),
 			array( __( 'Résultats', 'arvator' ), 'resultats' ),
 			array( __( 'Tarifs', 'arvator' ), 'tarifs' ),
 			array( __( 'FAQ', 'arvator' ), 'faq' ),
@@ -224,13 +228,37 @@ function arvator_nav( string $location, string $class ): void {
 			continue; // la page n'existe pas encore : pas de lien mort.
 		}
 		printf(
-			'<li><a href="%s">%s</a></li>',
+			'<li><a href="%s"%s>%s</a></li>',
 			esc_url( $target ),
+			'' === $link[1] && is_front_page() ? ' aria-current="page"' : '',
 			esc_html( $link[0] )
 		);
 	}
 	echo '</ul>';
 }
+
+/**
+ * Menu d'en-tête défini dans le tableau de bord : « Accueil » y est ajouté en premier s'il n'y figure pas déjà
+ * (aucun lien vers la page d'accueil dans le menu choisi).
+ */
+add_filter(
+	'wp_nav_menu_items',
+	static function ( string $items, $args ): string {
+		if ( ! is_object( $args ) || 'primary' !== ( $args->theme_location ?? '' ) ) {
+			return $items;
+		}
+		$home = untrailingslashit( home_url( '/' ) );
+		foreach ( (array) wp_get_nav_menu_items( get_nav_menu_locations()['primary'] ?? 0 ) as $item ) {
+			if ( untrailingslashit( (string) $item->url ) === $home ) {
+				return $items;
+			}
+		}
+		$current = is_front_page() ? ' aria-current="page"' : '';
+		return '<li class="menu-item menu-item-home' . ( is_front_page() ? ' current-menu-item' : '' ) . '"><a href="' . esc_url( home_url( '/' ) ) . '"' . $current . '>' . esc_html__( 'Accueil', 'arvator' ) . '</a></li>' . $items;
+	},
+	10,
+	2
+);
 
 /**
  * Logo : celui choisi dans le tableau de bord, sinon la marque en texte.

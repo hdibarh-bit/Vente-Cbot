@@ -2,14 +2,14 @@
 # This file is distributed under the Proprietary.
 msgid ""
 msgstr ""
-"Project-Id-Version: Arvator 0.8.2\n"
+"Project-Id-Version: Arvator 0.8.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/arvator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-25T19:50:43+00:00\n"
+"POT-Creation-Date: 2026-10-27T13:17:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: arvator\n"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: footer.php:25
 #: header.php:38
-#: inc/template-tags.php:182
+#: inc/template-tags.php:186
 msgid "Essai gratuit"
 msgstr ""
 
@@ -131,7 +131,7 @@ msgstr ""
 
 #. translators: %d: durée de l'essai en jours.
 #: front-page.php:44
-#: inc/template-tags.php:96
+#: inc/template-tags.php:99
 msgid "Essayer %d jours sur compte démo"
 msgstr ""
 
@@ -215,7 +215,7 @@ msgid "Commencer par l’essai gratuit"
 msgstr ""
 
 #: front-page.php:101
-#: inc/template-tags.php:180
+#: inc/template-tags.php:184
 msgid "Résultats simulés"
 msgstr ""
 
@@ -272,8 +272,8 @@ msgid "Essayer sur compte démo"
 msgstr ""
 
 #: front-page.php:139
-#: inc/template-tags.php:174
-#: inc/template-tags.php:181
+#: inc/template-tags.php:178
+#: inc/template-tags.php:185
 msgid "Tarifs"
 msgstr ""
 
@@ -400,8 +400,8 @@ msgid "Demander mon essai gratuit"
 msgstr ""
 
 #: front-page.php:208
-#: inc/template-tags.php:72
-#: inc/template-tags.php:97
+#: inc/template-tags.php:75
+#: inc/template-tags.php:100
 msgid "Acheter Arvator"
 msgstr ""
 
@@ -453,95 +453,100 @@ msgstr ""
 msgid "Un robot de trading automatique qui s’installe sur votre propre compte cTrader. Nous ne touchons jamais à votre argent ni à votre compte."
 msgstr ""
 
-#: inc/template-tags.php:44
+#: inc/template-tags.php:47
 msgid "resultats"
 msgstr ""
 
-#: inc/template-tags.php:67
+#: inc/template-tags.php:70
 msgid "annual"
 msgstr ""
 
-#: inc/template-tags.php:122
+#: inc/template-tags.php:125
 msgid "Recommandez Arvator&nbsp;!"
 msgstr ""
 
-#: inc/template-tags.php:125
+#: inc/template-tags.php:128
 msgid "par recommandation"
 msgstr ""
 
-#: inc/template-tags.php:127
+#: inc/template-tags.php:130
 msgid "Pour chaque proche qui achète le robot grâce à votre lien."
 msgstr ""
 
 #. translators: %s: délai en jours avant le versement de la récompense.
-#: inc/template-tags.php:131
+#: inc/template-tags.php:134
 msgid "*Récompense de recommandation versée %s&nbsp;jours après l’achat, s’il n’est pas remboursé."
 msgstr ""
 
-#: inc/template-tags.php:134
+#: inc/template-tags.php:137
 msgid "Inscription gratuite, <span class=\"referral__link\">voir conditions</span>."
 msgstr ""
 
-#: inc/template-tags.php:173
-msgid "Résultats"
-msgstr ""
-
-#: inc/template-tags.php:175
-#: inc/template-tags.php:185
-msgid "FAQ"
-msgstr ""
-
 #: inc/template-tags.php:176
-#: inc/template-tags.php:186
-msgid "À propos"
+#: inc/template-tags.php:257
+msgid "Accueil"
 msgstr ""
 
 #: inc/template-tags.php:177
-#: inc/template-tags.php:187
+msgid "Résultats"
+msgstr ""
+
+#: inc/template-tags.php:179
+#: inc/template-tags.php:189
+msgid "FAQ"
+msgstr ""
+
+#: inc/template-tags.php:180
+#: inc/template-tags.php:190
+msgid "À propos"
+msgstr ""
+
+#: inc/template-tags.php:181
+#: inc/template-tags.php:191
 msgid "Contact"
 msgstr ""
 
-#: inc/template-tags.php:183
+#: inc/template-tags.php:187
 msgid "Rapport gratuit"
 msgstr ""
 
-#: inc/template-tags.php:184
+#: inc/template-tags.php:188
 msgid "Parrainage"
 msgstr ""
 
-#: inc/template-tags.php:188
+#: inc/template-tags.php:192
 msgid "Espace membre"
 msgstr ""
 
-#: inc/template-tags.php:191
+#: inc/template-tags.php:195
 msgid "Risques"
 msgstr ""
 
-#: inc/template-tags.php:192
+#: inc/template-tags.php:196
 msgid "Mentions légales"
 msgstr ""
 
-#: inc/template-tags.php:193
+#: inc/template-tags.php:197
 msgid "CGV"
 msgstr ""
 
-#: inc/template-tags.php:194
+#: inc/template-tags.php:198
 msgid "Confidentialité"
 msgstr ""
 
-#: inc/template-tags.php:195
+#: inc/template-tags.php:199
 msgid "Cookies"
 msgstr ""
 
-#: inc/template-tags.php:196
+#: inc/template-tags.php:200
 msgid "Conditions du parrainage"
 msgstr ""
 
-#: inc/template-tags.php:239
+#: inc/template-tags.php:267
 msgid "accueil"
 msgstr ""
 
-#: inc/template-tags.php:264
+#: inc/template-tags.php:292
 msgid "Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement."
 msgstr ""
 

@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.3 — 27/10/2026
+- **Menu d'en-tête : « Accueil » en premier** (page d'accueil, marquée comme page courante quand on y est). Si vous avez créé votre propre menu dans Apparence > Menus, « Accueil » y est ajouté automatiquement quand il n'y figure pas.
+
 ### 0.8.2 — 25/10/2026
 - Section Tarifs : « Paiement par carte (sécurisé par Stripe) ou par virement bancaire pour la formule annuelle ».
 

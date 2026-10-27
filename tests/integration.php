@@ -742,6 +742,7 @@ check( str_contains( $home['body'], 'Backtest avec les frais réels d' ) && str_
 check( ! str_contains( $home['body'], '2024 → 2026 enchaînés' ) && ! str_contains( $home['body'], "23\u{202F}186" ) && ! str_contains( $home['body'], '7 oct' ) && ! str_contains( $home['body'], 'Backtest-cTrader' ), 'résultats : plus aucun ancien chiffre ni lien vers l\'ancien rapport' );
 check( 1 === preg_match( '/hero__card.*?15\x{202F}202\x{00A0}€.*?\+204\x{00A0}%/su', $home['body'] ), 'haut de page : carte de référence 5 000 € → 15 202 €' );
 check( str_contains( $anon->get( '/faq/' )['body'], '20 trades refusés au risque 1' ) && str_contains( $anon->get( '/faq/' )['body'], 'au moins 2 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'au moins 5 000' ), 'FAQ : capital minimum conseillé 2 000 €' );
+check( 1 === preg_match( '#<ul class="site-nav__list"><li><a href="[^"]*/"[^>]*aria-current="page">Accueil</a></li>#', $home['body'] ), 'menu d\'en-tête : « Accueil » en premier, page courante sur l\'accueil' );
 check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) ||1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
 
@@ -1985,6 +1986,20 @@ $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'promo_uses' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'commissions' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'license_sync' ) );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'orders' ) . " WHERE stripe_session_id LIKE 'bank:%'" );
+
+/* ======================================================================== Q. Menu d'en-tête : Accueil */
+title( 'Q. Menu d\'en-tête : « Accueil »' );
+$mid = wp_create_nav_menu( "Menu test $tag" );
+wp_update_nav_menu_item( $mid, 0, array( 'menu-item-title' => 'FAQ', 'menu-item-url' => home_url( '/faq/' ), 'menu-item-status' => 'publish', 'menu-item-type' => 'custom' ) );
+set_theme_mod( 'nav_menu_locations', array( 'primary' => $mid ) );
+$hm = ( new Browser( $url ) )->get( '/' )['body'];
+check( 1 === preg_match( '#<ul[^>]*class="site-nav__list"[^>]*>\s*<li class="menu-item menu-item-home[^"]*"><a href="[^"]*/"[^>]*>Accueil</a></li>#', $hm ), 'menu personnalisé sans lien vers l\'accueil : « Accueil » ajouté en premier' );
+wp_update_nav_menu_item( $mid, 0, array( 'menu-item-title' => 'Accueil', 'menu-item-url' => home_url( '/' ), 'menu-item-status' => 'publish', 'menu-item-type' => 'custom' ) );
+$hm2 = ( new Browser( $url ) )->get( '/' )['body'];
+preg_match( '#<ul[^>]*class="site-nav__list"[^>]*>(.*?)</ul>#s', $hm2, $nav );
+check( 1 === substr_count( (string) ( $nav[1] ?? '' ), 'Accueil</a>' ), 'menu personnalisé avec un lien vers l\'accueil : pas de doublon' );
+set_theme_mod( 'nav_menu_locations', array() );
+wp_delete_nav_menu( $mid );
 
 /* ======================================================================== Nettoyage */
 foreach ( array( $uA, $uB, $uC ) as $uid ) {
