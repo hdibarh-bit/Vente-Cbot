@@ -16,6 +16,7 @@ $cfg   = arvator_settings();
 $grace = (int) ( $cfg['graceJours'] ?? 3 );
 $trial = (int) ( $cfg['essaiJours'] ?? 14 );
 $cap   = (int) ( $cfg['capitalConseille'] ?? 2000 );
+$launch = arvator_launch_offer_note();
 
 // Compte de référence (5 000 € au risque 1 %) pour la carte du haut de page.
 $ref = is_array( $data['reference'] ?? null ) ? $data['reference'] : array();
@@ -27,6 +28,13 @@ get_header();
 <?php if ( '' !== arvator_page_url( 'parrainage' ) ) : ?>
 	<section class="section section--tight section--top" aria-label="<?php esc_attr_e( 'Recommandation', 'arvator' ); ?>">
 		<div class="container"><?php arvator_referral_banner(); ?></div>
+	</section>
+<?php endif; ?>
+
+<?php // Bandeau « Offre de lancement » juste sous la recommandation (demande de Hamid, 28/10/2026). Disparaît seul à la date de changement de prix. ?>
+<?php if ( null !== arvator_launch_offer() ) : ?>
+	<section class="section section--tight" aria-labelledby="titre-lancement">
+		<div class="container"><?php arvator_launch_offer_banner(); ?></div>
 	</section>
 <?php endif; ?>
 
@@ -147,7 +155,7 @@ get_header();
 				<h3 id="plan-mensuel"><?php esc_html_e( 'Abonnement mensuel', 'arvator' ); ?></h3>
 				<p class="plan__price"><span class="plan__amount"><?php echo esc_html( arvator_fmt_price( $price['mensuel'] ) ); ?></span> <span class="plan__unit"><?php esc_html_e( 'par mois', 'arvator' ); ?></span></p>
 				<dl class="plan__rows">
-					<div><dt><?php esc_html_e( 'Achat du robot (une seule fois)', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['achat'] ) ); ?></dd></div>
+					<div><dt><?php esc_html_e( 'Achat du robot (une seule fois)', 'arvator' ); ?><?php if ( '' !== $launch ) : ?><span class="plan__launch"><?php echo esc_html( $launch ); ?></span><?php endif; ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['achat'] ) ); ?></dd></div>
 					<div><dt><?php esc_html_e( 'Premier paiement', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['premier_paiement_m'] ) ); ?></dd></div>
 					<div><dt><?php esc_html_e( 'Ensuite, chaque mois', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['mensuel'] ) ); ?></dd></div>
 					<div class="plan__total"><dt><?php esc_html_e( 'Coût de la première année', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['annee1_mensuel'] ) ); ?></dd></div>
@@ -160,7 +168,7 @@ get_header();
 				<h3 id="plan-annuel"><?php esc_html_e( 'Abonnement annuel', 'arvator' ); ?></h3>
 				<p class="plan__price"><span class="plan__amount"><?php echo esc_html( arvator_fmt_price( $price['annuel_par_mois'] ) ); ?></span> <span class="plan__unit"><?php esc_html_e( 'par mois, payés d’avance pour l’année', 'arvator' ); ?></span></p>
 				<dl class="plan__rows">
-					<div><dt><?php esc_html_e( 'Achat du robot (une seule fois)', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['achat'] ) ); ?></dd></div>
+					<div><dt><?php esc_html_e( 'Achat du robot (une seule fois)', 'arvator' ); ?><?php if ( '' !== $launch ) : ?><span class="plan__launch"><?php echo esc_html( $launch ); ?></span><?php endif; ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['achat'] ) ); ?></dd></div>
 					<div><dt><?php esc_html_e( 'Premier paiement', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['premier_paiement_a'] ) ); ?></dd></div>
 					<div><dt><?php esc_html_e( 'Ensuite, chaque année', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['annuel_total'] ) ); ?></dd></div>
 					<div class="plan__total"><dt><?php esc_html_e( 'Coût de la première année', 'arvator' ); ?></dt><dd><?php echo esc_html( arvator_fmt_price( $price['annee1_annuel'] ) ); ?></dd></div>

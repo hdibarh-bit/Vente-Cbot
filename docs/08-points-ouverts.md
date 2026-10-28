@@ -28,6 +28,7 @@
 - [ ] Ouvrir la version anglaise : à décider par Hamid après les premières ventes ; avis de l'avocat sur les pays visés d'abord (voir `13-version-anglaise.md`).
 
 ## Avant le lancement public (priorité)
+- [ ] **1er janvier 2027 : passer le robot à 2 500 €** (sinon l'annonce de l'offre de lancement serait trompeuse) : nouveau prix dans Stripe (`ARVATOR_STRIPE_PRICE_BOT`), `achatCbot` = 2500 dans `config/reglages.json` puis `bin/sync-donnees.php`, textes FAQ/CGV et montant du virement (FAQ « Puis-je payer par virement ? ») ; nouvelle version thème + plugin.
 - [ ] Compiler le cBot `IctSmcTendance` dans cTrader (onglet Algo → Build) et corriger les erreurs.
 - [ ] Tester la connexion WebSocket (port 25345) depuis le cloud cTrader → licence automatique ou manuelle.
 - [ ] Valider le juridique (avocat) : CGV, avertissements, programme de parrainage (page « Conditions du programme de parrainage », provisoire), statut « vente de logiciel ».

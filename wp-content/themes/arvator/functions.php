@@ -17,6 +17,7 @@ define( 'ARVATOR_THEME_VERSION', '0.3.0' );
 require_once get_theme_file_path( 'inc/template-tags.php' );
 require_once get_theme_file_path( 'inc/results.php' );
 require_once get_theme_file_path( 'inc/settings.php' );
+require_once get_theme_file_path( 'inc/launch-offer.php' );
 require_once get_theme_file_path( 'inc/customizer.php' );
 
 add_action(

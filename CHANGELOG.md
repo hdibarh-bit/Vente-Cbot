@@ -4,6 +4,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.4 — 28/10/2026
+- **Bandeau « Offre de lancement »** sur l'accueil, juste sous « Recommandez Arvator ! » : 1 500 € le robot, « Prix de lancement : 1 500 € pour les premiers utilisateurs. Il passera à 2 500 € le 1er janvier 2027. », boutons « En profiter » (page d'achat) et « Essayer Arvator » (essai gratuit). **Pas de prix barré** (choix de Hamid : un prix barré doit avoir été réellement pratiqué).
+- Section Tarifs : sous « Achat du robot », mention « Prix de lancement · 2 500 € à partir du 1er janvier 2027 ».
+- Le bandeau et la mention **disparaissent seuls le 1er janvier 2027** (heure de Paris). Réglage : `config/reglages.json` → `prix.offreLancement`.
+
 ### 0.8.3 — 27/10/2026
 - **Menu d'en-tête : « Accueil » en premier** (page d'accueil, marquée comme page courante quand on y est). Si vous avez créé votre propre menu dans Apparence > Menus, « Accueil » y est ajouté automatiquement quand il n'y figure pas.
 
@@ -84,6 +89,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.10.2 — 28/10/2026
+- FAQ (« Combien ça coûte ? ») et CGV (article 3, Prix) : « 1 500 € (prix de lancement ; il passera à 2 500 € le 1er janvier 2027) ». Mention retirée automatiquement le 1er janvier 2027. Pages mises à jour seules si vous ne les avez jamais modifiées dans l'éditeur ; sinon elles sont signalées dans l'administration.
+- La page de paiement n'affiche pas cette mention (demande de Hamid).
 
 ### 0.10.1 — 27/10/2026
 - **Page « Accueil » créée** (elle manquait dans Réglages > Lecture) et choisie automatiquement comme page d'accueil du site. L'affichage reste celui du thème. Le choix n'est fait qu'une fois, et seulement si aucune autre page d'accueil n'est déjà choisie : un choix ultérieur de votre part est respecté.

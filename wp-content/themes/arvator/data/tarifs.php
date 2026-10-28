@@ -18,6 +18,11 @@ return array (
     'economieAnnuelle' => 120,
     'devise' => 'EUR',
     'mentionTvaAffichee' => false,
+    'offreLancement' => 
+    array (
+      'prixApres' => 2500,
+      'dateChangement' => '2027-01-01',
+    ),
   ),
   'capitalConseille' => 2000,
   'risque' => 

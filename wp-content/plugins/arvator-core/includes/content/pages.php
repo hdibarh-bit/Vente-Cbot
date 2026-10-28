@@ -47,7 +47,7 @@ TXT,
 	),
 
 	'faq'      => array(
-		'rev'   => 4,
+		'rev'   => 5,
 		'title' => 'Questions fréquentes',
 		'text'  => <<<'TXT'
 ## Le robot
@@ -78,7 +78,7 @@ Ce n'est pas une obligation. Avec un petit capital, la taille minimale de positi
 
 ## Prix, licence et abonnement
 ?? Combien ça coûte ?
-Un achat unique de 1 500 € pour le robot, puis un abonnement obligatoire pour garder la licence active : 39,90 € par mois, ou 29,90 € par mois en formule annuelle (358,80 € payés d'avance pour l'année, soit 120 € d'économie par an). Au moment du paiement, vous réglez l'achat et le premier abonnement en une seule fois. Vous pouvez payer par carte bancaire (via Stripe) ou par virement bancaire (formule annuelle).
+Un achat unique de 1 500 € pour le robot[arvator_offre_lancement], puis un abonnement obligatoire pour garder la licence active : 39,90 € par mois, ou 29,90 € par mois en formule annuelle (358,80 € payés d'avance pour l'année, soit 120 € d'économie par an). Au moment du paiement, vous réglez l'achat et le premier abonnement en une seule fois. Vous pouvez payer par carte bancaire (via Stripe) ou par virement bancaire (formule annuelle).
 
 ?? Que se passe-t-il si mon abonnement n'est plus payé ?
 Votre licence expire. Après 3 jours de grâce, le robot ne prend plus de nouvelles positions, mais continue de gérer celles qui sont déjà ouvertes.
@@ -188,7 +188,7 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 7,
+		'rev'   => 8,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 ## 1. Éditeur et objet
@@ -198,7 +198,7 @@ Ces conditions s'appliquent à toute vente du robot de trading Arvator par Hamid
 Arvator est un logiciel (un robot cTrader) livré sous forme de fichier numérique. L'achat donne au client une licence d'utilisation personnelle, non exclusive et non transférable, liée à un numéro de compte cTrader. Le client reste propriétaire de son argent et de son compte : l'éditeur n'y a jamais accès.
 
 ## 3. Prix
-- Achat du robot : 1 500 €, payé une seule fois.
+- Achat du robot : 1 500 €[arvator_offre_lancement], payé une seule fois.
 - Abonnement obligatoire pour garder la licence active : 39,90 € par mois, ou 358,80 € par an (soit 29,90 € par mois, payés d'avance).
 Les prix sont en euros et ceux affichés au moment de la commande s'appliquent.
 

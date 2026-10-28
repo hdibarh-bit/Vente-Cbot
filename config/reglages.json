@@ -8,7 +8,11 @@
     "abonnementAnnuelParMois": 29.9,
     "economieAnnuelle": 120,
     "devise": "EUR",
-    "mentionTvaAffichee": false
+    "mentionTvaAffichee": false,
+    "offreLancement": {
+      "prixApres": 2500,
+      "dateChangement": "2027-01-01"
+    }
   },
   "capitalConseille": 2000,
   "risque": { "defaut": 1, "choix": [1, 2, 3], "plafond": 3 },

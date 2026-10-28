@@ -24,6 +24,7 @@ cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, m
 | Abonnement mensuel | 39,90 €/mois | 1 500 + 478,80 = 1 978,80 € |
 | Abonnement annuel | 29,90 €/mois = 358,80 €/an payés d'avance | 1 500 + 358,80 = 1 858,80 € |
 
+- **Offre de lancement (Hamid, 28/10/2026)** : robot à 1 500 € jusqu'au 31/12/2026, **2 500 € à partir du 1er janvier 2027**. Affichage sans prix barré (un prix barré doit avoir été réellement pratiqué, art. L112-1-1 du Code de la consommation) : bandeau sur l'accueil + mention à côté du prix (Tarifs, FAQ, CGV), sauf sur la page de paiement. Réglage `prix.offreLancement` dans `config/reglages.json` ; tout disparaît seul le 1er janvier 2027.
 - L'abonnement est **obligatoire** pour garder la licence active. L'annuel économise 120 €/an : argument à mettre en avant.
 - Au paiement : achat + premier abonnement dans le même passage en caisse.
 - Sans abonnement payé : le cBot cesse d'ouvrir de nouveaux trades en fin de licence (voir `04-licences.md`).
