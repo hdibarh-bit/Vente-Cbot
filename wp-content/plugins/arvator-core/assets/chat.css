@@ -1,0 +1,117 @@
+/* Arvator — assistant de discussion. Reprend les couleurs du thème (variables), avec des valeurs de repli. */
+
+.arv-chat {
+	--c-bg: var(--bg, #0B0B0C);
+	--c-surface: var(--surface, #141416);
+	--c-surface-2: var(--surface-2, #1B1B1E);
+	--c-gold: var(--gold, #C9A227);
+	--c-gold-light: var(--gold-light, #E6C766);
+	--c-text: var(--text, #F5F1E6);
+	--c-muted: var(--muted, #A8A29A);
+	--c-line: var(--line, rgba(201, 162, 39, .28));
+	--c-line-soft: var(--line-soft, rgba(245, 241, 230, .10));
+	--c-grad: var(--gold-grad, linear-gradient(135deg, #E6C766 0%, #C9A227 55%, #A8841B 100%));
+	font-family: var(--sans, "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif);
+	color: var(--c-text);
+}
+
+.arv-chat__bubble {
+	position: fixed; right: 20px; bottom: 20px; z-index: 80;
+	width: 60px; height: 60px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+	display: grid; place-items: center;
+	background: var(--c-grad); color: var(--c-bg);
+	box-shadow: 0 8px 28px rgba(201, 162, 39, .35), 0 2px 6px rgba(0, 0, 0, .4);
+	transition: transform .15s ease, box-shadow .15s ease;
+}
+.arv-chat__bubble:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(201, 162, 39, .45), 0 2px 6px rgba(0, 0, 0, .4); }
+.arv-chat__bubble:focus-visible { outline: 2px solid var(--c-gold-light); outline-offset: 4px; }
+.arv-chat__bubble svg { width: 28px; height: 28px; }
+.arv-chat.is-open .arv-chat__bubble { transform: scale(.92); }
+
+.arv-chat__panel {
+	position: fixed; right: 20px; bottom: 92px; z-index: 81;
+	width: min(380px, calc(100vw - 40px)); height: min(560px, calc(100vh - 120px)); height: min(560px, calc(100dvh - 120px));
+	display: flex; flex-direction: column; overflow: hidden;
+	background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 16px;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+	transform-origin: bottom right; animation: arv-chat-in .18s ease-out;
+}
+.arv-chat__panel[hidden] { display: none; }
+@keyframes arv-chat-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+
+.arv-chat__head {
+	display: flex; align-items: center; gap: .75rem; padding: .85rem 1rem;
+	background: var(--c-surface-2); border-bottom: 1px solid var(--c-line);
+}
+.arv-chat__avatar {
+	flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+	background: var(--c-grad); color: var(--c-bg); font: 700 1rem/1 var(--serif, Georgia, serif);
+}
+.arv-chat__who { flex: 1; min-width: 0; }
+.arv-chat__title { margin: 0; font: 600 1rem/1.25 var(--serif, Georgia, serif); color: var(--c-gold-light); }
+.arv-chat__status { margin: 0; font-size: .78rem; color: var(--c-muted); }
+.arv-chat__icon-btn {
+	flex: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid transparent; padding: 0; cursor: pointer;
+	display: grid; place-items: center; background: transparent; color: var(--c-muted);
+}
+.arv-chat__icon-btn:hover { color: var(--c-text); border-color: var(--c-line); }
+.arv-chat__icon-btn:focus-visible { outline: 2px solid var(--c-gold-light); outline-offset: 2px; }
+.arv-chat__icon-btn svg { width: 18px; height: 18px; }
+
+.arv-chat__log {
+	flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 1rem;
+	display: flex; flex-direction: column; gap: .6rem; background: var(--c-bg);
+}
+.arv-chat__msg {
+	max-width: 85%; padding: .6rem .85rem; border-radius: 14px;
+	font-size: .94rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.arv-chat__msg--bot { align-self: flex-start; background: var(--c-surface-2); border: 1px solid var(--c-line-soft); border-bottom-left-radius: 4px; }
+.arv-chat__msg--user { align-self: flex-end; background: var(--c-grad); color: var(--c-bg); border-bottom-right-radius: 4px; font-weight: 500; }
+.arv-chat__msg--error { border-color: rgba(227, 169, 154, .5); }
+.arv-chat__msg a { color: var(--c-gold-light); text-underline-offset: 2px; }
+.arv-chat__msg--user a { color: var(--c-bg); }
+
+.arv-chat__typing { display: inline-flex; gap: 4px; align-items: center; height: 1.4em; }
+.arv-chat__typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--c-gold); opacity: .4; animation: arv-chat-dot 1.2s infinite ease-in-out; }
+.arv-chat__typing span:nth-child(2) { animation-delay: .15s; }
+.arv-chat__typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes arv-chat-dot { 0%, 80%, 100% { opacity: .3; transform: none; } 40% { opacity: 1; transform: translateY(-3px); } }
+
+.arv-chat__form { display: flex; gap: .5rem; align-items: flex-end; padding: .75rem; border-top: 1px solid var(--c-line); background: var(--c-surface); }
+.arv-chat__input {
+	flex: 1; min-height: 44px; max-height: 120px; resize: none; margin: 0;
+	padding: .65rem .85rem; border-radius: 12px; border: 1px solid var(--c-line-soft);
+	background: var(--c-bg); color: var(--c-text); font-family: inherit; font-size: 1rem; line-height: 1.4; /* 16 px : pas de zoom automatique sur iPhone */
+}
+.arv-chat__input::placeholder { color: var(--c-muted); }
+.arv-chat__input:focus { outline: none; border-color: var(--c-gold); }
+.arv-chat__send {
+	flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+	display: grid; place-items: center; background: var(--c-grad); color: var(--c-bg);
+}
+.arv-chat__send:disabled { opacity: .45; cursor: default; }
+.arv-chat__send:focus-visible { outline: 2px solid var(--c-gold-light); outline-offset: 2px; }
+.arv-chat__send svg { width: 20px; height: 20px; }
+
+.arv-chat__notice { margin: 0; padding: 0 .9rem .7rem; background: var(--c-surface); font-size: .72rem; line-height: 1.45; color: var(--c-muted); }
+.arv-chat__notice a { color: var(--c-muted); }
+
+/* Téléphone : la fenêtre prend tout l'écran, la bulle se cache pendant la discussion. */
+@media (max-width: 600px) {
+	.arv-chat__bubble { right: 16px; bottom: 16px; width: 56px; height: 56px; }
+	.arv-chat__panel {
+		inset: 0; width: 100%; height: 100%; max-height: none; border-radius: 0; border: 0;
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+	.arv-chat.is-open .arv-chat__bubble { display: none; }
+	.arv-chat__msg { max-width: 90%; }
+	html.arv-chat-lock, html.arv-chat-lock body { overflow: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.arv-chat__panel, .arv-chat__typing span { animation: none; }
+	.arv-chat__bubble { transition: none; }
+}
+
+@media print { .arv-chat { display: none; } }

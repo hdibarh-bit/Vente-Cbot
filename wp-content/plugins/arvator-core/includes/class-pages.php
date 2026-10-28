@@ -81,7 +81,40 @@ final class Arvator_Pages {
 		update_option( self::OPT_CREATED, array_values( array_unique( $done ) ), false );
 		update_option( self::OPT_REV, $revs, false );
 		update_option( self::OPT_REVIEW, $review, false );
+		self::apply_fixes();
 	}
+
+	/**
+	 * Corrections ciblées sur les pages déjà en ligne, MÊME si Hamid les a modifiées dans l'éditeur
+	 * (demande de Hamid du 28/10/2026) : seules les phrases fautives sont remplacées, le reste de la page est conservé.
+	 * Chaque correction ne fait rien si la page est déjà juste : on peut la relancer sans risque.
+	 */
+	private static function apply_fixes(): void {
+		$sp = '(?:\s|&nbsp;|&#160;|\x{00A0}|\x{202F})';
+
+		foreach ( array( 'risques', 'faq', 'mentions-legales', 'cgv', 'confidentialite', 'contact', 'a-propos', 'conditions-parrainage', 'parrainage' ) as $slug ) {
+			$page = get_page_by_path( $slug, OBJECT, 'page' );
+			if ( ! $page instanceof WP_Post ) {
+				continue;
+			}
+			$new = (string) $page->post_content;
+			$new = (string) preg_replace( '/au' . $sp . '+moins' . $sp . '+5' . $sp . '?000' . $sp . '?€/u', 'au moins 2 000 €', $new );
+			$new = str_replace( array( 'contact@cosmartis.com', 'bot.cosmartis.com' ), array( Arvator_Site::EMAIL, Arvator_Site::DOMAIN ), $new );
+
+			if ( 'confidentialite' === $slug && ! str_contains( $new, 'Assistant de discussion' ) ) {
+				$block = self::to_blocks( self::CHAT_PRIVACY );
+				$pos   = strpos( $new, "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Cookies</h2>" );
+				$new   = false === $pos ? rtrim( $new ) . "\n\n" . $block : substr( $new, 0, $pos ) . $block . substr( $new, $pos );
+			}
+
+			if ( $new !== $page->post_content ) {
+				self::replace_content( $page, $new );
+			}
+		}
+	}
+
+	/** Paragraphe « Assistant de discussion » de la politique de confidentialité (aussi dans content/pages.php). */
+	public const CHAT_PRIVACY = "## Assistant de discussion\nLes messages que vous écrivez à l'assistant de discussion (la bulle en bas à droite du site) sont transmis à un fournisseur d'intelligence artificielle pour générer la réponse. Ils ne sont pas conservés. N'y écrivez pas de données personnelles (mot de passe, numéro de carte, coordonnées bancaires).";
 
 	/**
 	 * Page « Accueil » choisie comme page d'accueil du site (Réglages > Lecture), une seule fois et seulement si aucune

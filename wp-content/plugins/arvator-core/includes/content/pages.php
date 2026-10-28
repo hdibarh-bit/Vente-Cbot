@@ -265,6 +265,9 @@ L'éditeur, ainsi que les prestataires strictement nécessaires : Stripe (paieme
 ## Vos droits
 Vous pouvez accéder à vos données, les rectifier, les exporter ou demander leur effacement. Depuis votre [espace membre](/espace-membre/), rubrique « Mes informations », vous pouvez demander l'export ou l'effacement de vos données. Vous pouvez aussi écrire à {{email}}. Vous pouvez enfin saisir la CNIL (cnil.fr) en cas de difficulté.
 
+TXT . Arvator_Pages::CHAT_PRIVACY . <<<'TXT'
+
+
 ## Cookies
 Voir la page [Cookies](/cookies/).
 TXT,
