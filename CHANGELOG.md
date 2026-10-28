@@ -4,8 +4,11 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.5 — 28/10/2026
+- Accueil : le bandeau « Offre de lancement » passe **tout en haut, avant le bandeau « Recommandez Arvator ! »** (demande de Hamid).
+
 ### 0.8.4 — 28/10/2026
-- **Bandeau « Offre de lancement »** sur l'accueil, juste sous « Recommandez Arvator ! » : 1 500 € le robot, « Prix de lancement : 1 500 € pour les premiers utilisateurs. Il passera à 2 500 € le 1er janvier 2027. », boutons « En profiter » (page d'achat) et « Essayer Arvator » (essai gratuit). **Pas de prix barré** (choix de Hamid : un prix barré doit avoir été réellement pratiqué).
+- **Bandeau « Offre de lancement »** sur l'accueil, en haut de l'accueil : 1 500 € le robot, « Prix de lancement : 1 500 € pour les premiers utilisateurs. Il passera à 2 500 € le 1er janvier 2027. », boutons « En profiter » (page d'achat) et « Essayer Arvator » (essai gratuit). **Pas de prix barré** (choix de Hamid : un prix barré doit avoir été réellement pratiqué).
 - Section Tarifs : sous « Achat du robot », mention « Prix de lancement · 2 500 € à partir du 1er janvier 2027 ».
 - Le bandeau et la mention **disparaissent seuls le 1er janvier 2027** (heure de Paris). Réglage : `config/reglages.json` → `prix.offreLancement`.
 

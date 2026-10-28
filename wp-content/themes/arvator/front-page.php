@@ -24,17 +24,18 @@ $ref = is_array( $data['reference'] ?? null ) ? $data['reference'] : array();
 get_header();
 ?>
 
-<?php // Bandeau « Recommandez Arvator ! » tout en haut, juste sous l'en-tête (demande de Hamid, 23/10/2026). ?>
-<?php if ( '' !== arvator_page_url( 'parrainage' ) ) : ?>
-	<section class="section section--tight section--top" aria-label="<?php esc_attr_e( 'Recommandation', 'arvator' ); ?>">
-		<div class="container"><?php arvator_referral_banner(); ?></div>
+<?php // Bandeau « Offre de lancement » tout en haut, avant le bandeau de recommandation (demande de Hamid, 28/10/2026). Disparaît seul à la date de changement de prix. ?>
+<?php $has_offer = null !== arvator_launch_offer(); ?>
+<?php if ( $has_offer ) : ?>
+	<section class="section section--tight section--top" aria-labelledby="titre-lancement">
+		<div class="container"><?php arvator_launch_offer_banner(); ?></div>
 	</section>
 <?php endif; ?>
 
-<?php // Bandeau « Offre de lancement » juste sous la recommandation (demande de Hamid, 28/10/2026). Disparaît seul à la date de changement de prix. ?>
-<?php if ( null !== arvator_launch_offer() ) : ?>
-	<section class="section section--tight" aria-labelledby="titre-lancement">
-		<div class="container"><?php arvator_launch_offer_banner(); ?></div>
+<?php // Bandeau « Recommandez Arvator ! » tout en haut, juste sous l'en-tête (demande de Hamid, 23/10/2026). ?>
+<?php if ( '' !== arvator_page_url( 'parrainage' ) ) : ?>
+	<section class="section section--tight<?php echo $has_offer ? '' : ' section--top'; ?>" aria-label="<?php esc_attr_e( 'Recommandation', 'arvator' ); ?>">
+		<div class="container"><?php arvator_referral_banner(); ?></div>
 	</section>
 <?php endif; ?>
 
