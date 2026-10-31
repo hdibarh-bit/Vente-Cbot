@@ -72,7 +72,7 @@ final class Arvator_Admin {
 		}
 		echo '<div class="wrap"><h1>Fichiers privés</h1>';
 		self::show_notice();
-		echo '<p>Le fichier du robot que vous mettez en ligne ici est <strong>invisible du public</strong> : seuls les clients ayant acheté peuvent le télécharger depuis leur espace membre. Formats acceptés : .algo, .zip, .pdf (100 Mo maximum).</p>';
+		echo '<p>Le fichier du robot que vous mettez en ligne ici est <strong>invisible du public</strong> : seuls les clients ayant acheté peuvent le télécharger depuis leur espace membre. Formats acceptés : .algo, .zip, .pdf, .mp4 (vidéo) (100 Mo maximum).</p>';
 		printf( '<p><em>Dossier de stockage :</em> <code>%s</code></p>', esc_html( Arvator_Downloads::private_dir() ) );
 		?>
 		<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -161,7 +161,7 @@ final class Arvator_Admin {
 
 		$messages = array(
 			'ok'        => array( 'ok', 'Fichier mis en ligne.' ),
-			'extension' => array( 'err', 'Format refusé : seuls .algo, .zip et .pdf sont acceptés.' ),
+			'extension' => array( 'err', 'Format refusé : seuls .algo, .zip, .pdf et .mp4 sont acceptés.' ),
 			'size'      => array( 'err', 'Fichier vide ou trop lourd (100 Mo maximum).' ),
 			'upload'    => array( 'err', 'Le téléversement a échoué.' ),
 			'dir'       => array( 'err', 'Impossible de créer le dossier privé. Définissez ARVATOR_PRIVATE_DIR dans wp-config.php.' ),

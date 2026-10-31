@@ -102,6 +102,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Plugin Arvator Core
 
+### 0.10.4 — 31/10/2026
+- Arvator > Fichiers privés accepte aussi les **vidéos .mp4** (100 Mo maximum) : la vidéo de démonstration peut être livrée aux clients après achat, dans leur espace membre, avec le robot. Téléchargement réservé aux clients ayant acheté, comme le robot.
+
 ### 0.10.3 — 28/10/2026
 - **Assistant de discussion** : bulle dorée en bas à droite de chaque page, fenêtre de discussion (plein écran sur téléphone). Les questions partent directement au workflow n8n « Arvator — Assistant du site (chatbot) » (`https://n8n.cosmartis.com/webhook/arvator-chat`). La conversation n'est gardée que dans l'onglet du visiteur ; le site n'enregistre rien. Pour masquer l'assistant : `define( 'ARVATOR_CHAT_URL', '' );` dans wp-config.php.
 - **Corrections sur les pages déjà en ligne, même modifiées dans l'éditeur** (seules les phrases fautives changent) : « au moins 5 000 € » → « au moins 2 000 € » (Risques, et FAQ si besoin) ; « bot.cosmartis.com » → « arvator.com » ; « contact@cosmartis.com » → « support@arvator.com » (Mentions légales, Confidentialité, et les autres pages du plugin si besoin).

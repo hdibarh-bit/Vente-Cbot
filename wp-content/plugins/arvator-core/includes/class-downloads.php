@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Arvator_Downloads {
 
 	private const OPTION      = 'arvator_private_files';
-	private const EXTENSIONS  = array( 'algo', 'zip', 'pdf' );
+	private const EXTENSIONS  = array( 'algo', 'zip', 'pdf', 'mp4' );
 	private const MAX_BYTES   = 100 * MB_IN_BYTES;
 
 	public static function init(): void {
