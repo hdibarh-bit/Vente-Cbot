@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.8 — 31/10/2026
+- Accueil : la vidéo « Comment ça marche » et ses deux boutons passent **juste sous la carte du compte de référence** (5 000 € au 1er janvier 2024), avant « Tous les capitaux de départ » (demande de Hamid).
+
 ### 0.8.7 — 31/10/2026
 - Accueil : **vidéo de démonstration** (achat et démarrage) juste après la section des résultats simulés, sous le titre « Comment ça marche », suivie des boutons « Acheter Arvator » et « Demander un essai de 14 jours ». Jamais en lecture automatique. Fichier : `wp-content/uploads/2026/10/Arvator_demo_achat_demarrage_voix.mp4`.
 
