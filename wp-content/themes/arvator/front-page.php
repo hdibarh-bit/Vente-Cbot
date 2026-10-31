@@ -39,6 +39,26 @@ get_header();
 	</section>
 <?php endif; ?>
 
+<?php
+// Vidéo explicative juste après le bandeau de recommandation (demande de Hamid, 31/10/2026).
+// Titre simple (ni lien ni bouton), vidéo affichée directement, jamais en lecture automatique :
+// c'est le visiteur qui lance et arrête la lecture.
+$video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-content/uploads/2026/10/Arvator_video_explicative.mp4' );
+?>
+<?php if ( '' !== $video_url ) : ?>
+	<section class="section section--tight" aria-labelledby="titre-video">
+		<div class="container">
+			<h2 id="titre-video" class="home-video__title"><?php esc_html_e( 'Voir la stratégie du bot', 'arvator' ); ?></h2>
+			<div class="home-video">
+				<video class="home-video__player" controls preload="metadata" playsinline>
+					<source src="<?php echo esc_url( $video_url ); ?>" type="video/mp4">
+					<?php esc_html_e( 'Votre navigateur ne peut pas lire cette vidéo.', 'arvator' ); ?>
+				</video>
+			</div>
+		</div>
+	</section>
+<?php endif; ?>
+
 <section class="hero">
 	<div class="container hero__inner">
 		<div class="hero__copy">

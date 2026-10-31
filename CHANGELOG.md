@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.6 — 31/10/2026
+- Accueil : **vidéo explicative** juste après le bandeau « Recommandez Arvator ! », sous le titre « Voir la stratégie du bot ». La vidéo est affichée directement (pas de lien), **jamais en lecture automatique** : le visiteur la lance et l'arrête lui-même. Fichier : `wp-content/uploads/2026/10/Arvator_video_explicative.mp4` (bibliothèque de médias).
+
 ### 0.8.5 — 28/10/2026
 - Accueil : le bandeau « Offre de lancement » passe **tout en haut, avant le bandeau « Recommandez Arvator ! »** (demande de Hamid).
 
