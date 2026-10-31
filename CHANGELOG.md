@@ -4,6 +4,9 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.8.7 — 31/10/2026
+- Accueil : **vidéo de démonstration** (achat et démarrage) juste après la section des résultats simulés, sous le titre « Comment ça marche », suivie des boutons « Acheter Arvator » et « Demander un essai de 14 jours ». Jamais en lecture automatique. Fichier : `wp-content/uploads/2026/10/Arvator_demo_achat_demarrage_voix.mp4`.
+
 ### 0.8.6 — 31/10/2026
 - Accueil : **vidéo explicative** juste après le bandeau « Recommandez Arvator ! », sous le titre « Voir la stratégie du bot ». La vidéo est affichée directement (pas de lien), **jamais en lecture automatique** : le visiteur la lance et l'arrête lui-même. Fichier : `wp-content/uploads/2026/10/Arvator_video_explicative.mp4` (bibliothèque de médias).
 

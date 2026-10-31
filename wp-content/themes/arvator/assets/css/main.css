@@ -433,3 +433,4 @@ p { margin: 0 0 1em; }
 .home-video__title { text-align: center; margin: 0 0 1.25rem; }
 .home-video { max-width: 960px; margin-inline: auto; border: 1px solid var(--line); border-radius: calc(var(--radius) + 6px); overflow: hidden; background: #000; box-shadow: 0 0 28px rgba(201, 162, 39, .10); }
 .home-video__player { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
+.home-video__cta { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin: 1.5rem 0 0; }

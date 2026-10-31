@@ -49,12 +49,7 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 	<section class="section section--tight" aria-labelledby="titre-video">
 		<div class="container">
 			<h2 id="titre-video" class="home-video__title"><?php esc_html_e( 'Voir la stratégie du bot', 'arvator' ); ?></h2>
-			<div class="home-video">
-				<video class="home-video__player" controls preload="metadata" playsinline>
-					<source src="<?php echo esc_url( $video_url ); ?>" type="video/mp4">
-					<?php esc_html_e( 'Votre navigateur ne peut pas lire cette vidéo.', 'arvator' ); ?>
-				</video>
-			</div>
+			<?php arvator_home_video( $video_url ); ?>
 		</div>
 	</section>
 <?php endif; ?>
@@ -162,6 +157,27 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 		</p>
 	</div>
 </section>
+
+<?php
+// Vidéo de démonstration (achat et démarrage) juste après les résultats, suivie des deux boutons (demande de Hamid, 31/10/2026).
+// Jamais en lecture automatique : c'est le visiteur qui lance et arrête la lecture.
+$demo_url = apply_filters( 'arvator_home_demo_video_url', 'https://arvator.com/wp-content/uploads/2026/10/Arvator_demo_achat_demarrage_voix.mp4' );
+?>
+<?php if ( '' !== $demo_url ) : ?>
+	<section class="section section--tight" aria-labelledby="titre-demo">
+		<div class="container">
+			<h2 id="titre-demo" class="home-video__title"><?php esc_html_e( 'Comment ça marche', 'arvator' ); ?></h2>
+			<?php arvator_home_video( $demo_url ); ?>
+			<p class="home-video__cta">
+				<?php arvator_buy_button( __( 'Acheter Arvator', 'arvator' ), 'btn btn--primary' ); ?>
+				<?php
+				/* translators: %d: nombre de jours d'essai. */
+				arvator_button( 'essai-gratuit', sprintf( __( 'Demander un essai de %d jours', 'arvator' ), $trial ), 'btn btn--ghost' );
+				?>
+			</p>
+		</div>
+	</section>
+<?php endif; ?>
 
 <section class="section" id="tarifs" aria-labelledby="titre-tarifs">
 	<div class="container">

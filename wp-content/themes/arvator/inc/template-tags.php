@@ -291,3 +291,18 @@ function arvator_brand(): void {
 function arvator_risk_notice(): string {
 	return __( 'Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.', 'arvator' );
 }
+
+/**
+ * Lecteur vidéo de l'accueil : affiché directement, jamais en lecture automatique.
+ * Le visiteur lance et arrête lui-même la lecture.
+ */
+function arvator_home_video( string $url ): void {
+	?>
+	<div class="home-video">
+		<video class="home-video__player" controls preload="metadata" playsinline>
+			<source src="<?php echo esc_url( $url ); ?>" type="video/mp4">
+			<?php esc_html_e( 'Votre navigateur ne peut pas lire cette vidéo.', 'arvator' ); ?>
+		</video>
+	</div>
+	<?php
+}
