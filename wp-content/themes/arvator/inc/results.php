@@ -1,6 +1,6 @@
 <?php
 /**
- * Résultats de backtest (performances simulées).
+ * Résultats backtestés (cTrader, 2024-2026, frais du courtier inclus).
  *
  * Les chiffres viennent de data/resultats.php, généré par bin/sync-donnees.php à partir de config/resultats-backtest.json
  * (seuls les champs publics sont copiés).
@@ -63,7 +63,7 @@ function arvator_fmt_capital( int|float $n ): string {
 	return arvator_fmt_eur( $n );
 }
 
-/** Pourcentage avec une décimale si besoin, signé : « +60,7 % », « −20,1 % », « +204 % ». */
+/** Pourcentage avec une décimale si besoin, signé : « +5,5 % », « −16,7 % », « +81 % ». */
 function arvator_fmt_pct1( int|float $n, bool $signed = true, bool $force = false ): string {
 	$decimals = ( ! $force && abs( $n - round( $n ) ) < 0.05 ) ? 0 : 1;
 	$abs      = number_format( abs( (float) $n ), $decimals, ',', "\u{202F}" );
@@ -97,11 +97,31 @@ function arvator_fmt_date( string $iso, bool $with_year = true ): string {
 	return $with_year ? $out . ' ' . $parts[0] : $out;
 }
 
-/** Période de baisse : « 2 septembre → 21 octobre 2026 » (année une seule fois si elle est commune). */
+/** Date courte « 2026-02-03 » → « 3 fév. 2026 » (« 1er » le premier du mois). */
+function arvator_fmt_date_short( string $iso ): string {
+	$months = array( '', 'janv.', 'fév.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.' );
+	$parts  = explode( '-', $iso );
+	if ( 3 !== count( $parts ) ) {
+		return '';
+	}
+	$day = (int) $parts[2];
+	return ( 1 === $day ? '1er' : (string) $day ) . "\u{00A0}" . ( $months[ (int) $parts[1] ] ?? '' ) . "\u{00A0}" . $parts[0];
+}
+
+/** Période de baisse : « 3 fév. 2026 → 13 mars 2026 ». */
 function arvator_fmt_span( string $from, string $to ): string {
 	if ( '' === $from || '' === $to ) {
 		return '';
 	}
-	$same_year = substr( $from, 0, 4 ) === substr( $to, 0, 4 );
-	return arvator_fmt_date( $from, ! $same_year ) . ' → ' . arvator_fmt_date( $to );
+	return arvator_fmt_date_short( $from ) . ' → ' . arvator_fmt_date_short( $to );
+}
+
+/** Mention de risque unique, courte, sous les tableaux de résultats et dans le pied de page (demande de Hamid, 01/11/2026). */
+function arvator_results_disclaimer(): string {
+	return __( 'Résultats backtestés sur des données passées, frais du courtier inclus. Les performances passées ne préjugent pas des performances futures. Le trading comporte un risque de perte en capital.', 'arvator' );
+}
+
+/** Source des chiffres, sous chaque tableau. */
+function arvator_results_source(): string {
+	return __( 'Backtests réalisés sur cTrader, du 1er janvier 2024 au 31 octobre 2026, frais du courtier inclus.', 'arvator' );
 }

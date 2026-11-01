@@ -14,7 +14,7 @@
       "dateChangement": "2027-01-01"
     }
   },
-  "capitalConseille": 2000,
+  "capitalConseille": 5000,
   "risque": { "defaut": 1, "choix": [1, 2, 3], "plafond": 3 },
   "parrainage": {
     "niveaux": 1,

@@ -4,6 +4,14 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 
 ## Thème Arvator
 
+### 0.9.0 — 01/11/2026
+- **Nouveaux résultats** (backtests cTrader du 1er janvier 2024 au 31 octobre 2026, frais du courtier inclus), lus depuis un seul fichier : `config/resultats-backtest.json` (puis `bin/sync-resultats.sh`).
+- Accueil : **deux tableaux au lieu de trois**. (1) Encadré du haut « Résultats backtestés · risque 1 % » : 5 000 € → 9 055 €, solde fin 2024 / 2025 / oct. 2026, total 3 ans, pire baisse. (2) Tableau à onglets 1 % / 2 % / 3 % : capitaux 1 000 €, 2 500 €, 5 000 €, 7 500 €, 10 000 € ; colonnes par année, total 3 ans, pire baisse avec dates. Le bloc « compte de référence + année par année » est supprimé.
+- Colonne « Trades refusés » supprimée ; encadrés « Comment ce backtest est calculé » et « Pourquoi au moins 2 000 € » supprimés (termes techniques, nom de courtier).
+- Ligne 5 000 € : badges « Référence » et « Minimum conseillé ». Capital minimum conseillé : **5 000 €**.
+- « Performances simulées » remplacé par « résultats backtestés » ; une seule mention de risque courte sous le tableau et dans le pied de page.
+- Vidéos : inchangées et à la même place.
+
 ### 0.8.8 — 31/10/2026
 - Accueil : la vidéo « Comment ça marche » et ses deux boutons passent **juste sous la carte du compte de référence** (5 000 € au 1er janvier 2024), avant « Tous les capitaux de départ » (demande de Hamid).
 
@@ -101,6 +109,10 @@ Chaque nouvelle version se réinstalle par-dessus l'ancienne (voir `docs/10-inst
 - Première version : thème doré, page d'accueil, résultats simulés 1 % / 2 % / 3 %, tarifs.
 
 ## Plugin Arvator Core
+
+### 0.10.5 — 01/11/2026
+- Textes des pages (FAQ, À propos, Risques, CGV, mentions légales, parrainage, conditions du parrainage, essai gratuit) et des emails : « résultats backtestés » au lieu de « performances simulées », capital conseillé **5 000 €**, plus de « trades refusés ».
+- Pages déjà en ligne : les phrases concernées sont corrigées automatiquement à la mise à jour, **même si vous avez modifié la page** (le reste de la page n'est pas touché). La page Risques et les mentions légales sont conservées.
 
 ### 0.10.4 — 31/10/2026
 - Arvator > Fichiers privés accepte aussi les **vidéos .mp4** (100 Mo maximum) : la vidéo de démonstration peut être livrée aux clients après achat, dans leur espace membre, avec le robot. Téléchargement réservé aux clients ayant acheté, comme le robot.

@@ -363,7 +363,7 @@ final class Arvator_Member {
 			<p><button class="btn btn--ghost btn--sm" type="button" data-copy="#arv-ref-link" data-copied="<?php esc_attr_e( 'Copié ✓', 'arvator-core' ); ?>"><?php esc_html_e( 'Copier le lien', 'arvator-core' ); ?></button>
 				<span class="muted"><?php /* translators: %s: code de recommandation. */ echo wp_kses_post( sprintf( __( 'Votre code : <strong>%s</strong>', 'arvator-core' ), esc_html( (string) $ref['code'] ) ) ); ?></span></p>
 			<p class="muted"><?php esc_html_e( 'Ce lien mène à la page d’achat, où votre code est déjà rempli.', 'arvator-core' ); ?></p>
-			<p class="muted"><?php esc_html_e( 'Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des performances simulées et le trading comporte un risque élevé de perte en capital.', 'arvator-core' ); ?></p>
+			<p class="muted"><?php esc_html_e( 'Recommandez Arvator honnêtement : jamais de promesse de gain. Les résultats du site sont des résultats backtestés et le trading comporte un risque élevé de perte en capital.', 'arvator-core' ); ?></p>
 		</section>
 
 		<div class="arv-cards">

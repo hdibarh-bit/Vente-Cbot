@@ -14,7 +14,7 @@ cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, m
 
 **Réglages client** : risque par trade et noms des symboles chez son broker. Plafond 3 % codé en dur (liste fixe 1 % / 2 % / 3 %). Pour changer : arrêter le cBot dans le cloud cTrader, modifier « risque », relancer.
 
-**Capital conseillé : 2 000 € minimum** (décidé par Hamid le 25/10/2026, au lieu de 5 000 € : chez IC Markets, presque plus aucun trade n'est refusé à partir de 2 000 €). En dessous, le lot minimum fait refuser des trades et les résultats deviennent irréguliers. La référence mise en avant pour les résultats reste 5 000 €.
+**Capital conseillé : 5 000 € minimum** (décidé par Hamid le 01/11/2026, remplace les 2 000 € du 25/10/2026). C'est aussi le capital de référence des résultats affichés.
 **Risque par défaut : 1 %** (décidé le 21/10/2026). Le client choisit 1 %, 2 % ou 3 %, jamais au-delà.
 
 ## Prix
@@ -30,7 +30,7 @@ cBot cTrader qui tourne dans le cloud cTrader, sur le compte broker du client, m
 - Sans abonnement payé : le cBot cesse d'ouvrir de nouveaux trades en fin de licence (voir `04-licences.md`).
 - **TVA (décidé le 21/10/2026)** : auto-entrepreneur au départ, donc aucune mention TTC/HT. Passage en société plus tard : prix en TTC.
 
-## Pourquoi un capital conseillé de 2 000 € minimum (à expliquer sur le site)
+## Historique : pourquoi 2 000 € avait été conseillé (remplacé le 01/11/2026 par 5 000 €, plus expliqué sur le site)
 Décision de Hamid du 25/10/2026. **Ce n'est pas une obligation** : le client peut démarrer avec moins.
 - Raison unique : un manque de capital fait **refuser des trades** (taille minimale de position du courtier). Le robot prend alors moins de trades et les résultats sont moins réguliers.
 - Backtest du 25/10/2026 (trades refusés au risque 1 %) : 500 € : 1 745 · 1 000 € : 415 · 2 000 € : 20 · 4 000 € : 1 · 5 000 € : 1 · 10 000 € : 0. Aux risques 2 % et 3 %, 0 refusé dès 2 000 € (sauf 500 € et 1 000 € à 2 %).

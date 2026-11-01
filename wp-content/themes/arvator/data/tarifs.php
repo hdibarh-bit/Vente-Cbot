@@ -24,7 +24,7 @@ return array (
       'dateChangement' => '2027-01-01',
     ),
   ),
-  'capitalConseille' => 2000,
+  'capitalConseille' => 5000,
   'risque' => 
   array (
     'defaut' => 1,

@@ -1,7 +1,7 @@
 <?php
 /**
  * Textes initiaux des pages. Modifiables ensuite dans Pages > Modifier.
- * Règles : aucune description de la stratégie, aucune promesse de gain, « performances simulées » partout.
+ * Règles : aucune description de la stratégie, aucune promesse de gain, « résultats backtestés » partout (demande de Hamid du 01/11/2026).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +21,7 @@ TXT,
 	),
 
 	'a-propos' => array(
-		'rev'   => 3,
+		'rev'   => 4,
 		'title' => 'À propos',
 		'text'  => <<<'TXT'
 ## Un robot de trading automatique, présenté en toute transparence
@@ -33,13 +33,13 @@ Arvator est conçu et édité par Hamid DIBARH, entrepreneur individuel établi 
 [arvator_auteur]
 
 ## Notre façon de faire
-- **Transparence :** nous montrons des performances simulées (backtest), toujours accompagnées des baisses de chaque simulation. Nous ne vendons pas de promesse.
+- **Transparence :** nous montrons des résultats backtestés, toujours avec les baisses qui vont avec. Nous ne vendons pas de promesse.
 - **Vos fonds restent chez vous :** nous ne touchons jamais à votre argent ni à votre compte. Nous vendons un logiciel.
 - **Vous gardez le contrôle :** le robot est livré réglé à 1 % de risque par trade. Vous pouvez le monter à 2 % ou 3 %, jamais au-delà.
 - **Pas de conseil :** Arvator n'est pas un conseil en investissement et ne gère pas votre compte à votre place.
 
 ## Ce qu'il faut savoir
-Les résultats présentés sont des simulations sur 2024, 2025 et 2026. Le robot fonctionne en démonstration depuis septembre 2026 : il n'existe pas encore d'historique en argent réel. [Lire l'avertissement complet sur les risques](/risques/).
+Les résultats présentés sont des backtests sur 2024, 2025 et 2026. Le robot fonctionne en démonstration depuis septembre 2026 : il n'existe pas encore d'historique en argent réel. [Lire l'avertissement complet sur les risques](/risques/).
 
 ## Une question ?
 Écrivez-nous depuis la page [Contact](/contact/) ou à {{email}}.
@@ -47,7 +47,7 @@ TXT,
 	),
 
 	'faq'      => array(
-		'rev'   => 5,
+		'rev'   => 6,
 		'title' => 'Questions fréquentes',
 		'text'  => <<<'TXT'
 ## Le robot
@@ -61,11 +61,11 @@ Avec tout courtier proposant cTrader avec le cloud. Nous ne recommandons aucun c
 Vous seul. Votre capital reste chez votre courtier, sur votre compte. Nous ne touchons jamais à votre argent ni à votre compte : nous vendons un logiciel.
 
 ?? Arvator garantit-il des gains ?
-Non. Aucun robot ne peut garantir des gains. Les résultats affichés sont des performances simulées (backtest 2024-2026) qui ne préjugent pas des résultats futurs. Vous pouvez perdre tout ou partie du capital engagé. Voir la page [Risques](/risques/).
+Non. Aucun robot ne peut garantir des gains. Les résultats affichés sont des résultats backtestés (2024-2026) qui ne préjugent pas des résultats futurs. Vous pouvez perdre tout ou partie du capital engagé. Voir la page [Risques](/risques/).
 
 ## Résultats et risque
 ?? Les résultats affichés sont-ils réels ?
-Non, ce sont des simulations (backtest) réalisées sur 2024, 2025 et 2026. Le robot fonctionne en démonstration depuis septembre 2026 : il n'existe pas encore d'historique en argent réel.
+Non, ce sont des backtests réalisés sur cTrader de 2024 à 2026, frais du courtier inclus. Le robot fonctionne en démonstration depuis septembre 2026 : il n'existe pas encore d'historique en argent réel.
 
 ?? Quel niveau de risque est livré ?
 Le robot est livré réglé à 1 % de risque par trade. Vous pouvez le monter à 2 % ou 3 %, jamais au-delà. Un risque plus élevé amplifie aussi bien les gains que les baisses.
@@ -73,8 +73,8 @@ Le robot est livré réglé à 1 % de risque par trade. Vous pouvez le monter à
 ?? Comment changer le niveau de risque ?
 Dans votre cloud cTrader, arrêtez le robot, modifiez le réglage « risque » (1 %, 2 % ou 3 %), puis relancez-le.
 
-?? Pourquoi conseillez-vous au moins 2 000 € ?
-Ce n'est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2 000 €, notre backtest (qui inclut les frais d'un courtier, par exemple IC Markets) ne compte que 20 trades refusés au risque 1 %, et aucun aux risques 2 % et 3 %.
+?? Pourquoi conseillez-vous au moins 5 000 € ?
+Ce n'est pas une obligation. C'est le capital de référence de nos backtests : au réglage livré (1 %), plus le capital est petit, plus les baisses sont fortes en pourcentage. Voir les résultats par capital sur la [page d'accueil](/#resultats).
 
 ## Prix, licence et abonnement
 ?? Combien ça coûte ?
@@ -128,25 +128,25 @@ TXT,
 	),
 
 	'risques'  => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Risques',
 		'text'  => <<<'TXT'
-Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu'à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.
+Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu'à la totalité des sommes engagées. Les résultats présentés sont des résultats backtestés et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.
 
 ## Vous pouvez perdre tout ou partie de votre capital
 Investir sur les marchés financiers, en particulier avec un effet de levier, peut entraîner des pertes importantes. N'engagez que de l'argent que vous pouvez vous permettre de perdre.
 
-## Les résultats affichés sont des simulations
-- Ce sont des performances simulées (backtest), réalisées sur 2024, 2025 et 2026. Elles ne sont pas des résultats réels.
+## Les résultats affichés sont des backtests
+- Ce sont des résultats backtestés sur cTrader, du 1er janvier 2024 au 31 octobre 2026, frais du courtier inclus. Ce ne sont pas des résultats réels.
 - Les réglages ont été choisis sur le même historique que celui qui les teste : les résultats futurs seront probablement moins bons.
 - Il n'existe pas encore d'historique en argent réel : le robot fonctionne en démonstration depuis septembre 2026.
 - L'avenir peut être très positif, nul ou négatif, avec une perte possible de tout le capital engagé.
 
 ## Les baisses font partie du fonctionnement
-Chaque simulation affichée montre la pire baisse et le solde le plus bas. Plus le niveau de risque est élevé (1 %, 2 % ou 3 % par trade), plus les gains simulés comme les baisses peuvent être importants. Le robot est livré à 1 % ; vous pouvez le monter jusqu'à 3 %, jamais au-delà.
+Chaque résultat affiché montre la pire baisse. Plus le niveau de risque est élevé (1 %, 2 % ou 3 % par trade), plus les gains comme les baisses peuvent être importants. Le robot est livré à 1 % ; vous pouvez le monter jusqu'à 3 %, jamais au-delà.
 
 ## Le capital compte
-Avec un petit capital, beaucoup de trades sont refusés (taille minimale de position imposée par le courtier) : le robot en prend moins et les résultats sont plus irréguliers. Nous conseillons au moins 2 000 €, sans que ce soit une garantie de résultat.
+Avec un petit capital, les baisses sont plus fortes en pourcentage. Nous conseillons au moins 5 000 €, sans que ce soit une garantie de résultat.
 
 ## Vous restez responsable
 - Vous êtes seul responsable de votre compte, de votre courtier, de vos réglages et de vos décisions.
@@ -160,7 +160,7 @@ TXT,
 	),
 
 	'mentions-legales' => array(
-		'rev'   => 5,
+		'rev'   => 6,
 		'title' => 'Mentions légales',
 		'text'  => <<<'TXT'
 ## Éditeur du site
@@ -180,7 +180,7 @@ Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Chypre.
 Le robot Arvator, le site, ses textes, ses images et sa marque sont protégés. Toute reproduction, copie, diffusion ou extraction du robot ou de son code sans autorisation écrite est interdite.
 
 ## Avertissement
-Arvator est un logiciel. Il ne constitue pas un conseil en investissement. Les résultats présentés sont des performances simulées. Voir la page [Risques](/risques/).
+Arvator est un logiciel. Il ne constitue pas un conseil en investissement. Les résultats présentés sont des résultats backtestés. Voir la page [Risques](/risques/).
 
 ## Données personnelles
 Voir la [politique de confidentialité](/confidentialite/) et la page [Cookies](/cookies/).
@@ -188,7 +188,7 @@ TXT,
 	),
 
 	'cgv'      => array(
-		'rev'   => 8,
+		'rev'   => 9,
 		'title' => 'Conditions générales de vente',
 		'text'  => <<<'TXT'
 ## 1. Éditeur et objet
@@ -224,7 +224,7 @@ L'essai gratuit dure 14 jours et fonctionne uniquement sur un compte démo cTrad
 Le client peut résilier son abonnement à tout moment depuis son espace membre. La résiliation prend effet à la fin de la période déjà payée ; la période en cours n'est pas remboursée.
 
 ## 10. Responsabilité et risques
-Le trading comporte un risque élevé de perte en capital. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Le client est seul responsable de ses réglages, de son compte, de son courtier et de ses décisions. Le logiciel ne constitue pas un conseil en investissement. Voir la page [Risques](/risques/).
+Le trading comporte un risque élevé de perte en capital. Les résultats présentés sont des résultats backtestés et ne préjugent pas des résultats futurs. Le client est seul responsable de ses réglages, de son compte, de son courtier et de ses décisions. Le logiciel ne constitue pas un conseil en investissement. Voir la page [Risques](/risques/).
 
 ## 11. Données personnelles
 Les données du client sont traitées selon la [politique de confidentialité](/confidentialite/).
@@ -297,7 +297,7 @@ TXT,
 	),
 
 	'parrainage' => array(
-		'rev'   => 2,
+		'rev'   => 3,
 		'title' => 'Parrainage',
 		'text'  => <<<'TXT'
 ## Recommandez Arvator à vos proches
@@ -314,14 +314,14 @@ Vous connaissez quelqu'un que le trading automatique intéresse ? Partagez votre
 - Si l'achat est remboursé ou contesté, la récompense correspondante est retirée.
 
 ## Recommander de façon honnête
-Arvator est un logiciel, pas une promesse de gain. Quand vous le recommandez, ne promettez jamais de résultat : les performances présentées sur ce site sont **simulées** (backtest 2024-2026) et le trading comporte un risque élevé de perte en capital. La récompense de recommandation n'est jamais assurée : elle dépend uniquement des achats réellement faits avec votre lien.
+Arvator est un logiciel, pas une promesse de gain. Quand vous le recommandez, ne promettez jamais de résultat : les résultats présentés sur ce site sont des **résultats backtestés** (2024-2026) et le trading comporte un risque élevé de perte en capital. La récompense de recommandation n'est jamais assurée : elle dépend uniquement des achats réellement faits avec votre lien.
 
 Voir les [conditions du programme de parrainage](/conditions-parrainage/).
 TXT,
 	),
 
 	'conditions-parrainage' => array(
-		'rev'   => 4,
+		'rev'   => 5,
 		'title' => 'Conditions du programme de parrainage',
 		'text'  => <<<'TXT'
 ## 1. Objet
@@ -346,7 +346,7 @@ Chaque récompense est « en attente » pendant 30 jours après le paiement du f
 Si l'achat d'un filleul est remboursé (droit de rétractation) ou contesté auprès de sa banque, la récompense correspondante est retirée. Si elle n'a pas encore été versée, elle est annulée. Si elle a déjà été versée, son montant est déduit des récompenses suivantes du parrain ; à défaut, le parrain s'engage à le rembourser.
 
 ## 7. Fraude et bonne conduite
-Sont interdits : l'auto-parrainage (même personne, même adresse email, même moyen de paiement), les faux comptes, le spam, la publicité trompeuse et toute promesse de gain. Le parrain doit présenter Arvator honnêtement : les performances présentées sont simulées et le trading comporte un risque élevé de perte en capital. Une récompense suspecte est bloquée le temps d'une vérification. En cas de manquement, le lien peut être suspendu et les récompenses concernées annulées.
+Sont interdits : l'auto-parrainage (même personne, même adresse email, même moyen de paiement), les faux comptes, le spam, la publicité trompeuse et toute promesse de gain. Le parrain doit présenter Arvator honnêtement : les résultats présentés sont des résultats backtestés et le trading comporte un risque élevé de perte en capital. Une récompense suspecte est bloquée le temps d'une vérification. En cas de manquement, le lien peut être suspendu et les récompenses concernées annulées.
 
 ## 8. Nature du programme
 La récompense de recommandation n'est pas un salaire et n'est jamais assurée : elle dépend uniquement des achats réellement payés par des filleuls. Le parrain agit en son nom propre et ne représente pas Arvator.
@@ -360,6 +360,7 @@ TXT,
 	),
 
 	'essai-gratuit' => array(
+		'rev'   => 2,
 		'title' => 'Essai gratuit de 14 jours',
 		'text'  => <<<'TXT'
 Essayez Arvator pendant 14 jours **sur un compte démo cTrader** : aucun argent n'est engagé. Il suffit d'une adresse email et du numéro de votre compte démo.
@@ -368,7 +369,7 @@ Ce que vous devez savoir avant de demander l'essai : **si vous achetez le robot 
 
 [arvator_essai]
 
-L'essai est limité à un par personne. Les résultats présentés sur le site sont des performances simulées : le trading comporte un risque élevé de perte en capital.
+L'essai est limité à un par personne. Les résultats présentés sur le site sont des résultats backtestés : le trading comporte un risque élevé de perte en capital.
 TXT,
 	),
 

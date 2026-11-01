@@ -2,7 +2,7 @@
 /**
  * Page d'accueil Arvator.
  *
- * Règle de communication : on présente le robot et ses performances simulées en euros et en pourcentage.
+ * Règle de communication : on présente le robot et ses résultats backtestés en euros et en pourcentage.
  * On ne décrit jamais la stratégie ni aucun détail technique, et on ne promet aucun gain.
  */
 
@@ -15,12 +15,12 @@ $price = arvator_pricing();
 $cfg   = arvator_settings();
 $grace = (int) ( $cfg['graceJours'] ?? 3 );
 $trial = (int) ( $cfg['essaiJours'] ?? 14 );
-$cap   = (int) ( $cfg['capitalConseille'] ?? 2000 );
+$cap   = (int) ( $cfg['capitalConseille'] ?? 5000 );
 $launch = arvator_launch_offer_note();
 // Vidéo de démonstration (achat et démarrage), juste sous la carte du compte de référence (demande de Hamid, 31/10/2026).
 $demo_url = apply_filters( 'arvator_home_demo_video_url', 'https://arvator.com/wp-content/uploads/2026/10/Arvator_demo_achat_demarrage_voix.mp4' );
 
-// Compte de référence (5 000 € au risque 1 %) pour la carte du haut de page.
+// Compte de référence (5 000 € au risque 1 %) pour l'encadré du haut de page (repris du tableau, config/resultats-backtest.json).
 $ref = is_array( $data['reference'] ?? null ) ? $data['reference'] : array();
 
 get_header();
@@ -63,7 +63,7 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 			<h1><?php echo esc_html( arvator_text( 'hero_title' ) ); ?></h1>
 			<p class="lead"><?php echo esc_html( arvator_text( 'hero_lead' ) ); ?></p>
 			<p class="lead lead--sub">
-				<?php echo wp_kses_post( __( 'Les résultats présentés sont des <strong>performances simulées</strong> (backtest), pas des résultats réels : nous les montrons toujours avec les baisses qui vont avec.', 'arvator' ) ); ?>
+				<?php echo wp_kses_post( __( 'Les résultats présentés sont des <strong>résultats backtestés</strong>, testés sur les données du marché. Nous les montrons toujours avec les baisses qui vont avec.', 'arvator' ) ); ?>
 			</p>
 			<div class="hero__cta">
 				<?php if ( '' !== arvator_page_url( 'essai-gratuit' ) ) : ?>
@@ -73,24 +73,30 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 					<a class="btn btn--primary" href="#tarifs"><?php esc_html_e( 'Voir les tarifs', 'arvator' ); ?></a>
 				<?php endif; ?>
 			</div>
-			<p class="hero__note muted"><a href="#resultats"><?php esc_html_e( 'Voir les résultats simulés', 'arvator' ); ?></a></p>
+			<p class="hero__note muted"><a href="#resultats"><?php esc_html_e( 'Voir les résultats backtestés', 'arvator' ); ?></a></p>
 		</div>
 
 		<?php if ( $ref ) : ?>
-			<aside class="hero__card" aria-label="<?php esc_attr_e( 'Exemple de performances simulées', 'arvator' ); ?>">
-				<p class="hero__card-kicker"><?php esc_html_e( 'Performances simulées · risque 1 %', 'arvator' ); ?></p>
+			<aside class="hero__card" aria-label="<?php esc_attr_e( 'Exemple de résultats backtestés', 'arvator' ); ?>">
+				<p class="hero__card-kicker"><?php /* translators: %d: niveau de risque. */ echo esc_html( sprintf( __( 'Résultats backtestés · risque %d %%', 'arvator' ), (int) $ref['risquePct'] ) ); ?></p>
 				<p class="hero__card-title"><?php /* translators: 1: capital de départ, 2: solde final. */ echo esc_html( sprintf( __( '%1$s → %2$s', 'arvator' ), arvator_fmt_capital( $ref['capital'] ), arvator_fmt_eur( $ref['soldeFinal'] ) ) ); ?></p>
 				<dl class="stat-list">
+					<?php foreach ( (array) $ref['annees'] as $i => $y ) : ?>
+						<div class="stat-list__row">
+							<dt><?php echo esc_html( (string) ( $data['colonnesAnnees'][ $i ] ?? '' ) ); ?></dt>
+							<dd><?php echo esc_html( arvator_fmt_eur( $y['solde'] ) ); ?> <span class="stat-list__pct"><?php echo esc_html( '(' . arvator_fmt_pct( $y['pct'] ) . ')' ); ?></span></dd>
+						</div>
+					<?php endforeach; ?>
 					<div class="stat-list__row">
-						<dt><?php esc_html_e( 'Évolution simulée', 'arvator' ); ?></dt>
-						<dd><?php echo esc_html( arvator_fmt_pct1( $ref['gainPct'] ) ); ?> <span class="stat-list__pct"><?php echo esc_html( arvator_fmt_eur_signed( $ref['gainEur'] ) ); ?></span></dd>
+						<dt><?php esc_html_e( 'Total 3 ans', 'arvator' ); ?></dt>
+						<dd><?php echo esc_html( arvator_fmt_pct( $ref['totalPct'] ) ); ?> <span class="stat-list__pct"><?php echo esc_html( '(' . arvator_fmt_eur_signed( $ref['gainEur'] ) . ')' ); ?></span></dd>
 					</div>
 					<div class="stat-list__row stat-list__row--neg">
 						<dt><?php esc_html_e( 'Pire baisse', 'arvator' ); ?></dt>
-						<dd><?php echo esc_html( arvator_fmt_pct1( $ref['pireBaissePct'], true, true ) ); ?> <span class="stat-list__pct"><?php echo esc_html( arvator_fmt_eur_signed( $ref['pireBaisseEur'] ) ); ?></span></dd>
+						<dd><?php echo esc_html( arvator_fmt_pct1( $ref['pireBaissePct'], true, true ) ); ?> <span class="stat-list__pct"><?php echo esc_html( '(' . arvator_fmt_eur_signed( $ref['pireBaisseEur'] ) . ')' ); ?></span></dd>
 					</div>
 				</dl>
-				<p class="hero__card-note muted"><?php echo wp_kses_post( __( 'Compte simulé du 1<sup>er</sup> janvier 2024 au 25 octobre 2026, frais d’un courtier inclus. Baisse en cours au 25/10/2026. Ne garantit pas les résultats futurs.', 'arvator' ) ); ?></p>
+				<p class="hero__card-note muted"><?php echo esc_html( arvator_results_source() ); ?></p>
 			</aside>
 		<?php endif; ?>
 	</div>
@@ -124,13 +130,11 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 
 <section class="section section--surface" id="resultats" aria-labelledby="titre-resultats">
 	<div class="container">
-		<p class="eyebrow"><?php esc_html_e( 'Résultats simulés', 'arvator' ); ?></p>
-		<h2 id="titre-resultats"><?php esc_html_e( 'Backtest avec les frais réels d’un courtier', 'arvator' ); ?></h2>
+		<p class="eyebrow"><?php esc_html_e( 'Résultats backtestés', 'arvator' ); ?></p>
+		<h2 id="titre-resultats"><?php esc_html_e( 'Les résultats de 2024 à 2026, avec les baisses', 'arvator' ); ?></h2>
 		<p class="section__intro">
-			<?php esc_html_e( 'Un backtest rejoue le robot sur des prix passés. Ce sont des performances simulées : elles ne garantissent pas les résultats futurs. Regardez toujours la pire baisse à côté de chaque gain.', 'arvator' ); ?>
+			<?php esc_html_e( 'Solde en fin de chaque année, puis total des trois années. Choisissez votre niveau de risque et votre capital de départ.', 'arvator' ); ?>
 		</p>
-
-		<?php get_template_part( 'template-parts/results', 'reference', array( 'data' => $data ) ); ?>
 
 		<?php if ( '' !== $demo_url ) : ?>
 			<div class="home-demo" aria-labelledby="titre-demo">
@@ -148,24 +152,6 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 
 		<h3 class="results__title results__title--spaced"><?php esc_html_e( 'Tous les capitaux de départ', 'arvator' ); ?></h3>
 		<?php get_template_part( 'template-parts/results', 'tabs', array( 'data' => $data ) ); ?>
-
-		<div class="callout" role="note">
-			<h3><?php esc_html_e( 'Comment ce backtest est calculé', 'arvator' ); ?></h3>
-			<ul class="callout__list">
-				<li><?php esc_html_e( 'Un seul compte, ouvert le 1er janvier 2024 et suivi jusqu’au 25 octobre 2026, sans retrait. Les gains s’accumulent d’une année sur l’autre, sans remise à zéro chaque année.', 'arvator' ); ?></li>
-				<li><?php esc_html_e( 'Réglage livré : 1 perte maximum par jour, 3 positions maximum en même temps.', 'arvator' ); ?></li>
-				<li><?php esc_html_e( 'Tous les frais d’un vrai courtier sont inclus, avec IC Markets (compte Raw Spread, cTrader) cité comme exemple de courtier : les écarts de prix (spreads), la commission, les frais pour garder une position ouverte la nuit (swaps) et la taille minimale de position.', 'arvator' ); ?></li>
-				<li><?php esc_html_e( 'Quand le capital est trop petit pour la taille minimale du courtier, le robot ne prend pas le trade : c’est compté dans les résultats (colonne « Trades refusés »).', 'arvator' ); ?></li>
-			</ul>
-			<p class="muted"><?php esc_html_e( 'Objectif de cette section : vous donner une idée réaliste de ce que le robot coûte en frais et de ce qu’il pourrait rapporter, sans promesse.', 'arvator' ); ?></p>
-		</div>
-
-		<div class="callout" role="note">
-			<h3><?php esc_html_e( 'Pourquoi nous conseillons au moins 2&nbsp;000&nbsp;€', 'arvator' ); ?></h3>
-			<p>
-				<?php esc_html_e( 'Ce n’est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2&nbsp;000&nbsp;€, il ne reste que 20 trades refusés au risque 1&nbsp;%, et aucun aux risques 2&nbsp;% et 3&nbsp;% ; en dessous, une partie des trades est refusée.', 'arvator' ); ?>
-			</p>
-		</div>
 
 		<p class="section__more">
 			<?php arvator_button( 'resultats', __( 'Voir tous les résultats détaillés', 'arvator' ), 'btn btn--ghost' ); ?>
@@ -223,7 +209,7 @@ $video_url = apply_filters( 'arvator_home_video_url', 'https://arvator.com/wp-co
 				<h3><?php esc_html_e( 'Bon à savoir avant d’acheter', 'arvator' ); ?></h3>
 				<ul class="checklist">
 					<li><?php /* translators: %d: jours de grâce. */ echo esc_html( sprintf( __( 'L’abonnement est obligatoire : sans abonnement à jour, la licence expire. Après %d jours de grâce, le robot ne prend plus de nouvelles positions.', 'arvator' ), $grace ) ); ?></li>
-					<li><?php /* translators: %s: capital conseillé. */ echo esc_html( sprintf( __( 'Le capital que vous placez sur votre compte cTrader est à part du prix du robot, et reste chez votre courtier. Nous conseillons au moins %s (voir plus haut pourquoi).', 'arvator' ), arvator_fmt_capital( $cap ) ) ); ?></li>
+					<li><?php /* translators: %s: capital conseillé. */ echo esc_html( sprintf( __( 'Le capital que vous placez sur votre compte cTrader est à part du prix du robot, et reste chez votre courtier. Nous conseillons au moins %s.', 'arvator' ), arvator_fmt_capital( $cap ) ) ); ?></li>
 					<li><?php esc_html_e( 'Paiement par carte (sécurisé par Stripe : vos données de carte ne passent jamais par ce site) ou par virement bancaire pour la formule annuelle.', 'arvator' ); ?></li>
 				</ul>
 			</div>

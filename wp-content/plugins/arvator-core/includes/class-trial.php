@@ -63,7 +63,7 @@ final class Arvator_Trial {
 			<p class="arv-check"><label><input type="checkbox" name="waiver" value="1" required> <?php echo wp_kses_post( __( '<strong>Je comprends que, si j’achète le robot après cet essai, je renonce à mon droit de rétractation :</strong> l’achat ne sera alors plus remboursable.', 'arvator-core' ) ); ?></label></p>
 			<p class="arv-check"><label><input type="checkbox" name="consent" value="1" required> <?php /* translators: %s: adresse de la politique de confidentialité. */ echo wp_kses_post( sprintf( __( 'J’accepte que mon adresse email soit utilisée pour m’envoyer ma licence d’essai (voir la <a href="%s" target="_blank" rel="noopener">politique de confidentialité</a>).', 'arvator-core' ), esc_url( Arvator_Support::page_url( 'confidentialite' ) ) ) ); ?></label></p>
 			<p><button class="btn btn--primary" type="submit"><?php esc_html_e( 'Demander mon essai gratuit', 'arvator-core' ); ?></button></p>
-			<p class="muted"><?php esc_html_e( 'Les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' ); ?></p>
+			<p class="muted"><?php esc_html_e( 'Les résultats présentés sur le site sont des résultats backtestés. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' ); ?></p>
 		</form>
 		<?php
 		return (string) ob_get_clean();
@@ -112,7 +112,7 @@ final class Arvator_Trial {
 		$res    = Arvator_License::request_trial( $email, $account );
 		$status = is_wp_error( $res ) ? 'requested' : ( true === ( $res['ok'] ?? null ) ? 'active' : 'refused' );
 		$wpdb->update( Arvator_Repo::table( 'trials' ), array( 'status' => $status ), array( 'email' => $email ) );
-		$reminder = __( "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai.", 'arvator-core' ) . "\n\n" . __( 'Les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' ) . "\n\n" . Arvator_Site::signature();
+		$reminder = __( "Rappel : si vous achetez le robot après l'essai, vous renoncez à votre droit de rétractation (l'achat n'est alors plus remboursable), comme vous l'avez accepté en demandant l'essai.", 'arvator-core' ) . "\n\n" . __( 'Les résultats présentés sur le site sont des résultats backtestés. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' ) . "\n\n" . Arvator_Site::signature();
 
 		if ( 'refused' === $status ) {
 			$reason = (string) ( $res['raison'] ?? '' );

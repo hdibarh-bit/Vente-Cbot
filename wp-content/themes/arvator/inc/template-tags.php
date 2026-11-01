@@ -181,7 +181,7 @@ function arvator_default_links( string $location ): array {
 			array( __( 'Contact', 'arvator' ), 'contact' ),
 		),
 		'footer'  => array(
-			array( __( 'Résultats simulés', 'arvator' ), 'resultats' ),
+			array( __( 'Résultats', 'arvator' ), 'resultats' ),
 			array( __( 'Tarifs', 'arvator' ), 'tarifs' ),
 			array( __( 'Essai gratuit', 'arvator' ), 'essai-gratuit' ),
 			array( __( 'Rapport gratuit', 'arvator' ), 'rapport-gratuit' ),
@@ -286,10 +286,10 @@ function arvator_brand(): void {
 }
 
 /**
- * Texte d'avertissement obligatoire, identique sur toutes les pages.
+ * Texte d'avertissement du pied de page, identique sur toutes les pages : la mention de risque courte (demande de Hamid, 01/11/2026).
  */
 function arvator_risk_notice(): string {
-	return __( 'Le trading comporte un risque élevé de perte en capital, pouvant aller jusqu’à la totalité des sommes engagées. Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel ne constitue pas un conseil en investissement.', 'arvator' );
+	return arvator_results_disclaimer();
 }
 
 /**

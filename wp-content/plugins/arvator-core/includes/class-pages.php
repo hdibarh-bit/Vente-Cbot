@@ -92,13 +92,16 @@ final class Arvator_Pages {
 	private static function apply_fixes(): void {
 		$sp = '(?:\s|&nbsp;|&#160;|\x{00A0}|\x{202F})';
 
-		foreach ( array( 'risques', 'faq', 'mentions-legales', 'cgv', 'confidentialite', 'contact', 'a-propos', 'conditions-parrainage', 'parrainage' ) as $slug ) {
+		foreach ( array( 'risques', 'faq', 'mentions-legales', 'cgv', 'confidentialite', 'contact', 'a-propos', 'conditions-parrainage', 'parrainage', 'essai-gratuit' ) as $slug ) {
 			$page = get_page_by_path( $slug, OBJECT, 'page' );
 			if ( ! $page instanceof WP_Post ) {
 				continue;
 			}
 			$new = (string) $page->post_content;
-			$new = (string) preg_replace( '/au' . $sp . '+moins' . $sp . '+5' . $sp . '?000' . $sp . '?€/u', 'au moins 2 000 €', $new );
+			$new = (string) preg_replace( '/(au' . $sp . '+moins' . $sp . '+)2' . $sp . '?000(' . $sp . '?€)/u', '${1}5 000$2', $new );
+			foreach ( self::RESULT_FIXES as $fix ) {
+				$new = str_replace( array( self::inline( $fix[0] ), $fix[0] ), array( self::inline( $fix[1] ), $fix[1] ), $new );
+			}
 			$new = str_replace( array( 'contact@cosmartis.com', 'bot.cosmartis.com' ), array( Arvator_Site::EMAIL, Arvator_Site::DOMAIN ), $new );
 
 			if ( 'confidentialite' === $slug && ! str_contains( $new, 'Assistant de discussion' ) ) {
@@ -112,6 +115,31 @@ final class Arvator_Pages {
 			}
 		}
 	}
+
+	/**
+	 * Résultats (demande de Hamid du 01/11/2026) : « performances simulées » → « résultats backtestés », capital conseillé 5 000 €,
+	 * plus de « trades refusés ». Paires [ancienne phrase, nouvelle phrase], appliquées même sur une page modifiée dans l'éditeur.
+	 */
+	private const RESULT_FIXES = array(
+		array( '- **Transparence :** nous montrons des performances simulées (backtest), toujours accompagnées des baisses de chaque simulation. Nous ne vendons pas de promesse.', '- **Transparence :** nous montrons des résultats backtestés, toujours avec les baisses qui vont avec. Nous ne vendons pas de promesse.' ),
+		array( 'Les résultats présentés sont des simulations sur 2024, 2025 et 2026.', 'Les résultats présentés sont des backtests sur 2024, 2025 et 2026.' ),
+		array( 'Les résultats affichés sont des performances simulées (backtest 2024-2026) qui ne préjugent pas', 'Les résultats affichés sont des résultats backtestés (2024-2026) qui ne préjugent pas' ),
+		array( 'Non, ce sont des simulations (backtest) réalisées sur 2024, 2025 et 2026.', 'Non, ce sont des backtests réalisés sur cTrader de 2024 à 2026, frais du courtier inclus.' ),
+		array( '?? Pourquoi conseillez-vous au moins 2 000 € ?', '?? Pourquoi conseillez-vous au moins 5 000 € ?' ),
+		array( 'Ce n\'est pas une obligation. Avec un petit capital, la taille minimale de position imposée par le courtier ferait risquer plus que prévu : le robot refuse alors le trade. Il en prend donc moins, et les résultats deviennent plus irréguliers. À partir de 2 000 €, notre backtest (qui inclut les frais d\'un courtier, par exemple IC Markets) ne compte que 20 trades refusés au risque 1 %, et aucun aux risques 2 % et 3 %.', 'Ce n\'est pas une obligation. C\'est le capital de référence de nos backtests : au réglage livré (1 %), plus le capital est petit, plus les baisses sont fortes en pourcentage. Voir les résultats par capital sur la [page d\'accueil](/#resultats).' ),
+		array( 'Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Ce logiciel', 'Les résultats présentés sont des résultats backtestés et ne préjugent pas des résultats futurs. Ce logiciel' ),
+		array( '## Les résultats affichés sont des simulations', '## Les résultats affichés sont des backtests' ),
+		array( '- Ce sont des performances simulées (backtest), réalisées sur 2024, 2025 et 2026. Elles ne sont pas des résultats réels.', '- Ce sont des résultats backtestés sur cTrader, du 1er janvier 2024 au 31 octobre 2026, frais du courtier inclus. Ce ne sont pas des résultats réels.' ),
+		array( 'Chaque simulation affichée montre la pire baisse et le solde le plus bas. Plus le niveau de risque est élevé (1 %, 2 % ou 3 % par trade), plus les gains simulés comme les baisses', 'Chaque résultat affiché montre la pire baisse. Plus le niveau de risque est élevé (1 %, 2 % ou 3 % par trade), plus les gains comme les baisses' ),
+		array( 'Avec un petit capital, beaucoup de trades sont refusés (taille minimale de position imposée par le courtier) : le robot en prend moins et les résultats sont plus irréguliers. Nous conseillons au moins 2 000 €, sans que ce soit une garantie de résultat.', 'Avec un petit capital, les baisses sont plus fortes en pourcentage. Nous conseillons au moins 5 000 €, sans que ce soit une garantie de résultat.' ),
+		array( 'Les résultats présentés sont des performances simulées. Voir la page', 'Les résultats présentés sont des résultats backtestés. Voir la page' ),
+		array( 'Les résultats présentés sont des performances simulées et ne préjugent pas des résultats futurs. Le client', 'Les résultats présentés sont des résultats backtestés et ne préjugent pas des résultats futurs. Le client' ),
+		array( 'les performances présentées sur ce site sont **simulées** (backtest 2024-2026)', 'les résultats présentés sur ce site sont des **résultats backtestés** (2024-2026)' ),
+		array( 'les performances présentées sont simulées et le trading', 'les résultats présentés sont des résultats backtestés et le trading' ),
+		array( 'Les résultats présentés sur le site sont des performances simulées : le trading', 'Les résultats présentés sur le site sont des résultats backtestés : le trading' ),
+		array( 'des performances simulées', 'des résultats backtestés' ),
+		array( 'performances simulées', 'résultats backtestés' ),
+	);
 
 	/** Paragraphe « Assistant de discussion » de la politique de confidentialité (aussi dans content/pages.php). */
 	public const CHAT_PRIVACY = "## Assistant de discussion\nLes messages que vous écrivez à l'assistant de discussion (la bulle en bas à droite du site) sont transmis à un fournisseur d'intelligence artificielle pour générer la réponse. Ils ne sont pas conservés. N'y écrivez pas de données personnelles (mot de passe, numéro de carte, coordonnées bancaires).";

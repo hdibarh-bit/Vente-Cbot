@@ -582,7 +582,7 @@ check( is_array( $order ) && 'paid' === $order['status'] && 150000 === (int) $or
 $sub = $buyer_user ? $wpdb->get_row( 'SELECT * FROM ' . Arvator_Repo::table( 'subscriptions' ) . " WHERE stripe_subscription_id = 'sub_$tag'", ARRAY_A ) : null;
 check( is_array( $sub ) && 'annual' === $sub['plan'] && 'active' === $sub['status'] && 0 === (int) $sub['cancel_at_period_end'] && str_starts_with( (string) $sub['current_period_end'], '2030-03-17' ), 'abonnement annuel enregistré avec sa date de fin' );
 $m = mails();
-check( 1 === count( $m ) && $buyer === $m[0]->to && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'performances simulées' ), 'email de confirmation avec lien pour choisir le mot de passe' );
+check( 1 === count( $m ) && $buyer === $m[0]->to && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'résultats backtestés' ), 'email de confirmation avec lien pour choisir le mot de passe' );
 check( Arvator_Repo::is_entitled( (int) $buyer_user->ID ), 'le client peut télécharger le robot' );
 
 // -- Idempotence : même événement, renvoyé plusieurs fois
@@ -750,15 +750,14 @@ check( str_contains( $anon->get( '/faq/' )['body'], 'Prêt à essayer' ) && str_
 foreach ( array( 'risques', 'cgv', 'mentions-legales', 'confidentialite', 'cookies', 'acheter', 'espace-membre', 'essai-gratuit', 'contact' ) as $s ) {
 	check( ! str_contains( $anon->get( '/' . $s . '/' )['body'], 'Prêt à essayer' ), "page « $s » : pas de bandeau d'appel à l'action" );
 }
-// Résultats : un seul backtest de référence (5 000 € au risque 1 % : 15 202 €, +204 %, pire baisse −20,1 % / −3 771 €), plus aucun ancien chiffre.
-check( str_contains( $home['body'], "15\u{202F}202\u{00A0}€" ) && str_contains( $home['body'], "+204\u{00A0}%" ), 'résultats : bloc de référence 5 000 € → 15 202 €, +204 %' );
-check( str_contains( $home['body'], "\u{2212}20,1\u{00A0}%" ) && str_contains( $home['body'], "\u{2212}3\u{202F}771\u{00A0}€" ) && str_contains( $home['body'], 'Baisse en cours au 25/10/2026' ), 'résultats : pire baisse (en % et en €) et baisse en cours' );
-check( str_contains( $home['body'], "8\u{202F}036\u{00A0}€" ) && str_contains( $home['body'], '19 septembre 2024' ) && str_contains( $home['body'], 'pas encore' ), 'résultats : détail par année du même compte' );
-check( str_contains( $home['body'], 'Trades refusés' ) && str_contains( $home['body'], 'panneau-risque-2' ) && str_contains( $home['body'], 'panneau-risque-3' ) && str_contains( $home['body'], 'En dessous de 2' ), 'résultats : onglets 1 %, 2 %, 3 %, trades refusés et note petits capitaux' );
-check( str_contains( $home['body'], 'Backtest avec les frais réels d' ) && str_contains( $home['body'], 'IC Markets' ) && ! preg_match( '#href="[^"]*(icmarkets|ic-markets)#i', $home['body'] ), 'résultats : titre sur la méthode, courtier cité sans lien' );
-check( ! str_contains( $home['body'], '2024 → 2026 enchaînés' ) && ! str_contains( $home['body'], "23\u{202F}186" ) && ! str_contains( $home['body'], '7 oct' ) && ! str_contains( $home['body'], 'Backtest-cTrader' ), 'résultats : plus aucun ancien chiffre ni lien vers l\'ancien rapport' );
-check( 1 === preg_match( '/hero__card.*?15\x{202F}202\x{00A0}€.*?\+204\x{00A0}%/su', $home['body'] ), 'haut de page : carte de référence 5 000 € → 15 202 €' );
-check( str_contains( $anon->get( '/faq/' )['body'], '20 trades refusés au risque 1' ) && str_contains( $anon->get( '/faq/' )['body'], 'au moins 2 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'au moins 5 000' ), 'FAQ : capital minimum conseillé 2 000 €' );
+// Résultats (01/11/2026) : encadré 5 000 € → 9 055 € + tableau à onglets ; plus aucun ancien chiffre ni « simulé ».
+check( 1 === preg_match( '/hero__card.*?5\x{202F}000\x{00A0}€ → 9\x{202F}055\x{00A0}€.*?5\x{202F}143\x{00A0}€.*?7\x{202F}999\x{00A0}€.*?\+81\x{00A0}%.*?\+4\x{202F}055\x{00A0}€.*?\x{2212}16,7\x{00A0}%.*?\x{2212}1\x{202F}587\x{00A0}€/su', $home['body'] ), 'haut de page : encadré de référence 5 000 € → 9 055 €, années, total et pire baisse' );
+check( str_contains( $home['body'], 'Backtests réalisés sur cTrader, du 1er janvier 2024 au 31 octobre 2026' ) && str_contains( $home['body'], 'Les performances passées ne préjugent pas des performances futures' ), 'résultats : source et mention de risque courte' );
+check( str_contains( $home['body'], 'panneau-risque-2' ) && str_contains( $home['body'], 'panneau-risque-3' ) && str_contains( $home['body'], 'Solde fin oct. 2026' ) && str_contains( $home['body'], 'Total 3 ans' ) && str_contains( $home['body'], 'Minimum conseillé' ) && str_contains( $home['body'], "54\u{202F}412\u{00A0}€" ), 'résultats : onglets 1 %, 2 %, 3 %, colonnes par année, badge minimum conseillé' );
+check( 3 === substr_count( $home['body'], 'Minimum conseillé' ), 'résultats : badge « Minimum conseillé » sur la ligne 5 000 € de chaque onglet', (string) substr_count( $home['body'], 'Minimum conseillé' ) );
+check( ! str_contains( $home['body'], 'Trades refusés' ) && ! str_contains( $home['body'], 'simulé' ) && ! str_contains( $home['body'], "15\u{202F}202" ) && ! str_contains( $home['body'], '+204' ) && ! str_contains( $home['body'], 'IC Markets' ) && ! str_contains( $home['body'], 'class="reference' ) && ! str_contains( $home['body'], "500\u{00A0}€</th>" ), 'résultats : plus aucun ancien chiffre, ni « simulé », ni 3e tableau' );
+check( str_contains( $home['body'], 'id="titre-video"' ) && str_contains( $home['body'], 'id="titre-demo"' ) && strpos( $home['body'], 'id="titre-demo"' ) < strpos( $home['body'], 'panneau-risque-1' ), 'vidéos toujours en place (explicative en haut, démonstration avant le tableau)' );
+check( str_contains( $anon->get( '/faq/' )['body'], 'au moins 5 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'au moins 2 000' ) && ! str_contains( $anon->get( '/faq/' )['body'], 'trades refusés' ), 'FAQ : capital minimum conseillé 5 000 €' );
 check( 1 === preg_match( '#<ul class="site-nav__list"><li><a href="[^"]*/"[^>]*aria-current="page">Accueil</a></li>#', $home['body'] ), 'menu d\'en-tête : « Accueil » en premier, page courante sur l\'accueil' );
 check( 1 === preg_match( '/site-header.*?\/acheter\/.*?\/essai-gratuit\//s', $home['body'] ) ||1 === preg_match( '/site-header.*?\/essai-gratuit\//s', $home['body'] ), 'en-tête : boutons d\'essai et d\'achat' );
 $wpdb->query( 'DELETE FROM ' . Arvator_Repo::table( 'trials' ) . " WHERE email LIKE '%$tag@example.org'" );
@@ -814,7 +813,7 @@ $pref  = $puser ? Arvator_Referral::referrer( (int) $puser->ID ) : null;
 check( $puser instanceof WP_User && in_array( Arvator_Roles::CLIENT, $puser->roles, true ) && is_array( $pref ) && 8 === strlen( (string) $pref['code'] ) && 'active' === $pref['status'], 'compte client et code de parrain créés, sans achat' );
 $code = (string) ( $pref['code'] ?? '' );
 $m    = mails();
-check( 1 === count( $m ) && $pemail === $m[0]->to && 1 === substr_count( $m[0]->message, '?ref=' ) && str_contains( $m[0]->message, '/acheter/?ref=' . $code ) && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'performances simulées' ), 'email : lien de recommandation + lien pour choisir le mot de passe + rappel des risques' );
+check( 1 === count( $m ) && $pemail === $m[0]->to && 1 === substr_count( $m[0]->message, '?ref=' ) && str_contains( $m[0]->message, '/acheter/?ref=' . $code ) && str_contains( $m[0]->message, 'action=rp' ) && str_contains( $m[0]->message, 'résultats backtestés' ), 'email : lien de recommandation + lien pour choisir le mot de passe + rappel des risques' );
 @unlink( $log );
 check( 'parrain_mail' === notice_of( $anon->post( '/wp-admin/admin-post.php', array( 'email' => "a$tag@example.com" ) + $sgood ) ) && null === Arvator_Referral::referrer( $uA ), 'adresse déjà cliente : même réponse (pas de fuite), pas d\'inscription à sa place' );
 check( 1 === count( mails() ) && "a$tag@example.com" === mails()[0]->to && str_contains( mails()[0]->message, 'rubrique « Parrainage »' ), '… mais un email lui explique comment activer son lien' );

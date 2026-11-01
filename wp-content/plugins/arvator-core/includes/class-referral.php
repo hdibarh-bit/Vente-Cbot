@@ -743,7 +743,7 @@ final class Arvator_Referral {
 		}
 		$lines[] = __( 'Pour recevoir vos récompenses de recommandation, indiquez votre IBAN dans votre espace membre, rubrique « Parrainage ».', 'arvator-core' );
 		$lines[] = '';
-		$lines[] = __( 'Rappel : recommandez Arvator de façon honnête. Les résultats présentés sur le site sont des performances simulées et le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
+		$lines[] = __( 'Rappel : recommandez Arvator de façon honnête. Les résultats présentés sur le site sont des résultats backtestés et le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
 		$lines[] = '';
 		$lines[] = Arvator_Site::signature();
 		wp_mail( $email, __( 'Arvator : votre lien de recommandation', 'arvator-core' ), implode( "\n", $lines ) );

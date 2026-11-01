@@ -429,7 +429,7 @@ final class Arvator_Webhook {
 		$lines[] = __( 'Retrouvez votre achat, votre abonnement et le téléchargement du robot dans votre espace membre :', 'arvator-core' );
 		$lines[] = Arvator_Member::url();
 		$lines[] = '';
-		$lines[] = __( 'Rappel : les résultats présentés sur le site sont des performances simulées. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
+		$lines[] = __( 'Rappel : les résultats présentés sur le site sont des résultats backtestés. Le trading comporte un risque élevé de perte en capital.', 'arvator-core' );
 		$lines[] = '';
 		$lines[] = Arvator_Site::signature();
 

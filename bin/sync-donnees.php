@@ -30,20 +30,37 @@ function ecrire( string $file, string $label, array $data ): void {
 	echo "Écrit : $file\n";
 }
 
-// Résultats de backtest (un seul backtest de référence, frais de courtier inclus).
-$r = lire( $root . '/config/resultats-backtest.json' );
+// Résultats backtestés : un tableau par niveau de risque ; l'encadré de référence (5 000 € au risque 1 %)
+// est repris de la ligne correspondante du tableau, pour qu'il n'y ait qu'une seule source de chiffres.
+$r   = lire( $root . '/config/resultats-backtest.json' );
+$ref = null;
+foreach ( $r['tableaux'][ 'r' . $r['reference']['risquePct'] ] as $ligne ) {
+	if ( (int) $ligne['capital'] === (int) $r['reference']['capital'] ) {
+		$ref = $ligne;
+	}
+}
+if ( null === $ref ) {
+	fwrite( STDERR, "Ligne de référence introuvable dans les tableaux.\n" );
+	exit( 1 );
+}
+$fin = end( $ref['annees'] );
 ecrire(
 	$theme . '/resultats.php',
-	'Résultats de backtest (performances simulées)',
+	'Résultats backtestés',
 	array(
 		'periode'          => $r['periode'],
 		'devise'           => $r['devise'],
 		'livraison'        => $r['livraison'],
-		'methode'          => $r['methode'],
-		'reference'        => $r['reference'],
+		'colonnesAnnees'   => $r['colonnesAnnees'],
+		'reference'        => array_merge(
+			$ref,
+			array(
+				'risquePct'  => $r['reference']['risquePct'],
+				'soldeFinal' => $fin['solde'],
+				'gainEur'    => $fin['solde'] - $ref['capital'],
+			)
+		),
 		'tableaux'         => $r['tableaux'],
-		'noteSmallCapital' => $r['noteSmallCapital'],
-		'limitesCommunes'  => $r['limitesCommunes'],
 		'capitalConseille' => array(
 			'montant'     => $r['capitalConseille']['montant'],
 			'obligatoire' => $r['capitalConseille']['obligatoire'],
